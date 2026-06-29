@@ -33,6 +33,10 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
         Console
       </button>
+      <button class="studio-btn studio-btn-ghost studio-btn-sm" onclick="toggleAIChatPanel()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        AI Chat
+      </button>
       <button class="studio-btn studio-btn-ghost studio-btn-icon" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
       </button>
@@ -185,6 +189,10 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
             Add SpecFeature
           </button>
+          <button class="studio-btn studio-btn-ai w-full mt-2" onclick="aiGenerateFeature()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            ✨ Generate Feature with AI
+          </button>
         </div>
       </div>
 
@@ -240,9 +248,56 @@
     </div>
   </div>
 
+  <!-- AI Chat Panel -->
+  <div class="studio-ai-panel" id="ai-chat-panel">
+    <div class="studio-ai-panel-header">
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="font-semibold">AI Assistant</span>
+      </div>
+      <div class="flex gap-2">
+        <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="Studio.openModal('ai-settings-modal')" title="AI Settings">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="toggleAIChatPanel()" title="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="studio-ai-panel-body" id="ai-chat-messages">
+      <div class="studio-ai-message studio-ai-message-assistant">
+        Hi! I'm your AI modding assistant. I can help you create features, balance your mod, explain fields, or make changes based on your instructions. What would you like to do?
+      </div>
+    </div>
+    <div class="p-3 border-t" style="border-color: var(--border);">
+      <div class="flex gap-2">
+        <input type="text" id="ai-chat-input" class="studio-input" placeholder="e.g. Add online multiplayer, balance this, make it a console game..." onkeydown="if(event.key==='Enter') sendAIChatMessage()">
+        <button class="studio-btn studio-btn-ai" onclick="sendAIChatMessage()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <p class="text-xs mt-2" style="color: var(--text-muted);">AI sees your current mod state and can edit fields directly.</p>
+    </div>
+  </div>
+
+  <!-- AI Settings Modal -->
+  <div class="studio-modal-overlay" id="ai-settings-modal">
+    <div class="studio-modal">
+      <div class="studio-modal-header">
+        <h3 class="text-lg font-semibold">AI Settings</h3>
+        <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="Studio.closeModal('ai-settings-modal')">&times;</button>
+      </div>
+      <div class="studio-modal-body">
+        <div id="ai-settings-form"></div>
+      </div>
+    </div>
+  </div>
+
   <script src="js/tyd-engine.js"></script>
   <script src="js/presets.js"></script>
   <script src="js/studio.js"></script>
+  <script src="js/ai-assistant.js"></script>
+  <script src="js/ai-chat.js"></script>
   <script>
     // ─── State ───
     let projectId = null;
@@ -253,6 +308,7 @@
     function init() {
       Studio.init();
       document.getElementById('theme-toggle').addEventListener('click', Studio.toggleTheme);
+      AIAssistant.renderSettingsForm('ai-settings-form');
       Studio.initAccordions();
 
       // Load from URL
@@ -700,6 +756,201 @@
     // ─── Console Panel ───
     function toggleConsolePanel() {
       document.querySelector('.studio-split-right').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ─── AI Chat Panel ───
+    function toggleAIChatPanel() {
+      document.getElementById('ai-chat-panel').classList.toggle('open');
+    }
+
+    function getCurrentEditorState() {
+      const st = buildSoftwareType();
+      const validation = TyDEngine.validateSoftwareType(st);
+      return {
+        ...st,
+        _validation: validation
+      };
+    }
+
+    async function sendAIChatMessage() {
+      const input = document.getElementById('ai-chat-input');
+      const message = input.value.trim();
+      if (!message) return;
+
+      if (!AIAssistant.isConfigured()) {
+        Studio.openModal('ai-settings-modal');
+        Studio.toast('Please configure your AI provider first.', 'warning');
+        return;
+      }
+
+      const messagesContainer = document.getElementById('ai-chat-messages');
+      messagesContainer.innerHTML += `<div class="studio-ai-message studio-ai-message-user">${message.replace(/</g, '&lt;')}</div>`;
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      input.value = '';
+
+      const loadingId = 'ai-loading-' + Date.now();
+      messagesContainer.innerHTML += `<div class="studio-ai-message studio-ai-message-loading" id="${loadingId}"><span class="studio-pulse">Thinking...</span></div>`;
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      try {
+        AIChat.init({ getState: getCurrentEditorState });
+        const response = await AIChat.sendMessage(message, { getState: getCurrentEditorState });
+        document.getElementById(loadingId).remove();
+        messagesContainer.innerHTML += `<div class="studio-ai-message studio-ai-message-assistant">${response.message.replace(/</g, '&lt;').replace(/\n/g, '<br>')}</div>`;
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        if (response.operations && response.operations.length > 0) {
+          const callbacks = {
+            'SET_ROOT_FIELD': function(op) {
+              const el = document.getElementById('st-' + op.field.toLowerCase());
+              if (el) {
+                if (el.type === 'checkbox') el.checked = op.value;
+                else el.value = op.value;
+              }
+            },
+            'ADD_SPECFEATURE': function(op) {
+              const id = addSpecFeature();
+              if (op.feature) {
+                document.getElementById('sf-name-' + id).value = op.feature.Name || '';
+                document.getElementById('sf-spec-' + id).value = op.feature.Spec || '';
+                document.getElementById('sf-desc-' + id).value = op.feature.Description || '';
+                document.getElementById('sf-devtime-' + id).value = op.feature.DevTime || 5;
+                document.getElementById('sf-codeart-' + id).value = op.feature.CodeArt !== undefined ? op.feature.CodeArt : 0.5;
+                if (op.feature.Submarkets) {
+                  document.getElementById('sf-sm1-' + id).value = op.feature.Submarkets[0] || 0;
+                  document.getElementById('sf-sm2-' + id).value = op.feature.Submarkets[1] || 0;
+                  document.getElementById('sf-sm3-' + id).value = op.feature.Submarkets[2] || 0;
+                }
+              }
+            },
+            'MODIFY_SPECFEATURE': function(op) {
+              const cards = document.querySelectorAll('.spec-feature-card');
+              if (cards[op.index]) {
+                const id = cards[op.index].dataset.id;
+                const fieldMap = {
+                  'Name': 'sf-name-' + id,
+                  'Spec': 'sf-spec-' + id,
+                  'Description': 'sf-desc-' + id,
+                  'DevTime': 'sf-devtime-' + id,
+                  'CodeArt': 'sf-codeart-' + id,
+                  'Server': 'sf-server-' + id,
+                  'Dependencies': 'sf-dependencies-' + id,
+                  'Unlock': 'sf-unlock-' + id
+                };
+                const elId = fieldMap[op.field];
+                if (elId) {
+                  const el = document.getElementById(elId);
+                  if (el) el.value = op.value;
+                }
+              }
+            },
+            'REMOVE_SPECFEATURE': function(op) {
+              const cards = document.querySelectorAll('.spec-feature-card');
+              if (cards[op.index]) {
+                const id = cards[op.index].dataset.id;
+                removeSpecFeature(id);
+              }
+            },
+            'ADD_SUBFEATURE': function(op) {
+              const cards = document.querySelectorAll('.spec-feature-card');
+              if (cards[op.specIndex]) {
+                const sid = addSubFeature(cards[op.specIndex].dataset.id);
+                if (op.feature) {
+                  document.getElementById('sub-name-' + sid).value = op.feature.Name || '';
+                  document.getElementById('sub-desc-' + sid).value = op.feature.Description || '';
+                  document.getElementById('sub-level-' + sid).value = op.feature.Level || 1;
+                  document.getElementById('sub-devtime-' + sid).value = op.feature.DevTime || 3;
+                  document.getElementById('sub-codeart-' + sid).value = op.feature.CodeArt !== undefined ? op.feature.CodeArt : 0.5;
+                  if (op.feature.Submarkets) {
+                    document.getElementById('sub-sm1-' + sid).value = op.feature.Submarkets[0] || 0;
+                    document.getElementById('sub-sm2-' + sid).value = op.feature.Submarkets[1] || 0;
+                    document.getElementById('sub-sm3-' + sid).value = op.feature.Submarkets[2] || 0;
+                  }
+                }
+              }
+            },
+            'SET_SUBMARKETS': function(op) {
+              const cards = document.querySelectorAll('.spec-feature-card');
+              if (cards[op.specIndex]) {
+                const id = cards[op.specIndex].dataset.id;
+                document.getElementById('sf-sm1-' + id).value = op.values[0];
+                document.getElementById('sf-sm2-' + id).value = op.values[1];
+                document.getElementById('sf-sm3-' + id).value = op.values[2];
+              }
+            },
+            'CLEAR_FIELD': function(op) {
+              const el = document.getElementById('st-' + op.field.toLowerCase());
+              if (el) {
+                if (el.type === 'checkbox') el.checked = false;
+                else el.value = '';
+              }
+            }
+          };
+          const results = AIChat.executeOperations(response.operations, callbacks);
+          const successCount = results.filter(r => r.success).length;
+          if (successCount > 0) {
+            Studio.toast('Applied ' + successCount + ' changes', 'success');
+            updatePreview();
+          }
+        }
+      } catch (err) {
+        document.getElementById(loadingId).remove();
+        messagesContainer.innerHTML += `<div class="studio-ai-message studio-ai-message-assistant" style="color:var(--danger)">Error: ${err.message}</div>`;
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+    }
+
+    // ─── AI Feature Generation ───
+    async function aiGenerateFeature() {
+      if (!AIAssistant.isConfigured()) {
+        Studio.openModal('ai-settings-modal');
+        Studio.toast('Please configure AI first.', 'warning');
+        return;
+      }
+      const softwareName = document.getElementById('st-name').value.trim() || 'My Software';
+      const sub1 = document.getElementById('st-sub1').value.trim();
+      const sub2 = document.getElementById('st-sub2').value.trim();
+      const sub3 = document.getElementById('st-sub3').value.trim();
+      const specHint = prompt('What specialization should this feature have? (e.g. 3D, Audio, Network, System)', '3D');
+      if (!specHint) return;
+
+      Studio.toast('AI is generating a feature...', 'info');
+      try {
+        const feat = await AIAssistant.generateFeature(softwareName, [sub1, sub2, sub3], specHint);
+        const id = addSpecFeature();
+        setTimeout(() => {
+          document.getElementById(`sf-name-${id}`).value = feat.Name || '';
+          document.getElementById(`sf-spec-${id}`).value = feat.Spec || specHint;
+          document.getElementById(`sf-desc-${id}`).value = feat.Description || '';
+          document.getElementById(`sf-devtime-${id}`).value = feat.DevTime || 5;
+          document.getElementById(`sf-codeart-${id}`).value = feat.CodeArt !== undefined ? feat.CodeArt : 0.5;
+          const sm = feat.Submarkets || [1,1,1];
+          document.getElementById(`sf-sm1-${id}`).value = sm[0] || 0;
+          document.getElementById(`sf-sm2-${id}`).value = sm[1] || 0;
+          document.getElementById(`sf-sm3-${id}`).value = sm[2] || 0;
+
+          if (feat.SubFeatures) {
+            feat.SubFeatures.forEach(sub => {
+              const sid = addSubFeature(id);
+              setTimeout(() => {
+                document.getElementById(`sub-name-${sid}`).value = sub.Name || '';
+                document.getElementById(`sub-desc-${sid}`).value = sub.Description || '';
+                document.getElementById(`sub-level-${sid}`).value = sub.Level || 1;
+                document.getElementById(`sub-devtime-${sid}`).value = sub.DevTime || 3;
+                document.getElementById(`sub-codeart-${sid}`).value = sub.CodeArt !== undefined ? sub.CodeArt : 0.5;
+                const ssm = sub.Submarkets || [1,1,1];
+                document.getElementById(`sub-sm1-${sid}`).value = ssm[0] || 0;
+                document.getElementById(`sub-sm2-${sid}`).value = ssm[1] || 0;
+                document.getElementById(`sub-sm3-${sid}`).value = ssm[2] || 0;
+              }, 0);
+            });
+          }
+          updatePreview();
+          Studio.toast('Feature generated!', 'success');
+        }, 0);
+      } catch (err) {
+        Studio.toast('AI generation failed: ' + err.message, 'danger');
+      }
     }
 
     // ─── Start ───

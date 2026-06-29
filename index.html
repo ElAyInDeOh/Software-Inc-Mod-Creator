@@ -37,26 +37,24 @@
   </header>
 
   <main class="studio-container" style="padding-top: 2rem; padding-bottom: 4rem;">
-    <!-- Self-Host Banner -->
+    <!-- Self-Host Notice -->
     <section class="mb-8">
       <div class="studio-card" style="background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(168,85,247,0.1) 100%); border-color: rgba(99,102,241,0.3);">
         <div class="flex items-start gap-4" style="flex-wrap: wrap;">
           <div style="font-size: 2.5rem; line-height: 1;">🚀</div>
           <div class="flex-1">
-            <div class="font-semibold text-lg mb-1" style="color: #818cf8;">Want AI-Powered Mod Generation?</div>
+            <div class="font-semibold text-lg mb-1" style="color: #818cf8;">Self-Hosted Edition</div>
             <p class="text-sm mb-3" style="color: var(--text-secondary);">
-              This GitHub Pages version works fully in your browser with no setup.
-              To unlock <strong>AI assistance</strong> (BYOK — bring your own API key from OpenAI, Claude, or a local LLM),
-              host the project yourself with any static server, or run it on a VPS.
-              Works from any device — PC, phone, or tablet — once it's hosted.
+              AI assistance is available because you're running this on your own server.
+              Add your API key in settings to get started.
             </p>
             <div class="flex gap-2" style="flex-wrap: wrap;">
-              <a href="https://github.com/elayindeoh/Software-Inc-Mod-Creator#self-hosting" target="_blank" class="studio-btn studio-btn-primary" style="text-decoration:none; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); border-color: transparent;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+              <button class="studio-btn studio-btn-primary" onclick="Studio.openModal('ai-settings-modal')" style="text-decoration:none; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); border-color: transparent;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                Connect AI
+              </button>
+              <a href="SELF_HOSTING.md" target="_blank" class="studio-btn studio-btn-secondary" style="text-decoration:none;">
                 Self-Hosting Guide
-              </a>
-              <a href="https://github.com/elayindeoh/Software-Inc-Mod-Creator" target="_blank" class="studio-btn studio-btn-secondary" style="text-decoration:none;">
-                View on GitHub
               </a>
             </div>
           </div>
@@ -68,18 +66,21 @@
     <section class="text-center mb-12" style="max-width: 720px; margin-left: auto; margin-right: auto;">
       <div class="studio-badge studio-badge-info mb-4" style="font-size: 0.8125rem;">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-        Free & Open Source
+        Self-Hosted — AI Ready
       </div>
       <h1 class="text-4xl font-bold mb-4" style="line-height: 1.2;">Build Better Mods for <span style="color: var(--accent);">Software Inc.</span></h1>
       <p class="text-lg" style="color: var(--text-secondary); line-height: 1.6;">
-        A modern, intuitive mod creator with live preview, validation, and presets.
-        No installation. Works entirely in your browser.
+        A modern, intuitive mod creator with live preview, validation, presets, and optional AI-powered generation.
       </p>
       <div class="flex gap-3 justify-center mt-6" style="flex-wrap: wrap;">
         <a href="#presets" class="studio-btn studio-btn-primary" style="text-decoration:none;">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
           Create a Mod
         </a>
+        <button class="studio-btn studio-btn-secondary" onclick="Studio.openModal('ai-settings-modal')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          Connect AI
+        </button>
       </div>
     </section>
 
@@ -90,6 +91,10 @@
           <h2 class="text-2xl font-bold">Start from a Preset</h2>
           <p class="text-sm mt-1" style="color: var(--text-secondary);">Choose a template and customize it to your vision</p>
         </div>
+        <button class="studio-btn studio-btn-ai" onclick="openAiGenerateModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          ✨ Generate with AI
+        </button>
       </div>
       <div class="studio-grid" id="preset-grid">
         <!-- Populated by JS -->
@@ -171,9 +176,9 @@
         <div class="studio-card p-4">
           <div class="font-semibold text-lg mb-2 flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-            Self-Host for AI
+            AI-Powered (BYOK)
           </div>
-          <p class="text-sm" style="color: var(--text-secondary);">Host it yourself with any static server (or on a VPS) to unlock AI-powered generation, mod balancing, and field explanations with your own API key.</p>
+          <p class="text-sm" style="color: var(--text-secondary);">Connect your own OpenAI, Claude, or local LLM to generate features and balance mods in seconds.</p>
         </div>
       </div>
     </section>
@@ -192,12 +197,63 @@
     </footer>
   </main>
 
+  <!-- AI Settings Modal -->
+  <div class="studio-modal-overlay" id="ai-settings-modal">
+    <div class="studio-modal">
+      <div class="studio-modal-header">
+        <h3 class="text-lg font-semibold">AI Settings</h3>
+        <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="Studio.closeModal('ai-settings-modal')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="studio-modal-body">
+        <div id="ai-settings-form"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Generate Modal -->
+  <div class="studio-modal-overlay" id="ai-generate-modal">
+    <div class="studio-modal" style="max-width: 560px;">
+      <div class="studio-modal-header">
+        <h3 class="text-lg font-semibold">✨ Generate with AI</h3>
+        <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="Studio.closeModal('ai-generate-modal')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="studio-modal-body">
+        <div id="ai-generate-form">
+          <p class="text-sm mb-4" style="color: var(--text-secondary);">Describe the software type you want to create, and AI will generate a balanced mod for you.</p>
+          <div class="mb-4">
+            <label class="studio-label">What's your idea?</label>
+            <textarea id="ai-idea" class="studio-textarea" rows="3" placeholder="e.g., A futuristic cyberpunk hacking tool used by corporations..."></textarea>
+          </div>
+          <div class="mb-4">
+            <label class="studio-label">Submarket Names (3)</label>
+            <div class="flex gap-2">
+              <input type="text" id="ai-sub1" class="studio-input" placeholder="Gameplay" value="Gameplay">
+              <input type="text" id="ai-sub2" class="studio-input" placeholder="Graphics" value="Graphics">
+              <input type="text" id="ai-sub3" class="studio-input" placeholder="Story" value="Story">
+            </div>
+          </div>
+          <div id="ai-generate-result" class="mb-4"></div>
+          <button class="studio-btn studio-btn-ai w-full" id="ai-generate-btn" onclick="generateWithAi()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            Generate Software Type
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="js/tyd-engine.js"></script>
   <script src="js/presets.js"></script>
   <script src="js/studio.js"></script>
+  <script src="js/ai-assistant.js"></script>
   <script>
     // Initialize
     Studio.init();
+    AIAssistant.renderSettingsForm('ai-settings-form');
 
     // Render presets
     function renderPresets() {
@@ -276,6 +332,47 @@
       Studio.deleteProject(id);
       renderProjects();
       Studio.toast('Project deleted.', 'info');
+    }
+
+    function openAiGenerateModal() {
+      if (!AIAssistant.isConfigured()) {
+        Studio.openModal('ai-settings-modal');
+        Studio.toast('Please configure your AI provider first.', 'warning');
+        return;
+      }
+      Studio.openModal('ai-generate-modal');
+    }
+
+    async function generateWithAi() {
+      const idea = document.getElementById('ai-idea').value.trim();
+      const sub1 = document.getElementById('ai-sub1').value.trim();
+      const sub2 = document.getElementById('ai-sub2').value.trim();
+      const sub3 = document.getElementById('ai-sub3').value.trim();
+
+      if (!idea) {
+        Studio.toast('Please describe your idea.', 'warning');
+        return;
+      }
+
+      const resultDiv = document.getElementById('ai-generate-result');
+      const btn = document.getElementById('ai-generate-btn');
+      btn.disabled = true;
+      resultDiv.innerHTML = '<div class="studio-alert studio-alert-info"><span class="studio-pulse">Generating your mod...</span></div>';
+
+      try {
+        const data = await AIAssistant.generateSoftwareType(idea, [sub1, sub2, sub3]);
+        const project = Studio.createProject(data.Name || 'AI Generated Mod');
+        project.softwareTypes.push(data);
+        Studio.saveProject(project);
+        resultDiv.innerHTML = `<div class="studio-alert studio-alert-success">${Studio.Icons.check} <strong>${data.Name}</strong> generated successfully!</div>`;
+        renderProjects();
+        setTimeout(() => {
+          window.location.href = `software-type.html?project=${project.id}&index=0`;
+        }, 800);
+      } catch (err) {
+        resultDiv.innerHTML = `<div class="studio-alert studio-alert-danger">${Studio.Icons.warning} ${err.message}</div>`;
+        btn.disabled = false;
+      }
     }
 
     // Init
