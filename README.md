@@ -1,66 +1,86 @@
 # Software Inc Mod Studio
 
-A modern, browser-based mod creator for [Software Inc.](https://softwareinc.coredumping.com/) with live preview, validation, and AI assistance.
+[![GitHub release](https://img.shields.io/github/v/release/ElAyInDeOh/Software-Inc-Mod-Creator?include_prereleases&style=flat-square)](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/releases)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-blue?style=flat-square&logo=github)](https://elayindeoh.github.io/Software-Inc-Mod-Creator)
+[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-![preview](https://img.shields.io/badge/version-2.0.0-blue) ![license](https://img.shields.io/badge/license-MIT-green)
+A modern, browser-based mod creator for [**Software Inc.**](https://softwareinc.coredumping.com/).
 
-## What's Included
+Build mods with a live TyD preview, guided form editors, and optional AI assistance — all without touching a text editor.
 
-- **Software Type Editor** — Create software products with features, sub-features, categories, and hardware
-- **Company Type Editor** — Define AI companies that develop and compete  
-- **Name Generator** — Build tree-based name generators
-- **Personalities Editor** — Create employee traits and relationships
-- **Mod Metadata Editor** — Set mod name, description, and author
-- **AI Assistant** — Generate content, get suggestions, and edit your mod via chat (BYOK — bring your own API key)
+---
 
-## Quick Start
+## Two Ways to Use It
 
-### Requirements
+### ☁️ 1. GitHub Pages (Classic) — Zero Setup
 
-- [Node.js](https://nodejs.org/) (v16 or later)
+The original static tool that runs entirely in your browser. No install, no server, no account.
 
-### Install & Run
+🔗 **[Open the Live Tool](https://elayindeoh.github.io/Software-Inc-Mod-Creator)**
 
+**Includes:**
+- Software Type Editor (basic)
+- Company Type Editor
+- Name Generator
+- Classic form-based layout
+
+**Limitation:** Browser security blocks AI API calls from `github.io`, so this version has **no AI features**.
+
+---
+
+### 💻 2. Local Deployment (Recommended) — Full Power
+
+The redesigned studio with AI chat, live preview on every editor, and a modern split-pane interface.
+
+📦 **[Download Latest Release](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/releases/latest)**
+
+**What you get:**
+- **Software Type Editor** — SpecFeatures, SubFeatures, categories, hardware
+- **Company Type Editor** — AI companies with spawn rates and software focus
+- **Name Generator** — Simple + advanced tree-based modes
+- **Personalities Editor** — Employee traits with relationships & incompatibilities
+- **Mod Metadata Editor** — `meta.tyd` for your mod's name, description, author
+- **Floating AI Assistant** — Generate content, get suggestions, apply changes directly to forms (BYOK)
+- **Live TyD Preview** — See the output update as you type
+- **Validation** — Catch errors before you download
+
+**Requirements:**
+- [Node.js](https://nodejs.org/) v16+
+
+**Quick Start:**
 ```bash
-# 1. Extract the zip
-# 2. Open a terminal in the extracted folder
+# 1. Download and extract the release zip
+# 2. In the folder:
 
-# Install dependencies
 npm install
-
-# Start the server
 npm start
+
+# 3. Open http://localhost:8080
 ```
 
-Then open **`http://localhost:8080`** in your browser.
+**Even easier:**
+- **Windows:** Double-click `start.bat`
+- **macOS/Linux:** Run `./start.sh`
 
-That's it.
+**AI Setup (Optional):**
+Click the chat bubble → Settings → choose your provider → paste your API key.
 
-### Windows (Double-Click)
+Supported: OpenAI, Anthropic Claude, Google Gemini, OpenRouter, Ollama, and any OpenAI-compatible endpoint.
 
-If you don't want to use the terminal, just run **`start.bat`** after installing Node.js.
+---
 
-### macOS / Linux
+## Releases
 
-```bash
-chmod +x start.sh
-./start.sh
-```
+| Release | Branch | Description |
+|---------|--------|-------------|
+| [v2.0.0 (Latest)](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/releases/tag/v2.0.0) | `local-deploy` | Modern redesign, AI chat on every editor, easy start scripts |
+| [Original (Classic)](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/releases) | `main` | Static form editors, GitHub Pages compatible |
 
-## AI Setup (Optional)
-
-The tool works perfectly without AI. To enable it:
-
-1. Click the **floating chat bubble** (bottom-right)
-2. Click **Settings** → choose your provider
-3. Enter your API key — it stays in your browser, never sent to us
-4. Click **Save & Test**
-
-**Supported providers:** OpenAI, Anthropic Claude, Google Gemini, OpenRouter, Ollama, and any OpenAI-compatible endpoint (LM Studio, LocalAI, etc.)
+---
 
 ## Project Files
 
-Place downloaded `.tyd` files into your mod folder following this structure:
+Place downloaded `.tyd` files into your mod folder:
 
 ```
 MyMod/
@@ -76,16 +96,21 @@ MyMod/
   Thumbnail.png
 ```
 
-See `SoftwareIncFolderStructureAndExamples.zip` for a complete working example.
+The included `SoftwareIncFolderStructureAndExamples.zip` has a complete working example.
 
-## Updating
+---
 
-To update to a newer release, just download the new release and overwrite your existing folder (or keep them side by side).
+## Tech Stack
 
-## More Info
+- Vanilla HTML/CSS/JS — no build step, no bundler
+- Express server for AI proxy (local version only)
+- AI calls go directly from your browser to your chosen provider
 
-- [Official Modding Wiki](https://softwareinc.coredumping.com/wiki/index.php/Modding)
-- [Report Issues](https://github.com/elayindeoh/Software-Inc-Mod-Creator/issues)
+---
+
+## Contributing
+
+Issues and PRs welcome! Check the [issue tracker](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/issues).
 
 ---
 
