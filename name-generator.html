@@ -29,7 +29,6 @@
       <span>Name Generator</span>
     </a>
     <div class="studio-header-actions">
-      <button class="studio-btn studio-btn-ghost studio-btn-sm" onclick="Studio.openModal('ai-settings-modal')">AI</button>
       <button class="studio-btn studio-btn-ghost studio-btn-icon" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
       </button>
@@ -99,10 +98,6 @@
         Download .txt
       </button>
       <button class="studio-btn studio-btn-secondary" onclick="copyNameGen()">Copy</button>
-      <button class="studio-btn studio-btn-ai" onclick="aiGenerateNameGen()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-        AI Generate
-      </button>
     </div>
 
     <div class="studio-card mb-8">
@@ -113,25 +108,10 @@
     </div>
   </main>
 
-  <!-- AI Settings Modal -->
-  <div class="studio-modal-overlay" id="ai-settings-modal">
-    <div class="studio-modal">
-      <div class="studio-modal-header">
-        <h3 class="text-lg font-semibold">AI Settings</h3>
-        <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="Studio.closeModal('ai-settings-modal')">&times;</button>
-      </div>
-      <div class="studio-modal-body">
-        <div id="ai-settings-form"></div>
-      </div>
-    </div>
-  </div>
-
   <script src="js/studio.js"></script>
-  <script src="js/ai-assistant.js"></script>
   <script>
     Studio.init();
     document.getElementById('theme-toggle').addEventListener('click', Studio.toggleTheme);
-    AIAssistant.renderSettingsForm('ai-settings-form');
 
     let currentMode = 'simple';
 
@@ -168,31 +148,6 @@
 
     function copyNameGen() {
       Studio.copyToClipboard(buildText());
-    }
-
-    async function aiGenerateNameGen() {
-      if (!AIAssistant.isConfigured()) {
-        Studio.openModal('ai-settings-modal');
-        Studio.toast('Please configure AI first.', 'warning');
-        return;
-      }
-      const theme = prompt('What theme? (e.g. fantasy, cyberpunk, space, medieval)', 'technology');
-      if (!theme) return;
-      Studio.toast('AI is generating...', 'info');
-      try {
-        const text = await AIAssistant.generateNameGenerator(theme);
-        if (currentMode === 'advanced') {
-          document.getElementById('ng-raw').value = text;
-        } else {
-          // Try to parse simple structure
-          document.getElementById('ng-raw').value = text;
-          setMode('advanced');
-        }
-        updatePreview();
-        Studio.toast('Name generator created!', 'success');
-      } catch (err) {
-        Studio.toast('AI generation failed: ' + err.message, 'danger');
-      }
     }
 
     // Listeners
