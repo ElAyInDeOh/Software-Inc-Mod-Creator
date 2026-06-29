@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,7 +6,8 @@
   <title>Software Inc Mod Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/studio.css">
+  <link rel="stylesheet" href="css/studio.css?v=2">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2'><path d='M12 2L2 7l10 5 10-5-10-5z'/><path d='M2 17l10 5 10-5'/><path d='M2 12l10 5 10-5'/></svg>">
 </head>
 <body>
   <header class="app-header">
@@ -25,14 +26,13 @@
   <main class="home-container">
     <!-- Download Local Banner -->
     <section class="mb-6">
-      <div style="background: linear-gradient(135deg, var(--blue-light) 0%, var(--purple-light) 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem;">
+      <div class="banner-card">
         <div class="flex gap-4" style="align-items:flex-start; flex-wrap:wrap;">
-          <div style="font-size:2rem; line-height:1;">🤖</div>
+          <div style="font-size:2.5rem; line-height:1;">&#129302;</div>
           <div class="flex-1" style="min-width:200px;">
             <div class="font-semibold text-lg mb-1" style="color: var(--purple);">Want AI-Powered Mod Generation?</div>
-            <p class="text-sm mb-3" style="color: var(--text-2);">
-              This online version works fully in your browser with no setup. To unlock <strong>AI assistance</strong> (BYOK — bring your own API key from OpenAI, Claude, or a local LLM),
-              download and run the project locally with Node.js.
+            <p class="text-sm mb-3" style="color: var(--text-2); line-height:1.6;">
+              This online version works fully in your browser with no setup. To unlock <strong>AI assistance</strong> (BYOK &mdash; bring your own API key from OpenAI, Claude, or a local LLM), download and run the project locally with Node.js.
             </p>
             <div class="flex gap-2" style="flex-wrap:wrap;">
               <a href="https://github.com/elayindeoh/Software-Inc-Mod-Creator" target="_blank" class="btn btn-primary">
@@ -47,10 +47,10 @@
     </section>
 
     <!-- Hero -->
-    <section class="text-center mb-6" style="max-width:640px; margin:0 auto 3rem;">
-      <span class="badge badge-info mb-3" style="font-size:0.6875rem;">Browser-Based — No Setup Required</span>
-      <h1 style="font-size:2rem; font-weight:800; margin-bottom:0.75rem; line-height:1.2;">Build Better Mods for <span style="color:var(--blue);">Software Inc.</span></h1>
-      <p class="text-sm" style="color:var(--text-2); line-height:1.6; max-width:480px; margin:0 auto;">
+    <section class="hero-section">
+      <span class="hero-badge">Browser-Based &mdash; No Setup Required</span>
+      <h1 class="hero-title">Build Better Mods for <span style="color:var(--blue);">Software Inc.</span></h1>
+      <p class="hero-desc">
         A modern mod creator with live preview, validation, and presets. Works right in your browser.
       </p>
       <div class="flex gap-2 justify-center mt-4" style="flex-wrap:wrap;">
@@ -90,36 +90,36 @@
     <!-- All Tools -->
     <section class="mb-6">
       <h2 class="text-xl font-bold mb-3">All Tools</h2>
-      <div class="preset-grid">
-        <a href="software-type.html" class="preset-card" style="text-decoration:none;color:inherit;">
-          <div class="preset-icon">🎮</div>
-          <div class="preset-name">Software Type</div>
-          <div class="preset-desc">Create software products with features, categories, and hardware</div>
+      <div class="tool-grid">
+        <a href="software-type.html" class="tool-card">
+          <div class="tool-card-icon">&#127918;</div>
+          <div class="tool-card-name">Software Type</div>
+          <div class="tool-card-desc">Create software products with features, categories, and hardware</div>
         </a>
-        <a href="company-type.html" class="preset-card" style="text-decoration:none;color:inherit;">
-          <div class="preset-icon">🏢</div>
-          <div class="preset-name">Company Type</div>
-          <div class="preset-desc">Define AI companies that develop and compete</div>
+        <a href="company-type.html" class="tool-card">
+          <div class="tool-card-icon">&#127970;</div>
+          <div class="tool-card-name">Company Type</div>
+          <div class="tool-card-desc">Define AI companies that develop and compete</div>
         </a>
-        <a href="name-generator.html" class="preset-card" style="text-decoration:none;color:inherit;">
-          <div class="preset-icon">✏️</div>
-          <div class="preset-name">Name Generator</div>
-          <div class="preset-desc">Build tree-based name generators</div>
+        <a href="name-generator.html" class="tool-card">
+          <div class="tool-card-icon">&#9997;</div>
+          <div class="tool-card-name">Name Generator</div>
+          <div class="tool-card-desc">Build tree-based name generators</div>
         </a>
-        <a href="personalities.html" class="preset-card" style="text-decoration:none;color:inherit;">
-          <div class="preset-icon">🧠</div>
-          <div class="preset-name">Personalities</div>
-          <div class="preset-desc">Create employee traits and relationships</div>
+        <a href="personalities.html" class="tool-card">
+          <div class="tool-card-icon">&#129504;</div>
+          <div class="tool-card-name">Personalities</div>
+          <div class="tool-card-desc">Create employee traits and relationships</div>
         </a>
-        <a href="meta-editor.html" class="preset-card" style="text-decoration:none;color:inherit;">
-          <div class="preset-icon">📦</div>
-          <div class="preset-name">Mod Metadata</div>
-          <div class="preset-desc">Set mod name, description, and author</div>
+        <a href="meta-editor.html" class="tool-card">
+          <div class="tool-card-icon">&#128230;</div>
+          <div class="tool-card-name">Mod Metadata</div>
+          <div class="tool-card-desc">Set mod name, description, and author</div>
         </a>
-        <a href="https://softwareinc.coredumping.com/wiki/index.php/Modding" target="_blank" class="preset-card" style="text-decoration:none;color:inherit;">
-          <div class="preset-icon">📖</div>
-          <div class="preset-name">Documentation</div>
-          <div class="preset-desc">Official modding wiki and reference</div>
+        <a href="https://softwareinc.coredumping.com/wiki/index.php/Modding" target="_blank" class="tool-card">
+          <div class="tool-card-icon">&#128214;</div>
+          <div class="tool-card-name">Documentation</div>
+          <div class="tool-card-desc">Official modding wiki and reference</div>
         </a>
       </div>
     </section>
@@ -130,8 +130,8 @@
         Not affiliated with Coredumping. <a href="https://softwareinc.coredumping.com/" target="_blank">Software Inc.</a> is a trademark of Coredumping.
       </p>
       <p class="text-xs mt-2" style="color:var(--text-3);">
-        <a href="SoftwareIncModCreatorMainPage.html">Classic Version</a> ·
-        <a href="https://softwareinc.coredumping.com/wiki/index.php/Modding" target="_blank">Wiki</a> ·
+        <a href="SoftwareIncModCreatorMainPage.html">Classic Version</a> &middot;
+        <a href="https://softwareinc.coredumping.com/wiki/index.php/Modding" target="_blank">Wiki</a> &middot;
         <a href="https://github.com/elayindeoh/Software-Inc-Mod-Creator" target="_blank">GitHub</a>
       </p>
     </footer>
@@ -146,44 +146,41 @@
     function renderPresets() {
       const grid = document.getElementById('preset-grid');
       const presets = Presets.getPresetList();
-      grid.innerHTML = presets.map(p => `
-        <div class="preset-card fade-in" onclick="startFromPreset('${p.id}')" style="animation-delay:${presets.indexOf(p) * 0.04}s;">
-          <div class="preset-icon">${p.icon}</div>
-          <div class="preset-name">${p.name}</div>
-          <div class="preset-desc">${p.description}</div>
-        </div>
-      `).join('');
+      grid.innerHTML = presets.map(p =>
+        '<div class="preset-card fade-in" onclick="startFromPreset(\'' + p.id + '\')" style="animation-delay:' + (presets.indexOf(p) * 0.04) + 's;">' +
+          '<div class="preset-icon">' + p.icon + '</div>' +
+          '<div class="preset-name">' + p.name + '</div>' +
+          '<div class="preset-desc">' + p.description + '</div>' +
+        '</div>'
+      ).join('');
     }
 
     function renderProjects() {
       const container = document.getElementById('projects-list');
       const projects = Studio.getProjects();
       if (projects.length === 0) {
-        container.innerHTML = `<div style="border:1px dashed var(--border); border-radius:var(--radius); padding:2rem; text-align:center;">
-          <p style="color:var(--text-3); margin-bottom:0.75rem;">No projects yet. Start from a preset or create a blank project.</p>
-          <button class="btn btn-secondary btn-sm" onclick="createBlankProject()">Create Blank Project</button>
-        </div>`;
+        container.innerHTML = '<div class="empty-state"><p style="margin-bottom:0.75rem;">No projects yet. Start from a preset or create a blank project.</p><button class="btn btn-secondary btn-sm" onclick="createBlankProject()">Create Blank Project</button></div>';
         return;
       }
       container.innerHTML = projects.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(p => {
         const sw = p.softwareTypes?.length || 0;
         const ct = p.companyTypes?.length || 0;
         const ng = p.nameGenerators?.length || 0;
-        return `<div class="fade-in" style="background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
-          <div>
-            <div class="font-semibold">${p.name}</div>
-            <div class="flex gap-2 mt-1" style="flex-wrap:wrap;">
-              <span class="badge badge-info">${sw} SW</span>
-              <span class="badge badge-info">${ct} CT</span>
-              <span class="badge badge-info">${ng} NG</span>
-            </div>
-            <div class="text-xs mt-1" style="color:var(--text-3);">${new Date(p.updatedAt).toLocaleDateString()}</div>
-          </div>
-          <div class="flex gap-1">
-            <a href="software-type.html?project=${p.id}" class="btn btn-primary btn-sm" style="text-decoration:none;">Edit</a>
-            <button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">${Studio.Icons.trash}</button>
-          </div>
-        </div>`;
+        return '<div class="project-item fade-in">' +
+          '<div>' +
+            '<div class="font-semibold">' + p.name + '</div>' +
+            '<div class="flex gap-2 mt-1" style="flex-wrap:wrap;">' +
+              '<span class="badge badge-info">' + sw + ' SW</span>' +
+              '<span class="badge badge-info">' + ct + ' CT</span>' +
+              '<span class="badge badge-info">' + ng + ' NG</span>' +
+            '</div>' +
+            '<div class="text-xs mt-1" style="color:var(--text-3);">' + new Date(p.updatedAt).toLocaleDateString() + '</div>' +
+          '</div>' +
+          '<div class="flex gap-1">' +
+            '<a href="software-type.html?project=' + p.id + '" class="btn btn-primary btn-sm" style="text-decoration:none;">Edit</a>' +
+            '<button class="btn btn-danger btn-sm" onclick="deleteProject(\'' + p.id + '\')">' + Studio.Icons.trash + '</button>' +
+          '</div>' +
+        '</div>';
       }).join('');
     }
 
@@ -195,7 +192,7 @@
       Studio.saveProject(project);
       Studio.toast('Project created from preset!', 'success');
       renderProjects();
-      setTimeout(() => { window.location.href = `software-type.html?project=${project.id}&index=0`; }, 300);
+      setTimeout(() => { window.location.href = 'software-type.html?project=' + project.id + '&index=0'; }, 300);
     }
 
     function createBlankProject() {
@@ -219,3 +216,4 @@
   </script>
 </body>
 </html>
+
