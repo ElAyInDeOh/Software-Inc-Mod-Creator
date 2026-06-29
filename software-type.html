@@ -1,26 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Software Type Editor — Software Inc Mod Studio</title>
+  <title>Software Type Editor - Software Inc Mod Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          }
-        }
-      }
-    }
-  </script>
-  <link rel="stylesheet" href="css/studio.css">
+  <link rel="stylesheet" href="css/studio.css?v=2">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2'><path d='M12 2L2 7l10 5 10-5-10-5z'/><path d='M2 17l10 5 10-5'/><path d='M2 12l10 5 10-5'/></svg>">
 </head>
 <body>
   <header class="app-header">
@@ -30,7 +17,7 @@
     </a>
     <div class="app-header-actions">
       <button class="btn btn-ghost btn-sm" onclick="saveProject()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         Save
       </button>
       <button class="btn btn-ghost btn-icon" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
@@ -39,173 +26,231 @@
     </div>
   </header>
 
-  <div class="page">
-    <!-- Validation -->
-    <div id="validation-panel" class="mb-4" style="display:none;"></div>
+  <!-- Tab Navigation -->
+  <nav class="tab-bar">
+    <button class="tab-item active" data-tab="overview" onclick="switchTab('overview')">
+      <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Overview
+    </button>
+    <button class="tab-item" data-tab="market" onclick="switchTab('market')">
+      <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Market & Pricing
+    </button>
+    <button class="tab-item" data-tab="features" onclick="switchTab('features')">
+      <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      Features
+    </button>
+    <button class="tab-item mobile-only" data-tab="preview" onclick="switchTab('preview')">
+      <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      Preview
+    </button>
+  </nav>
 
-    <!-- ─── Basics ─── -->
-    <div class="section-block">
-      <div class="section-title">Basics</div>
-      <div class="form-section">
-        <div class="field-grid field-grid-2">
-          <div class="field">
-            <label class="field-label" for="st-name">Name <span class="req">*</span></label>
-            <input type="text" id="st-name" placeholder="e.g. Text Editor" oninput="updatePreview()">
-            <span class="field-desc">The product name shown in-game dropdown menus.</span>
+  <div class="split-layout">
+    <div class="split-left">
+      <!-- Validation Panel -->
+      <div id="validation-panel" class="mb-4" style="display:none;"></div>
+
+      <!-- Overview Tab -->
+      <div id="tab-overview" class="tab-panel active">
+        <div class="card">
+          <div class="card-header">
+            <svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Basic Information
           </div>
-          <div class="field">
-            <label class="field-label" for="st-unlock">Unlock Year</label>
-            <input type="number" id="st-unlock" value="1990" oninput="updatePreview()">
-            <span class="field-desc">Year this software becomes available.</span>
+          <div class="card-body">
+            <div class="field-grid field-grid-2">
+              <div class="field">
+                <label class="field-label" for="st-name">Name <span class="req">*</span></label>
+                <input type="text" id="st-name" class="input" placeholder="e.g. Video Game" oninput="updatePreview()">
+                <span class="field-desc">The product name shown in-game dropdown menus.</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="st-unlock">Unlock Year</label>
+                <input type="number" id="st-unlock" class="input" value="1990" oninput="updatePreview()">
+                <span class="field-desc">Year this software becomes available in game.</span>
+              </div>
+            </div>
+            <div class="field mt-4">
+              <label class="field-label" for="st-description">Description</label>
+              <textarea id="st-description" class="input" rows="3" placeholder="e.g. A typical video game with high sales variance and short retention." oninput="updatePreview()"></textarea>
+              <span class="field-desc">Tooltip shown when hovering the software in the design document.</span>
+            </div>
           </div>
         </div>
-        <div class="field mt-3">
-          <label class="field-label" for="st-description">Description</label>
-          <textarea id="st-description" rows="2" placeholder="e.g. A lightweight text editing tool." oninput="updatePreview()"></textarea>
-          <span class="field-desc">Tooltip shown when hovering the software in the design document.</span>
+
+        <div class="card">
+          <div class="card-header">
+            <svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Platform & Type
+          </div>
+          <div class="card-body">
+            <div class="field-grid field-grid-2">
+              <div class="field">
+                <label class="field-label" for="st-ossupport">OS Support</label>
+                <select id="st-ossupport" class="input" oninput="updatePreview()">
+                  <option value="True">True (All platforms)</option>
+                  <option value="False">False (None)</option>
+                  <option value="Computer">Computer only</option>
+                  <option value="Console">Console only</option>
+                  <option value="Phone">Phone only</option>
+                </select>
+                <span class="field-desc">Which platforms can run this software.</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="st-namegenerator">Name Generator</label>
+                <input type="text" id="st-namegenerator" class="input" placeholder="e.g. VideoGame" oninput="updatePreview()">
+                <span class="field-desc">Filename in NameGenerators folder (no .txt).</span>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="field-label mb-2">Options</div>
+              <div class="field-grid field-grid-3">
+                <label class="field-check">
+                  <input type="checkbox" id="st-oneclient" onchange="updatePreview()">
+                  One Client (contract work)
+                </label>
+                <label class="field-check">
+                  <input type="checkbox" id="st-inhouse" onchange="updatePreview()">
+                  In-House (tool dependency)
+                </label>
+                <label class="field-check">
+                  <input type="checkbox" id="st-hardware" onchange="updatePreview()">
+                  Hardware Product
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Submarkets
+          </div>
+          <div class="card-body">
+            <p class="text-sm text-secondary" style="margin-bottom:1rem;">Every software type has exactly 3 submarkets. These define which aspects of the product appeal to consumers. Each feature will have values matching these names.</p>
+            <div class="field-grid field-grid-3">
+              <div class="field">
+                <label class="field-label" for="st-sub1">Submarket 1 <span class="req">*</span></label>
+                <input type="text" id="st-sub1" class="input" placeholder="e.g. Gameplay" value="Gameplay" oninput="updatePreview()">
+                <span class="field-hint">Primary appeal factor</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="st-sub2">Submarket 2 <span class="req">*</span></label>
+                <input type="text" id="st-sub2" class="input" placeholder="e.g. Graphics" value="Graphics" oninput="updatePreview()">
+                <span class="field-hint">Secondary appeal factor</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="st-sub3">Submarket 3 <span class="req">*</span></label>
+                <input type="text" id="st-sub3" class="input" placeholder="e.g. Story" value="Story" oninput="updatePreview()">
+                <span class="field-hint">Tertiary appeal factor</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- ─── Market ─── -->
-    <div class="section-block">
-      <div class="section-title">Market & Pricing</div>
-      <div class="form-section">
-        <div class="field-grid field-grid-3">
-          <div class="field">
-            <label class="field-label" for="st-popularity">Popularity <span class="text-muted">(0-1)</span></label>
-            <input type="number" id="st-popularity" min="0" max="1" step="0.1" value="0.6" oninput="updatePreview()">
-            <span class="field-desc">Max consumer demand. 1 = OS, 0.6 = games.</span>
+      <!-- Market Tab -->
+      <div id="tab-market" class="tab-panel">
+        <div class="card">
+          <div class="card-header">
+            <svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Market & Pricing
           </div>
-          <div class="field">
-            <label class="field-label" for="st-retention">Retention <span class="text-muted">(months)</span></label>
-            <input type="number" id="st-retention" value="24" oninput="updatePreview()">
-            <span class="field-desc">How long users keep it. 72 = OS, 24 = games.</span>
-          </div>
-          <div class="field">
-            <label class="field-label" for="st-idealprice">Ideal Price</label>
-            <input type="number" id="st-idealprice" value="50" oninput="updatePreview()">
-            <span class="field-desc">Sale price at 100% quality.</span>
-          </div>
-        </div>
-        <div class="field-grid field-grid-2 mt-3">
-          <div class="field">
-            <label class="field-label" for="st-optimaldevtime">Optimal Dev Time <span class="text-muted">(emp-months)</span></label>
-            <input type="number" id="st-optimaldevtime" value="40" oninput="updatePreview()">
-            <span class="field-desc">Ideal total dev effort. 40 = games, 75 = OS.</span>
-          </div>
-          <div class="field">
-            <label class="field-label" for="st-random">Random <span class="text-muted">(0-1)</span></label>
-            <input type="number" id="st-random" min="0" max="1" step="0.1" value="0.5" oninput="updatePreview()">
-            <span class="field-desc">Sales variance. 0.5 for games, 0 for OS.</span>
-          </div>
-        </div>
-        <div class="field-grid field-grid-2 mt-3">
-          <div class="field">
-            <label class="field-label" for="st-iterative">Iterative <span class="text-muted">(0-1)</span></label>
-            <input type="number" id="st-iterative" min="0" max="1" step="0.1" value="0.75" oninput="updatePreview()">
-            <span class="field-desc">Likelihood of sequels. Ignored if categories set.</span>
-          </div>
-          <div class="field">
-            <label class="field-label" for="st-ossupport">OS Support</label>
-            <input type="text" id="st-ossupport" value="True" placeholder="True, False, Computer, [Computer; Console]" oninput="updatePreview()">
-            <span class="field-desc">True, False, or specific: Computer, Console, Phone.</span>
+          <div class="card-body">
+            <p class="text-sm text-secondary mb-4">These values control how the software performs in the market and how much players will pay for it.</p>
+            <div class="field-grid field-grid-2">
+              <div class="field">
+                <label class="field-label" for="st-popularity">Popularity <span class="text-muted">(0 - 1)</span></label>
+                <input type="number" id="st-popularity" class="input" min="0" max="1" step="0.1" value="0.6" oninput="updatePreview()">
+                <span class="field-desc">Maximum consumer demand. <strong>1.0</strong> = OS level, <strong>0.6</strong> = typical game.</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="st-retention">Retention <span class="text-muted">(months)</span></label>
+                <input type="number" id="st-retention" class="input" value="24" oninput="updatePreview()">
+                <span class="field-desc">How long users keep the software. <strong>72</strong> = OS, <strong>24</strong> = games.</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="st-idealprice">Ideal Price <span class="text-muted">($)</span></label>
+                <input type="number" id="st-idealprice" class="input" value="50" oninput="updatePreview()">
+                <span class="field-desc">Sale price at 100% quality. Games ~$50, OS ~$100.</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="st-optimaldevtime">Optimal Dev Time <span class="text-muted">(emp-months)</span></label>
+                <input type="number" id="st-optimaldevtime" class="input" value="40" oninput="updatePreview()">
+                <span class="field-desc">Ideal development effort. <strong>40</strong> = games, <strong>75</strong> = OS.</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="st-random">Sales Variance <span class="text-muted">(0 - 1)</span></label>
+                <input type="number" id="st-random" class="input" min="0" max="1" step="0.1" value="0.5" oninput="updatePreview()">
+                <span class="field-desc">Random sales fluctuation. <strong>0.5</strong> for games, <strong>0</strong> for stable products.</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="st-iterative">Iterative <span class="text-muted">(0 - 1)</span></label>
+                <input type="number" id="st-iterative" class="input" min="0" max="1" step="0.1" value="0.75" oninput="updatePreview()">
+                <span class="field-desc">Likelihood of sequels. Ignored if categories are set.</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ─── Submarkets ─── -->
-    <div class="section-block">
-      <div class="section-title">Submarkets</div>
-      <div class="form-section">
-        <p class="field-desc mb-3">Every software type has exactly 3 submarkets. These define which aspects of the product appeal to consumers. Each feature will have values matching these names.</p>
-        <div class="field-grid field-grid-3">
-          <div class="field">
-            <label class="field-label" for="st-sub1">Submarket 1 <span class="req">*</span></label>
-            <input type="text" id="st-sub1" value="Gameplay" placeholder="Gameplay" oninput="updatePreview()">
-          </div>
-          <div class="field">
-            <label class="field-label" for="st-sub2">Submarket 2 <span class="req">*</span></label>
-            <input type="text" id="st-sub2" value="Graphics" placeholder="Graphics" oninput="updatePreview()">
-          </div>
-          <div class="field">
-            <label class="field-label" for="st-sub3">Submarket 3 <span class="req">*</span></label>
-            <input type="text" id="st-sub3" value="Story" placeholder="Story" oninput="updatePreview()">
+      <!-- Features Tab -->
+      <div id="tab-features" class="tab-panel">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+          <div>
+            <h2 class="text-lg font-bold">Feature Builder</h2>
+            <p class="text-sm text-secondary mt-1">Add SpecFeatures (major capabilities) and SubFeatures within each. Aim for 2-3 SpecFeatures, each with 2-3 SubFeatures.</p>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- ─── Flags ─── -->
-    <div class="section-block">
-      <div class="section-title">Options</div>
-      <div class="form-section">
-        <div class="flex gap-4 flex-wrap">
-          <label class="studio-checkbox">
-            <input type="checkbox" id="st-oneclient" onchange="updatePreview()">
-            One Client (contract work)
-          </label>
-          <label class="studio-checkbox">
-            <input type="checkbox" id="st-inhouse" onchange="updatePreview()">
-            In-House (tool dependency)
-          </label>
-          <label class="studio-checkbox">
-            <input type="checkbox" id="st-hardware" onchange="updatePreview()">
-            Hardware Product
-          </label>
-        </div>
-        <div class="field mt-3">
-          <label class="field-label" for="st-namegenerator">Name Generator</label>
-          <input type="text" id="st-namegenerator" placeholder="e.g. rpgnames" oninput="updatePreview()">
-          <span class="field-desc">Filename in NameGenerators folder (no .txt extension).</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── Features ─── -->
-    <div class="section-block">
-      <div class="section-title">Features (SpecFeatures & SubFeatures)</div>
-      <p class="field-desc mb-3">Add SpecFeatures (major capabilities) and SubFeatures within each. Aim for 2-3 SpecFeatures, each with 2-3 SubFeatures.</p>
-      <div id="features-container"></div>
-      <div class="flex gap-2 mt-3">
-        <button class="btn btn-secondary btn-block" onclick="addSpecFeature()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-          Add SpecFeature
-        </button>
-        <button class="btn btn-ai btn-block" onclick="aiGenerateFeature()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-          Generate with AI
-        </button>
-      </div>
-    </div>
-
-    <!-- ─── Preview & Export ─── -->
-    <div class="section-block">
-      <div class="section-title">Live Preview & Export</div>
-      <div class="form-section">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm font-semibold">TyD Output</span>
-          <span id="preview-status" class="badge badge-success">Valid</span>
-        </div>
-        <pre class="code-preview" id="tyd-preview"><code>SoftwareType
-	{
-		Name		""
-	}</code></pre>
-        <div id="preview-warnings" class="mt-2" style="display:none;"></div>
-        <div class="mt-3">
-          <div class="text-sm font-semibold mb-2">Test Commands</div>
-          <div id="console-commands" class="flex flex-col gap-2"></div>
-        </div>
-        <div class="action-bar mt-3">
-          <button class="btn btn-primary" onclick="saveAndDownload()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-            Download .tyd
+        <div id="features-container"></div>
+        <div class="flex flex-col gap-2 mt-4">
+          <button class="btn btn-secondary btn-block" onclick="addSpecFeature()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add SpecFeature
           </button>
-          <button class="btn btn-secondary" onclick="copyToClipboard()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copy
+          <button class="btn btn-ai btn-block" onclick="aiGenerateFeature()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Generate with AI
           </button>
+        </div>
+      </div>
+
+      <!-- Preview Tab (Mobile Only) -->
+      <div id="tab-preview" class="tab-panel">
+        <div id="mobile-preview-container"></div>
+      </div>
+    </div>
+
+    <!-- Live Preview Panel (Desktop) -->
+    <div class="split-right desktop-only" id="desktop-preview">
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-header">
+          <svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Live Preview
+          <span id="preview-status" class="badge badge-success ml-auto" style="margin-left:auto;">Valid</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <pre class="code-preview" id="tyd-preview" style="border-radius:0; border:none; margin:0; max-height:400px;"><code>SoftwareType
+{
+	Name		""
+}</code></pre>
+          <div id="preview-warnings" style="display:none;"></div>
+          <div style="padding:1rem; border-top:1px solid var(--border);">
+            <div class="font-semibold text-sm mb-2">Test Commands</div>
+            <div id="console-commands" class="flex flex-col gap-2"></div>
+          </div>
+          <div class="action-bar" style="position:static; border-top:1px solid var(--border);">
+            <button class="btn btn-primary" onclick="saveAndDownload()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download .tyd
+            </button>
+            <button class="btn btn-secondary" onclick="copyToClipboard()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              Copy
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -214,21 +259,21 @@
   <!-- Floating AI Chat -->
   <button class="chat-fab" id="chat-fab" onclick="toggleChatWidget()">
     <span class="chat-fab-badge" id="chat-fab-badge"></span>
-    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
   </button>
 
   <div class="chat-window" id="chat-window">
     <div class="chat-header">
       <div class="chat-header-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         AI Assistant
       </div>
       <div class="chat-header-actions">
         <button class="btn btn-ghost btn-icon" onclick="Studio.openModal('ai-settings-modal')" title="AI Settings">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><path d="M20.3 4.3a2.4 2.4 0 0 1 0 3.4l-9.6 9.6-3.4 1 1-3.4 9.6-9.6a2.4 2.4 0 0 1 3.4 0Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
         <button class="btn btn-ghost btn-icon" onclick="toggleChatWidget()" title="Close">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
     </div>
@@ -241,20 +286,22 @@
       <div class="flex gap-2">
         <input type="text" id="ai-chat-input" class="input" placeholder="Ask AI to add features, balance, explain..." onkeydown="if(event.key==='Enter') sendAIChatMessage()">
         <button class="btn btn-ai" onclick="sendAIChatMessage()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
     </div>
   </div>
 
   <!-- AI Settings Modal -->
-  <div class="studio-modal-overlay" id="ai-settings-modal">
-    <div class="studio-modal">
-      <div class="studio-modal-header">
+  <div class="modal-overlay" id="ai-settings-modal">
+    <div class="modal">
+      <div class="modal-header">
         <h3 class="font-semibold">AI Settings</h3>
-        <button class="btn btn-ghost btn-icon" onclick="Studio.closeModal('ai-settings-modal')">&times;</button>
+        <button class="btn btn-ghost btn-icon" onclick="Studio.closeModal('ai-settings-modal')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
-      <div class="studio-modal-body">
+      <div class="modal-body">
         <div id="ai-settings-form"></div>
       </div>
     </div>
@@ -266,12 +313,35 @@
   <script src="js/ai-assistant.js"></script>
   <script src="js/ai-chat.js"></script>
   <script>
-    // ─── State ───
+    /* ========== State ========== */
     let projectId = null;
     let softwareIndex = 0;
     let specFeatureCount = 0;
+    let subFeatureCount = 0;
+    let categoryCount = 0;
+    let aiChatInitialized = false;
+    let pendingChanges = [];
 
-    // ─── Init ───
+    /* ========== Tab Navigation ========== */
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelector('[data-tab="' + tabId + '"]').classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+      if (tabId === 'preview') {
+        renderMobilePreview();
+      }
+    }
+
+    function renderMobilePreview() {
+      const desktopPreview = document.getElementById('desktop-preview');
+      const mobileContainer = document.getElementById('mobile-preview-container');
+      if (desktopPreview && mobileContainer) {
+        mobileContainer.innerHTML = desktopPreview.innerHTML;
+      }
+    }
+
+    /* ========== Init ========== */
     function init() {
       Studio.init();
       document.getElementById('theme-toggle').addEventListener('click', Studio.toggleTheme);
@@ -279,7 +349,6 @@
       Studio.initAccordions();
       updateAIChatStatus();
 
-      // Load from URL
       const params = new URLSearchParams(window.location.search);
       projectId = params.get('project');
       softwareIndex = parseInt(params.get('index') || '0', 10);
@@ -291,7 +360,6 @@
         }
       }
 
-      // If no features, add one default
       if (document.getElementById('features-container').children.length === 0) {
         addSpecFeature();
       }
@@ -299,6 +367,7 @@
       updatePreview();
     }
 
+    /* ========== Chat Widget ========== */
     function toggleChatWidget() {
       const fab = document.getElementById('chat-fab');
       const win = document.getElementById('chat-window');
@@ -315,7 +384,7 @@
         } else {
           if (!messagesContainer.querySelector('.ai-message-user') && !messagesContainer.querySelector('.ai-quickreply')) {
             messagesContainer.innerHTML = '<div class="ai-message ai-message-assistant">' +
-              'Hi! I\u2019m your AI modding assistant. I can help you create features, balance your mod, explain fields, or make changes. What would you like to do?' +
+              'Hi! I\'m your AI modding assistant. I can help you create features, balance your mod, explain fields, or make changes. What would you like to do?' +
               '</div>' +
               '<div class="ai-quickreplies">' +
               '<div class="ai-quickreply" onclick="handleStarterClick(this)">Create a new software type</div>' +
@@ -339,7 +408,7 @@
     }
     window.updateAIStatus = updateAIChatStatus;
 
-    // ─── Load Data ───
+    /* ========== Load Data ========== */
     function loadSoftwareType(st) {
       document.getElementById('st-name').value = st.Name || '';
       document.getElementById('st-description').value = st.Description || '';
@@ -361,40 +430,38 @@
       document.getElementById('st-sub2').value = subs[1] || '';
       document.getElementById('st-sub3').value = subs[2] || '';
 
-      // Load features
       document.getElementById('features-container').innerHTML = '';
       specFeatureCount = 0;
       if (st.Features) {
         st.Features.forEach(feat => {
           const id = addSpecFeature();
-          document.getElementById(`sf-name-${id}`).value = feat.Name || '';
-          document.getElementById(`sf-spec-${id}`).value = feat.Spec || '';
-          document.getElementById(`sf-desc-${id}`).value = feat.Description || '';
-          document.getElementById(`sf-devtime-${id}`).value = feat.DevTime || 5;
-          document.getElementById(`sf-codeart-${id}`).value = feat.CodeArt !== undefined ? feat.CodeArt : 0.5;
-          document.getElementById(`sf-server-${id}`).value = feat.Server || 0;
-          document.getElementById(`sf-optional-${id}`).checked = feat.Optional || false;
-          document.getElementById(`sf-dependencies-${id}`).value = feat.Dependencies || '';
-          document.getElementById(`sf-unlock-${id}`).value = feat.Unlock || 1990;
+          document.getElementById('sf-name-' + id).value = feat.Name || '';
+          document.getElementById('sf-spec-' + id).value = feat.Spec || '';
+          document.getElementById('sf-desc-' + id).value = feat.Description || '';
+          document.getElementById('sf-devtime-' + id).value = feat.DevTime || 5;
+          document.getElementById('sf-codeart-' + id).value = feat.CodeArt !== undefined ? feat.CodeArt : 0.5;
+          document.getElementById('sf-server-' + id).value = feat.Server || 0;
+          document.getElementById('sf-optional-' + id).checked = feat.Optional || false;
+          document.getElementById('sf-dependencies-' + id).value = feat.Dependencies || '';
+          document.getElementById('sf-unlock-' + id).value = feat.Unlock || 1990;
           const sm = feat.Submarkets || [1,1,1];
-          document.getElementById(`sf-sm1-${id}`).value = sm[0] || 0;
-          document.getElementById(`sf-sm2-${id}`).value = sm[1] || 0;
-          document.getElementById(`sf-sm3-${id}`).value = sm[2] || 0;
+          document.getElementById('sf-sm1-' + id).value = sm[0] || 0;
+          document.getElementById('sf-sm2-' + id).value = sm[1] || 0;
+          document.getElementById('sf-sm3-' + id).value = sm[2] || 0;
 
-          // Subfeatures
           if (feat.Features) {
             feat.Features.forEach(sub => {
               const sid = addSubFeature(id);
-              document.getElementById(`sub-name-${sid}`).value = sub.Name || '';
-              document.getElementById(`sub-desc-${sid}`).value = sub.Description || '';
-              document.getElementById(`sub-level-${sid}`).value = sub.Level || 1;
-              document.getElementById(`sub-devtime-${sid}`).value = sub.DevTime || 3;
-              document.getElementById(`sub-codeart-${sid}`).value = sub.CodeArt !== undefined ? sub.CodeArt : 0.5;
-              document.getElementById(`sub-unlock-${sid}`).value = sub.Unlock || 1990;
+              document.getElementById('sub-name-' + sid).value = sub.Name || '';
+              document.getElementById('sub-desc-' + sid).value = sub.Description || '';
+              document.getElementById('sub-level-' + sid).value = sub.Level || 1;
+              document.getElementById('sub-devtime-' + sid).value = sub.DevTime || 3;
+              document.getElementById('sub-codeart-' + sid).value = sub.CodeArt !== undefined ? sub.CodeArt : 0.5;
+              document.getElementById('sub-unlock-' + sid).value = sub.Unlock || 1990;
               const ssm = sub.Submarkets || [1,1,1];
-              document.getElementById(`sub-sm1-${sid}`).value = ssm[0] || 0;
-              document.getElementById(`sub-sm2-${sid}`).value = ssm[1] || 0;
-              document.getElementById(`sub-sm3-${sid}`).value = ssm[2] || 0;
+              document.getElementById('sub-sm1-' + sid).value = ssm[0] || 0;
+              document.getElementById('sub-sm2-' + sid).value = ssm[1] || 0;
+              document.getElementById('sub-sm3-' + sid).value = ssm[2] || 0;
               updateSubFeatureTitle(sid);
             });
           }
@@ -404,7 +471,7 @@
       updatePreview();
     }
 
-    // ─── Build SoftwareType from DOM ───
+    /* ========== Build SoftwareType ========== */
     function buildSoftwareType() {
       const st = {
         Name: document.getElementById('st-name').value.trim(),
@@ -431,54 +498,51 @@
         AddOns: []
       };
 
-      // Remove null/empty fields
       if (!st.OSSupport) delete st.OSSupport;
       if (!st.NameGenerator) delete st.NameGenerator;
       if (!st.OneClient) delete st.OneClient;
       if (!st.InHouse) delete st.InHouse;
       if (!st.Hardware) delete st.Hardware;
 
-      // Build features
       document.querySelectorAll('.spec-feature-card').forEach(card => {
         const id = card.dataset.id;
         const feat = {
-          Name: document.getElementById(`sf-name-${id}`).value.trim(),
-          Spec: document.getElementById(`sf-spec-${id}`).value.trim(),
-          Description: document.getElementById(`sf-desc-${id}`).value.trim(),
-          Unlock: parseInt(document.getElementById(`sf-unlock-${id}`).value) || 1990,
-          DevTime: parseInt(document.getElementById(`sf-devtime-${id}`).value) || 0,
-          CodeArt: parseFloat(document.getElementById(`sf-codeart-${id}`).value) || 0,
+          Name: document.getElementById('sf-name-' + id).value.trim(),
+          Spec: document.getElementById('sf-spec-' + id).value.trim(),
+          Description: document.getElementById('sf-desc-' + id).value.trim(),
+          Unlock: parseInt(document.getElementById('sf-unlock-' + id).value) || 1990,
+          DevTime: parseInt(document.getElementById('sf-devtime-' + id).value) || 0,
+          CodeArt: parseFloat(document.getElementById('sf-codeart-' + id).value) || 0,
           Submarkets: [
-            parseFloat(document.getElementById(`sf-sm1-${id}`).value) || 0,
-            parseFloat(document.getElementById(`sf-sm2-${id}`).value) || 0,
-            parseFloat(document.getElementById(`sf-sm3-${id}`).value) || 0
+            parseFloat(document.getElementById('sf-sm1-' + id).value) || 0,
+            parseFloat(document.getElementById('sf-sm2-' + id).value) || 0,
+            parseFloat(document.getElementById('sf-sm3-' + id).value) || 0
           ],
-          Server: parseFloat(document.getElementById(`sf-server-${id}`).value) || 0,
-          Optional: document.getElementById(`sf-optional-${id}`).checked,
+          Server: parseFloat(document.getElementById('sf-server-' + id).value) || 0,
+          Optional: document.getElementById('sf-optional-' + id).checked,
           Features: []
         };
-        if (document.getElementById(`sf-dependencies-${id}`).value.trim()) {
-          feat.Dependencies = document.getElementById(`sf-dependencies-${id}`).value.trim();
+        if (document.getElementById('sf-dependencies-' + id).value.trim()) {
+          feat.Dependencies = document.getElementById('sf-dependencies-' + id).value.trim();
         }
         if (!feat.Optional) delete feat.Optional;
         if (!feat.Server) delete feat.Server;
         if (!feat.Dependencies) delete feat.Dependencies;
 
-        // Subfeatures
         card.querySelectorAll('.sub-feature-card').forEach(subCard => {
           const sid = subCard.dataset.id;
-          const level = parseInt(document.getElementById(`sub-level-${sid}`).value) || 1;
+          const level = parseInt(document.getElementById('sub-level-' + sid).value) || 1;
           const sub = {
-            Name: document.getElementById(`sub-name-${sid}`).value.trim(),
-            Description: document.getElementById(`sub-desc-${sid}`).value.trim(),
+            Name: document.getElementById('sub-name-' + sid).value.trim(),
+            Description: document.getElementById('sub-desc-' + sid).value.trim(),
             Level: level,
-            Unlock: parseInt(document.getElementById(`sub-unlock-${sid}`).value) || 1990,
-            DevTime: parseInt(document.getElementById(`sub-devtime-${sid}`).value) || 0,
-            CodeArt: parseFloat(document.getElementById(`sub-codeart-${sid}`).value) || 0,
+            Unlock: parseInt(document.getElementById('sub-unlock-' + sid).value) || 1990,
+            DevTime: parseInt(document.getElementById('sub-devtime-' + sid).value) || 0,
+            CodeArt: parseFloat(document.getElementById('sub-codeart-' + sid).value) || 0,
             Submarkets: level === 3 ? 0 : [
-              parseFloat(document.getElementById(`sub-sm1-${sid}`).value) || 0,
-              parseFloat(document.getElementById(`sub-sm2-${sid}`).value) || 0,
-              parseFloat(document.getElementById(`sub-sm3-${sid}`).value) || 0
+              parseFloat(document.getElementById('sub-sm1-' + sid).value) || 0,
+              parseFloat(document.getElementById('sub-sm2-' + sid).value) || 0,
+              parseFloat(document.getElementById('sub-sm3-' + sid).value) || 0
             ]
           };
           feat.Features.push(sub);
@@ -490,136 +554,96 @@
       return st;
     }
 
-    // ─── Update Preview ───
+    /* ========== Preview ========== */
     function updatePreview() {
       const st = buildSoftwareType();
       const tyd = TyDEngine.serializeSoftwareType(st);
-      document.getElementById('tyd-preview').textContent = tyd;
+      const previewEl = document.getElementById('tyd-preview');
+      if (previewEl) previewEl.textContent = tyd;
 
-      // Validate
       const validation = TyDEngine.validateSoftwareType(st);
       const statusBadge = document.getElementById('preview-status');
       const warningsPanel = document.getElementById('preview-warnings');
       const validationPanel = document.getElementById('validation-panel');
 
       if (validation.valid && validation.warnings.length === 0) {
-        statusBadge.textContent = 'Valid';
-        statusBadge.className = 'studio-badge studio-badge-success';
-        warningsPanel.style.display = 'none';
-        validationPanel.style.display = 'none';
+        if (statusBadge) { statusBadge.textContent = 'Valid'; statusBadge.className = 'badge badge-success ml-auto'; }
+        if (warningsPanel) warningsPanel.style.display = 'none';
+        if (validationPanel) validationPanel.style.display = 'none';
       } else if (validation.valid) {
-        statusBadge.textContent = 'Warnings';
-        statusBadge.className = 'studio-badge studio-badge-warning';
-        warningsPanel.innerHTML = validation.warnings.map(w =>
-          `<div class="studio-alert studio-alert-warning mt-2" style="padding:0.5rem 0.75rem; font-size:0.875rem;">${Studio.Icons.warning} <strong>${w.field}:</strong> ${w.message}</div>`
-        ).join('');
-        warningsPanel.style.display = 'block';
-        validationPanel.style.display = 'none';
-      } else {
-        statusBadge.textContent = 'Errors';
-        statusBadge.className = 'studio-badge studio-badge-danger';
-        validationPanel.innerHTML = validation.errors.map(e =>
-          `<div class="studio-alert studio-alert-danger" style="padding:0.5rem 0.75rem; font-size:0.875rem; margin-bottom:0.5rem;">${Studio.Icons.warning} <strong>${e.field}:</strong> ${e.message}</div>`
-        ).join('');
-        validationPanel.style.display = 'block';
-        if (validation.warnings.length > 0) {
+        if (statusBadge) { statusBadge.textContent = 'Warnings'; statusBadge.className = 'badge badge-warning ml-auto'; }
+        if (warningsPanel) {
           warningsPanel.innerHTML = validation.warnings.map(w =>
-            `<div class="studio-alert studio-alert-warning mt-2" style="padding:0.5rem 0.75rem; font-size:0.875rem;">${Studio.Icons.warning} <strong>${w.field}:</strong> ${w.message}</div>`
+            '<div class="alert alert-warning mt-2" style="padding:0.5rem 0.75rem; font-size:0.875rem;">' + Studio.Icons.warning + ' <strong>' + w.field + ':</strong> ' + w.message + '</div>'
+          ).join('');
+          warningsPanel.style.display = 'block';
+        }
+        if (validationPanel) validationPanel.style.display = 'none';
+      } else {
+        if (statusBadge) { statusBadge.textContent = 'Errors'; statusBadge.className = 'badge badge-danger ml-auto'; }
+        if (validationPanel) {
+          validationPanel.innerHTML = validation.errors.map(e =>
+            '<div class="alert alert-danger" style="padding:0.5rem 0.75rem; font-size:0.875rem; margin-bottom:0.5rem;">' + Studio.Icons.warning + ' <strong>' + e.field + ':</strong> ' + e.message + '</div>'
+          ).join('');
+          validationPanel.style.display = 'block';
+        }
+        if (validation.warnings.length > 0 && warningsPanel) {
+          warningsPanel.innerHTML = validation.warnings.map(w =>
+            '<div class="alert alert-warning mt-2" style="padding:0.5rem 0.75rem; font-size:0.875rem;">' + Studio.Icons.warning + ' <strong>' + w.field + ':</strong> ' + w.message + '</div>'
           ).join('');
           warningsPanel.style.display = 'block';
         }
       }
 
-      // Console commands
       const cmds = Presets.getConsoleCommands(
         projectId ? 'MyMod' : 'MyMod',
         st.Name || 'MySoftware',
         'Default'
       );
-      document.getElementById('console-commands').innerHTML = cmds.map(c => `
-        <div class="studio-console-command">
-          <code>${c.cmd}</code>
-          <button class="studio-btn studio-btn-ghost studio-btn-sm" onclick="Studio.copyToClipboard('${c.cmd.replace(/'/g, "\\'")}')" title="Copy">${Studio.Icons.copy}</button>
-        </div>
-      `).join('');
+      const cmdContainer = document.getElementById('console-commands');
+      if (cmdContainer) {
+        cmdContainer.innerHTML = cmds.map(c =>
+          '<div class="console-cmd"><code>' + c.cmd + '</code><button class="btn btn-ghost btn-sm" onclick="Studio.copyToClipboard(\'' + c.cmd.replace(/'/g, "\\'") + '\')" title="Copy">' + Studio.Icons.copy + '</button></div>'
+        ).join('');
+      }
     }
 
-    // ─── SpecFeature Management ───
+    /* ========== SpecFeature Management ========== */
     function addSpecFeature() {
       specFeatureCount++;
       const id = specFeatureCount;
       const container = document.getElementById('features-container');
       const div = document.createElement('div');
-      div.className = 'feature-block spec-feature-card mb-3';
+      div.className = 'feature-block spec-feature-card';
       div.dataset.id = id;
-      div.innerHTML = `
-        <div class="feature-block-header" data-accordion>
-          <div class="feature-block-title" id="sf-title-${id}">Feature 1</div>
-          <div class="flex gap-2">
-            <button class="btn btn-ghost btn-icon" onclick="event.stopPropagation(); removeSpecFeature(${id})" title="Remove">${Studio.Icons.trash}</button>
-            <svg class="chevron open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </div>
-        </div>
-        <div class="feature-block-body" style="display:block;">
-          <div class="field-grid field-grid-2">
-            <div class="field">
-              <label class="field-label">Name</label>
-              <input type="text" id="sf-name-${id}" placeholder="e.g. Graphics Engine" oninput="updateSpecFeatureTitle(${id}); updatePreview()">
-            </div>
-            <div class="field">
-              <label class="field-label">Spec</label>
-              <input type="text" id="sf-spec-${id}" placeholder="e.g. 3D, Audio, System" oninput="updatePreview()">
-            </div>
-          </div>
-          <div class="field mt-3">
-            <label class="field-label">Description</label>
-            <textarea id="sf-desc-${id}" rows="2" placeholder="Tooltip description..." oninput="updatePreview()"></textarea>
-          </div>
-          <div class="field-grid field-grid-2 mt-3">
-            <div class="field">
-              <label class="field-label">Dev Time</label>
-              <input type="number" id="sf-devtime-${id}" value="5" min="0" oninput="updatePreview()">
-            </div>
-            <div class="field">
-              <label class="field-label">CodeArt <span class="text-muted">(0-1)</span></label>
-              <input type="number" id="sf-codeart-${id}" value="0.5" min="0" max="1" step="0.1" oninput="updatePreview()">
-            </div>
-          </div>
-          <div class="field mt-3">
-            <label class="field-label">Submarkets (3 values)</label>
-            <div class="flex gap-2">
-              <input type="number" id="sf-sm1-${id}" value="1" step="0.1" oninput="updatePreview()">
-              <input type="number" id="sf-sm2-${id}" value="1" step="0.1" oninput="updatePreview()">
-              <input type="number" id="sf-sm3-${id}" value="1" step="0.1" oninput="updatePreview()">
-            </div>
-          </div>
-          <div class="field-grid field-grid-2 mt-3">
-            <div class="field">
-              <label class="field-label">Unlock Year</label>
-              <input type="number" id="sf-unlock-${id}" value="1990" oninput="updatePreview()">
-            </div>
-            <div class="field">
-              <label class="field-label">Server <span class="text-muted">(mbps)</span></label>
-              <input type="number" id="sf-server-${id}" value="0" step="0.001" oninput="updatePreview()">
-            </div>
-          </div>
-          <div class="field mt-3">
-            <label class="field-label">Dependencies</label>
-            <input type="text" id="sf-dependencies-${id}" placeholder="e.g. 2D Editor or [2D Editor; 3D Editor]" oninput="updatePreview()">
-          </div>
-          <div class="mt-3">
-            <label class="studio-checkbox">
-              <input type="checkbox" id="sf-optional-${id}" onchange="updatePreview()">
-              Optional (player can toggle off)
-            </label>
-          </div>
-          <div id="sub-features-${id}" class="mt-3"></div>
-          <button class="btn btn-secondary btn-sm btn-block mt-2" onclick="addSubFeature(${id})">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-            Add SubFeature
-          </button>
-        </div>
-      `;
+      div.innerHTML =
+        '<div class="feature-block-header" data-accordion>' +
+          '<div class="feature-block-title" id="sf-title-' + id + '">Feature 1</div>' +
+          '<div class="flex gap-2">' +
+            '<button class="btn btn-ghost btn-icon" onclick="event.stopPropagation(); removeSpecFeature(' + id + ')" title="Remove">' + Studio.Icons.trash + '</button>' +
+            '<svg class="chevron open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>' +
+          '</div>' +
+        '</div>' +
+        '<div class="feature-block-body" style="display:block;">' +
+          '<div class="field-grid field-grid-2">' +
+            '<div class="field"><label class="field-label">Name</label><input type="text" class="input" id="sf-name-' + id + '" placeholder="e.g. Graphics Engine" oninput="updateSpecFeatureTitle(' + id + '); updatePreview()"></div>' +
+            '<div class="field"><label class="field-label">Spec</label><input type="text" class="input" id="sf-spec-' + id + '" placeholder="e.g. 3D, Audio, System" oninput="updatePreview()"></div>' +
+          '</div>' +
+          '<div class="field mt-3"><label class="field-label">Description</label><textarea class="input" id="sf-desc-' + id + '" rows="2" placeholder="Tooltip description..." oninput="updatePreview()"></textarea></div>' +
+          '<div class="field-grid field-grid-2 mt-3">' +
+            '<div class="field"><label class="field-label">Dev Time</label><input type="number" class="input" id="sf-devtime-' + id + '" value="5" min="0" oninput="updatePreview()"></div>' +
+            '<div class="field"><label class="field-label">CodeArt <span class="text-muted">(0-1)</span></label><input type="number" class="input" id="sf-codeart-' + id + '" value="0.5" min="0" max="1" step="0.1" oninput="updatePreview()"></div>' +
+          '</div>' +
+          '<div class="field mt-3"><label class="field-label">Submarkets (3 values)</label><div class="flex gap-2"><input type="number" class="input" id="sf-sm1-' + id + '" value="1" step="0.1" oninput="updatePreview()"><input type="number" class="input" id="sf-sm2-' + id + '" value="1" step="0.1" oninput="updatePreview()"><input type="number" class="input" id="sf-sm3-' + id + '" value="1" step="0.1" oninput="updatePreview()"></div></div>' +
+          '<div class="field-grid field-grid-2 mt-3">' +
+            '<div class="field"><label class="field-label">Unlock Year</label><input type="number" class="input" id="sf-unlock-' + id + '" value="1990" oninput="updatePreview()"></div>' +
+            '<div class="field"><label class="field-label">Server <span class="text-muted">(mbps)</span></label><input type="number" class="input" id="sf-server-' + id + '" value="0" step="0.001" oninput="updatePreview()"></div>' +
+          '</div>' +
+          '<div class="field mt-3"><label class="field-label">Dependencies</label><input type="text" class="input" id="sf-dependencies-' + id + '" placeholder="e.g. 2D Editor or [2D Editor; 3D Editor]" oninput="updatePreview()"></div>' +
+          '<div class="mt-3"><label class="field-check"><input type="checkbox" id="sf-optional-' + id + '" onchange="updatePreview()"> Optional (player can toggle off)</label></div>' +
+          '<div id="sub-features-' + id + '" class="mt-3"></div>' +
+          '<button class="btn btn-secondary btn-sm btn-block mt-3" onclick="addSubFeature(' + id + ')">' + Studio.Icons.plus + ' Add SubFeature</button>' +
+        '</div>';
       container.appendChild(div);
       Studio.initAccordions();
       renumberSpecFeatures();
@@ -633,92 +657,51 @@
       const name = nameEl ? nameEl.value.trim() : '';
       const cards = document.querySelectorAll('.spec-feature-card');
       const position = Array.from(cards).findIndex(c => c.dataset.id == id) + 1;
-      if (name) {
-        titleEl.textContent = name;
-      } else {
-        titleEl.textContent = 'Feature ' + position;
-      }
+      titleEl.textContent = name || 'Feature ' + position;
     }
 
     function renumberSpecFeatures() {
-      const cards = document.querySelectorAll('.spec-feature-card');
-      cards.forEach(function(card, i) {
+      document.querySelectorAll('.spec-feature-card').forEach(function(card, i) {
         const id = card.dataset.id;
         const titleEl = document.getElementById('sf-title-' + id);
         if (!titleEl) return;
         const nameEl = document.getElementById('sf-name-' + id);
-        const name = nameEl ? nameEl.value.trim() : '';
-        if (name) {
-          titleEl.textContent = name;
-        } else {
-          titleEl.textContent = 'Feature ' + (i + 1);
-        }
+        titleEl.textContent = (nameEl && nameEl.value.trim()) || 'Feature ' + (i + 1);
       });
     }
 
     function removeSpecFeature(id) {
-      const card = document.querySelector(`.spec-feature-card[data-id="${id}"]`);
+      const card = document.querySelector('.spec-feature-card[data-id="' + id + '"]');
       if (card) card.remove();
       renumberSpecFeatures();
       updatePreview();
     }
 
-    let subFeatureCount = 0;
     function addSubFeature(parentId) {
       subFeatureCount++;
       const sid = subFeatureCount;
-      const container = document.getElementById(`sub-features-${parentId}`);
+      const container = document.getElementById('sub-features-' + parentId);
       const div = document.createElement('div');
-      div.className = 'subfeature-block sub-feature-card mb-2';
+      div.className = 'subfeature-block sub-feature-card';
       div.dataset.id = sid;
-      div.innerHTML = `
-        <div class="feature-block-header" data-accordion>
-          <span class="feature-block-title" id="sub-title-${sid}">SubFeature</span>
-          <button class="btn btn-ghost btn-icon" onclick="removeSubFeature(${sid})" title="Remove">${Studio.Icons.trash}</button>
-        </div>
-        <div class="feature-block-body" style="display:block; padding:0.75rem;">
-          <div class="field-grid field-grid-2">
-            <div class="field">
-              <label class="field-label">Name</label>
-              <input type="text" id="sub-name-${sid}" placeholder="e.g. Basic Shaders" oninput="updateSubFeatureTitle(${sid}); updatePreview()">
-            </div>
-            <div class="field">
-              <label class="field-label">Level</label>
-              <select id="sub-level-${sid}" onchange="updateSubFeatureTitle(${sid}); updatePreview()">
-                <option value="1">1 (Basic)</option>
-                <option value="2">2 (Advanced)</option>
-                <option value="3">3 (Scripted)</option>
-              </select>
-            </div>
-          </div>
-          <div class="field mt-2">
-            <label class="field-label">Description</label>
-            <textarea id="sub-desc-${sid}" rows="1" placeholder="Tooltip..." oninput="updatePreview()"></textarea>
-          </div>
-          <div class="field-grid field-grid-2 mt-2">
-            <div class="field">
-              <label class="field-label">Dev Time</label>
-              <input type="number" id="sub-devtime-${sid}" value="3" min="0" oninput="updatePreview()">
-            </div>
-            <div class="field">
-              <label class="field-label">CodeArt <span class="text-muted">(0-1)</span></label>
-              <input type="number" id="sub-codeart-${sid}" value="0.5" min="0" max="1" step="0.1" oninput="updatePreview()">
-            </div>
-          </div>
-          <div class="field mt-2">
-            <label class="field-label">Submarkets</label>
-            <div class="flex gap-2">
-              <input type="number" id="sub-sm1-${sid}" value="1" step="0.1" oninput="updatePreview()">
-              <input type="number" id="sub-sm2-${sid}" value="1" step="0.1" oninput="updatePreview()">
-              <input type="number" id="sub-sm3-${sid}" value="1" step="0.1" oninput="updatePreview()">
-            </div>
-          </div>
-          <div class="field mt-2">
-            <label class="field-label">Unlock Year</label>
-            <input type="number" id="sub-unlock-${sid}" value="1990" oninput="updatePreview()">
-          </div>
-        </div>
-      `;
+      div.innerHTML =
+        '<div class="feature-block-header" data-accordion>' +
+          '<span class="feature-block-title" id="sub-title-' + sid + '">SubFeature</span>' +
+          '<button class="btn btn-ghost btn-icon" onclick="event.stopPropagation(); removeSubFeature(' + sid + ')" title="Remove">' + Studio.Icons.trash + '</button>' +
+        '</div>' +
+        '<div class="feature-block-body" style="display:block; padding:0.75rem;">' +
+          '<div class="field-grid field-grid-2">' +
+            '<div class="field"><label class="field-label">Name</label><input type="text" class="input" id="sub-name-' + sid + '" placeholder="e.g. Basic Shaders" oninput="updateSubFeatureTitle(' + sid + '); updatePreview()"></div>' +
+            '<div class="field"><label class="field-label">Level</label><select class="input" id="sub-level-' + sid + '" onchange="updateSubFeatureTitle(' + sid + '); updatePreview()"><option value="1">1 (Basic)</option><option value="2">2 (Advanced)</option><option value="3">3 (Scripted)</option></select></div>' +
+          '</div>' +
+          '<div class="field mt-2"><label class="field-label">Description</label><textarea class="input" id="sub-desc-' + sid + '" rows="1" placeholder="Tooltip..." oninput="updatePreview()"></textarea></div>' +
+          '<div class="field-grid field-grid-2 mt-2">' +
+            '<div class="field"><label class="field-label">Dev Time</label><input type="number" class="input" id="sub-devtime-' + sid + '" value="3" min="0" oninput="updatePreview()"></div>' +
+            '<div class="field"><label class="field-label">CodeArt <span class="text-muted">(0-1)</span></label><input type="number" class="input" id="sub-codeart-' + sid + '" value="0.5" min="0" max="1" step="0.1" oninput="updatePreview()"></div>' +
+          '</div>' +
+          '<div class="field mt-2"><label class="field-label">Submarkets</label><div class="flex gap-2"><input type="number" class="input" id="sub-sm1-' + sid + '" value="1" step="0.1" oninput="updatePreview()"><input type="number" class="input" id="sub-sm2-' + sid + '" value="1" step="0.1" oninput="updatePreview()"><input type="number" class="input" id="sub-sm3-' + sid + '" value="1" step="0.1" oninput="updatePreview()"></div></div>' +
+          '<div class="field mt-2"><label class="field-label">Unlock Year</label><input type="number" class="input" id="sub-unlock-' + sid + '" value="1990" oninput="updatePreview()"></div>' +
+        '</div>';
       container.appendChild(div);
       return sid;
     }
@@ -731,49 +714,32 @@
       const levelEl = document.getElementById('sub-level-' + sid);
       const level = levelEl ? levelEl.value : '1';
       const levelLabel = level === '3' ? 'Scripted' : (level === '2' ? 'Advanced' : 'Basic');
-      if (name) {
-        titleEl.textContent = name + ' (L' + level + ' ' + levelLabel + ')';
-      } else {
-        titleEl.textContent = 'SubFeature (L' + level + ' ' + levelLabel + ')';
-      }
+      titleEl.textContent = name ? (name + ' (L' + level + ' ' + levelLabel + ')') : ('SubFeature (L' + level + ' ' + levelLabel + ')');
     }
 
     function removeSubFeature(sid) {
-      const card = document.querySelector(`.sub-feature-card[data-id="${sid}"]`);
+      const card = document.querySelector('.sub-feature-card[data-id="' + sid + '"]');
       if (card) card.remove();
       updatePreview();
     }
 
-    // ─── Category Management ───
-    let categoryCount = 0;
+    /* ========== Category Management ========== */
     function addCategory() {
       categoryCount++;
       const id = categoryCount;
       const container = document.getElementById('categories-container');
+      if (!container) return;
       const div = document.createElement('div');
-      div.className = 'studio-card mb-2';
-      div.innerHTML = `
-        <div class="p-3">
-          <div class="flex items-center justify-between mb-2">
-            <span class="font-semibold text-sm">Category</span>
-            <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="this.closest('.studio-card').remove(); updatePreview();" title="Remove">${Studio.Icons.trash}</button>
-          </div>
-          <div class="studio-grid-2">
-            <div class="mb-2">
-              <label class="studio-label">Name</label>
-              <input type="text" class="studio-input" placeholder="e.g. Console" oninput="updatePreview()">
-            </div>
-            <div class="mb-2">
-              <label class="studio-label">Unlock</label>
-              <input type="number" class="studio-input" value="1990" oninput="updatePreview()">
-            </div>
-          </div>
-        </div>
-      `;
+      div.className = 'card mb-2';
+      div.innerHTML =
+        '<div class="card-body">' +
+          '<div class="flex items-center justify-between mb-2"><span class="font-semibold text-sm">Category</span><button class="btn btn-ghost btn-icon" onclick="this.closest(\'.card\').remove(); updatePreview();" title="Remove">' + Studio.Icons.trash + '</button></div>' +
+          '<div class="field-grid field-grid-2"><div class="field"><label class="field-label">Name</label><input type="text" class="input" placeholder="e.g. Console" oninput="updatePreview()"></div><div class="field"><label class="field-label">Unlock</label><input type="number" class="input" value="1990" oninput="updatePreview()"></div></div>' +
+        '</div>';
       container.appendChild(div);
     }
 
-    // ─── Actions ───
+    /* ========== Actions ========== */
     function saveAndDownload() {
       const st = buildSoftwareType();
       const validation = TyDEngine.validateSoftwareType(st);
@@ -782,7 +748,7 @@
         return;
       }
       const tyd = TyDEngine.serializeSoftwareType(st);
-      Studio.downloadTextFile(tyd, `${st.Name || 'software'}.tyd`);
+      Studio.downloadTextFile(tyd, (st.Name || 'software') + '.tyd');
       saveProject();
       Studio.toast('Downloaded!', 'success');
     }
@@ -795,7 +761,6 @@
 
     function saveProject() {
       if (!projectId) {
-        // Create new project
         const name = document.getElementById('st-name').value.trim() || 'Untitled Mod';
         const project = Studio.createProject(name + ' Mod');
         projectId = project.id;
@@ -819,15 +784,10 @@
     function getCurrentEditorState() {
       const st = buildSoftwareType();
       const validation = TyDEngine.validateSoftwareType(st);
-      return {
-        ...st,
-        _validation: validation
-      };
+      return { ...st, _validation: validation };
     }
 
-    let aiChatInitialized = false;
-    let pendingChanges = [];
-
+    /* ========== AI Chat Operations ========== */
     const aiOperationCallbacks = {
       'SET_ROOT_FIELD': function(op) {
         const el = document.getElementById('st-' + op.field.toLowerCase());
@@ -867,16 +827,7 @@
         const cards = document.querySelectorAll('.spec-feature-card');
         if (cards[op.index]) {
           const id = cards[op.index].dataset.id;
-          const fieldMap = {
-            'Name': 'sf-name-' + id,
-            'Spec': 'sf-spec-' + id,
-            'Description': 'sf-desc-' + id,
-            'DevTime': 'sf-devtime-' + id,
-            'CodeArt': 'sf-codeart-' + id,
-            'Server': 'sf-server-' + id,
-            'Dependencies': 'sf-dependencies-' + id,
-            'Unlock': 'sf-unlock-' + id
-          };
+          const fieldMap = { 'Name': 'sf-name-' + id, 'Spec': 'sf-spec-' + id, 'Description': 'sf-desc-' + id, 'DevTime': 'sf-devtime-' + id, 'CodeArt': 'sf-codeart-' + id, 'Server': 'sf-server-' + id, 'Dependencies': 'sf-dependencies-' + id, 'Unlock': 'sf-unlock-' + id };
           const elId = fieldMap[op.field];
           if (elId) {
             const el = document.getElementById(elId);
@@ -963,7 +914,6 @@
       if (!selector) return;
       const target = document.querySelector(selector);
       if (!target) return;
-
       const parentSpecCard = target.closest('.spec-feature-card');
       if (parentSpecCard) {
         const content = parentSpecCard.querySelector('.feature-block-body');
@@ -973,14 +923,11 @@
           if (chevron) chevron.classList.add('open');
         }
       }
-
       target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
       target.classList.remove('ai-highlight');
       void target.offsetWidth;
       target.classList.add('ai-highlight');
       setTimeout(function() { target.classList.remove('ai-highlight'); }, 3200);
-
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
         setTimeout(function() { target.focus(); }, 600);
       }
@@ -995,9 +942,7 @@
 
     async function sendAIChatMessage(message) {
       const input = document.getElementById('ai-chat-input');
-      if (message === undefined) {
-        message = input.value.trim();
-      }
+      if (message === undefined) { message = input.value.trim(); }
       if (!message) return;
 
       if (!AIAssistant.isConfigured()) {
@@ -1007,12 +952,12 @@
       }
 
       const messagesContainer = document.getElementById('ai-chat-messages');
-      messagesContainer.innerHTML += `<div class="ai-message ai-message-user">${message.replace(/</g, '&lt;')}</div>`;
+      messagesContainer.innerHTML += '<div class="ai-message ai-message-user">' + message.replace(/</g, '&lt;') + '</div>';
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
       input.value = '';
 
       const loadingId = 'ai-loading-' + Date.now();
-      messagesContainer.innerHTML += `<div class="ai-message ai-message-loading" id="${loadingId}"><span class="pulse">Thinking...</span></div>`;
+      messagesContainer.innerHTML += '<div class="ai-message ai-message-loading" id="' + loadingId + '"><span class="pulse">Thinking...</span></div>';
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
       try {
@@ -1022,7 +967,7 @@
         }
         const response = await AIChat.sendMessage(message, { getState: getCurrentEditorState });
         document.getElementById(loadingId).remove();
-        messagesContainer.innerHTML += `<div class="ai-message ai-message-assistant">${response.message.replace(/</g, '&lt;').replace(/\n/g, '<br>')}</div>`;
+        messagesContainer.innerHTML += '<div class="ai-message ai-message-assistant">' + response.message.replace(/</g, '&lt;').replace(/\n/g, '<br>') + '</div>';
 
         if (response.operations && response.operations.length > 0) {
           pendingChanges = [];
@@ -1036,8 +981,8 @@
             const changesId = 'changes-' + Date.now();
             let changesHtml = '<div class="ai-changes" id="' + changesId + '">';
             changesHtml += '<div class="ai-changes-header" onclick="toggleChangesList(this)">';
-            changesHtml += '\u2705 ' + summary;
-            changesHtml += '<span class="ai-changes-chevron open">\u25BC</span>';
+            changesHtml += '&#10003; ' + summary;
+            changesHtml += '<span class="ai-changes-chevron open">&#9660;</span>';
             changesHtml += '</div>';
             changesHtml += '<div class="ai-changes-list open">';
             pendingChanges.forEach(function(ch) {
@@ -1045,7 +990,7 @@
               if (ch.selector) {
                 changesHtml += '<div class="ai-change-item" onclick="scrollToChange(\'' + ch.selector.replace(/'/g, "\\'") + '\')">';
                 changesHtml += escaped;
-                changesHtml += '<span class="ai-change-item-arrow">\u2192</span>';
+                changesHtml += '<span class="ai-change-item-arrow">&#8594;</span>';
                 changesHtml += '</div>';
               } else {
                 changesHtml += '<div class="ai-change-item" style="cursor:default; opacity:0.7;">' + escaped + '</div>';
@@ -1054,16 +999,15 @@
             changesHtml += '</div></div>';
             messagesContainer.insertAdjacentHTML('beforeend', changesHtml);
 
-            Studio.toast('Applied ' + successCount + ' changes — click to view', 'success');
+            Studio.toast('Applied ' + successCount + ' changes. Click to view', 'success');
             updatePreview();
 
             if (pendingChanges.length > 0 && pendingChanges[0].selector) {
               setTimeout(function() { scrollToChange(pendingChanges[0].selector); }, 400);
             }
           }
-          const failed = results.filter(r => !r.success);
-          failed.forEach(function(r) {
-            messagesContainer.innerHTML += `<div class="ai-message ai-message-assistant" style="color:var(--danger); font-size:0.8125rem;">Could not apply "${r.type}": ${r.error}</div>`;
+          results.filter(r => !r.success).forEach(function(r) {
+            messagesContainer.innerHTML += '<div class="ai-message ai-message-assistant" style="color:var(--red); font-size:0.8125rem;">Could not apply "' + r.type + '": ' + r.error + '</div>';
           });
         }
 
@@ -1080,12 +1024,12 @@
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       } catch (err) {
         document.getElementById(loadingId).remove();
-        messagesContainer.innerHTML += `<div class="ai-message ai-message-assistant" style="color:var(--danger)">Error: ${err.message.replace(/</g, '&lt;')}</div>`;
+        messagesContainer.innerHTML += '<div class="ai-message ai-message-assistant" style="color:var(--red)">Error: ' + err.message.replace(/</g, '&lt;') + '</div>';
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
     }
 
-    // ─── AI Feature Generation ───
+    /* ========== AI Feature Generation ========== */
     async function aiGenerateFeature() {
       if (!AIAssistant.isConfigured()) {
         Studio.openModal('ai-settings-modal');
@@ -1104,29 +1048,29 @@
         const feat = await AIAssistant.generateFeature(softwareName, [sub1, sub2, sub3], specHint);
         const id = addSpecFeature();
         setTimeout(() => {
-          document.getElementById(`sf-name-${id}`).value = feat.Name || '';
-          document.getElementById(`sf-spec-${id}`).value = feat.Spec || specHint;
-          document.getElementById(`sf-desc-${id}`).value = feat.Description || '';
-          document.getElementById(`sf-devtime-${id}`).value = feat.DevTime || 5;
-          document.getElementById(`sf-codeart-${id}`).value = feat.CodeArt !== undefined ? feat.CodeArt : 0.5;
+          document.getElementById('sf-name-' + id).value = feat.Name || '';
+          document.getElementById('sf-spec-' + id).value = feat.Spec || specHint;
+          document.getElementById('sf-desc-' + id).value = feat.Description || '';
+          document.getElementById('sf-devtime-' + id).value = feat.DevTime || 5;
+          document.getElementById('sf-codeart-' + id).value = feat.CodeArt !== undefined ? feat.CodeArt : 0.5;
           const sm = feat.Submarkets || [1,1,1];
-          document.getElementById(`sf-sm1-${id}`).value = sm[0] || 0;
-          document.getElementById(`sf-sm2-${id}`).value = sm[1] || 0;
-          document.getElementById(`sf-sm3-${id}`).value = sm[2] || 0;
+          document.getElementById('sf-sm1-' + id).value = sm[0] || 0;
+          document.getElementById('sf-sm2-' + id).value = sm[1] || 0;
+          document.getElementById('sf-sm3-' + id).value = sm[2] || 0;
 
           if (feat.SubFeatures) {
             feat.SubFeatures.forEach(sub => {
               const sid = addSubFeature(id);
               setTimeout(() => {
-                document.getElementById(`sub-name-${sid}`).value = sub.Name || '';
-                document.getElementById(`sub-desc-${sid}`).value = sub.Description || '';
-                document.getElementById(`sub-level-${sid}`).value = sub.Level || 1;
-                document.getElementById(`sub-devtime-${sid}`).value = sub.DevTime || 3;
-                document.getElementById(`sub-codeart-${sid}`).value = sub.CodeArt !== undefined ? sub.CodeArt : 0.5;
+                document.getElementById('sub-name-' + sid).value = sub.Name || '';
+                document.getElementById('sub-desc-' + sid).value = sub.Description || '';
+                document.getElementById('sub-level-' + sid).value = sub.Level || 1;
+                document.getElementById('sub-devtime-' + sid).value = sub.DevTime || 3;
+                document.getElementById('sub-codeart-' + sid).value = sub.CodeArt !== undefined ? sub.CodeArt : 0.5;
                 const ssm = sub.Submarkets || [1,1,1];
-                document.getElementById(`sub-sm1-${sid}`).value = ssm[0] || 0;
-                document.getElementById(`sub-sm2-${sid}`).value = ssm[1] || 0;
-                document.getElementById(`sub-sm3-${sid}`).value = ssm[2] || 0;
+                document.getElementById('sub-sm1-' + sid).value = ssm[0] || 0;
+                document.getElementById('sub-sm2-' + sid).value = ssm[1] || 0;
+                document.getElementById('sub-sm3-' + sid).value = ssm[2] || 0;
               }, 0);
             });
           }
@@ -1138,8 +1082,17 @@
       }
     }
 
-    // ─── Start ───
+    /* ========== Start ========== */
     init();
   </script>
+  <style>
+    @media (min-width: 1025px) {
+      .mobile-only { display: none !important; }
+    }
+    @media (max-width: 1024px) {
+      .desktop-only { display: none !important; }
+    }
+  </style>
 </body>
 </html>
+

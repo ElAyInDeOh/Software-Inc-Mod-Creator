@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,7 +6,8 @@
   <title>Software Inc Mod Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/studio.css">
+  <link rel="stylesheet" href="css/studio.css?v=2">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2'><path d='M12 2L2 7l10 5 10-5-10-5z'/><path d='M2 17l10 5 10-5'/><path d='M2 12l10 5 10-5'/></svg>">
 </head>
 <body>
   <header class="app-header">
@@ -23,22 +24,22 @@
   </header>
 
   <main class="home-container">
-    <!-- AI Banner -->
-    <section id="ai-banner-section" class="mb-6">
-      <div id="ai-banner-card" style="background: linear-gradient(135deg, var(--blue-light) 0%, var(--purple-light) 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem;">
+    <!-- Download Local Banner -->
+    <section class="mb-6">
+      <div class="banner-card">
         <div class="flex gap-4" style="align-items:flex-start; flex-wrap:wrap;">
-          <div style="font-size:2rem; line-height:1;" id="ai-banner-icon">🚀</div>
+          <div style="font-size:2.5rem; line-height:1;">&#129302;</div>
           <div class="flex-1" style="min-width:200px;">
-            <div class="font-semibold text-lg mb-1" id="ai-banner-title" style="color: var(--purple);">Self-Hosted Edition</div>
-            <p class="text-sm mb-3" id="ai-banner-desc" style="color: var(--text-2);">
-              AI assistance is available. Add your API key to generate mods, balance features, and chat with an AI assistant.
+            <div class="font-semibold text-lg mb-1" style="color: var(--purple);">Want AI-Powered Mod Generation?</div>
+            <p class="text-sm mb-3" style="color: var(--text-2); line-height:1.6;">
+              This online version works fully in your browser with no setup. To unlock <strong>AI assistance</strong> (BYOK &mdash; bring your own API key from OpenAI, Claude, or a local LLM), download and run the project locally with Node.js.
             </p>
             <div class="flex gap-2" style="flex-wrap:wrap;">
-              <button id="ai-banner-btn" onclick="Studio.openModal('ai-settings-modal')" class="btn btn-ai">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-                <span id="ai-banner-btn-text">Connect AI</span>
-              </button>
-              <a href="SELF_HOSTING.md" target="_blank" class="btn btn-secondary btn-sm">Guide</a>
+              <a href="https://github.com/elayindeoh/Software-Inc-Mod-Creator" target="_blank" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                Download from GitHub
+              </a>
+              <a href="SELF_HOSTING.md" target="_blank" class="btn btn-secondary btn-sm">Setup Guide</a>
             </div>
           </div>
         </div>
@@ -46,21 +47,17 @@
     </section>
 
     <!-- Hero -->
-    <section class="text-center mb-6" style="max-width:640px; margin:0 auto 3rem;">
-      <span class="badge badge-purple mb-3" style="font-size:0.6875rem;">Self-Hosted — AI Ready</span>
-      <h1 style="font-size:2rem; font-weight:800; margin-bottom:0.75rem; line-height:1.2;">Build Better Mods for <span style="color:var(--blue);">Software Inc.</span></h1>
-      <p class="text-sm" style="color:var(--text-2); line-height:1.6; max-width:480px; margin:0 auto;">
-        A modern mod creator with live preview, validation, presets, and AI-powered generation.
+    <section class="hero-section">
+      <span class="hero-badge">Browser-Based &mdash; No Setup Required</span>
+      <h1 class="hero-title">Build Better Mods for <span style="color:var(--blue);">Software Inc.</span></h1>
+      <p class="hero-desc">
+        A modern mod creator with live preview, validation, and presets. Works right in your browser.
       </p>
       <div class="flex gap-2 justify-center mt-4" style="flex-wrap:wrap;">
         <a href="#presets" class="btn btn-primary">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
           Create a Mod
         </a>
-        <button id="ai-hero-btn" onclick="Studio.openModal('ai-settings-modal')" class="btn btn-secondary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span id="ai-hero-btn-text">Connect AI</span>
-        </button>
       </div>
     </section>
 
@@ -71,10 +68,6 @@
           <h2 class="text-xl font-bold">Start from a Preset</h2>
           <p class="text-sm mt-1" style="color:var(--text-2);">Choose a template and customize it</p>
         </div>
-        <button onclick="openAiGenerateModal()" class="btn btn-ai btn-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-          Generate with AI
-        </button>
       </div>
       <div class="preset-grid" id="preset-grid"></div>
     </section>
@@ -97,36 +90,36 @@
     <!-- All Tools -->
     <section class="mb-6">
       <h2 class="text-xl font-bold mb-3">All Tools</h2>
-      <div class="preset-grid">
-        <a href="software-type.html" class="preset-card" style="text-decoration:none;color:inherit;">
-          <div class="preset-icon">🎮</div>
-          <div class="preset-name">Software Type</div>
-          <div class="preset-desc">Create software products with features, categories, and hardware</div>
+      <div class="tool-grid">
+        <a href="software-type.html" class="tool-card">
+          <div class="tool-card-icon">&#127918;</div>
+          <div class="tool-card-name">Software Type</div>
+          <div class="tool-card-desc">Create software products with features, categories, and hardware</div>
         </a>
-        <a href="company-type.html" class="preset-card" style="text-decoration:none;color:inherit;">
-          <div class="preset-icon">🏢</div>
-          <div class="preset-name">Company Type</div>
-          <div class="preset-desc">Define AI companies that develop and compete</div>
+        <a href="company-type.html" class="tool-card">
+          <div class="tool-card-icon">&#127970;</div>
+          <div class="tool-card-name">Company Type</div>
+          <div class="tool-card-desc">Define AI companies that develop and compete</div>
         </a>
-        <a href="name-generator.html" class="preset-card" style="text-decoration:none;color:inherit;">
-          <div class="preset-icon">✏️</div>
-          <div class="preset-name">Name Generator</div>
-          <div class="preset-desc">Build tree-based name generators</div>
+        <a href="name-generator.html" class="tool-card">
+          <div class="tool-card-icon">&#9997;</div>
+          <div class="tool-card-name">Name Generator</div>
+          <div class="tool-card-desc">Build tree-based name generators</div>
         </a>
-        <a href="personalities.html" class="preset-card" style="text-decoration:none;color:inherit;">
-          <div class="preset-icon">🧠</div>
-          <div class="preset-name">Personalities</div>
-          <div class="preset-desc">Create employee traits and relationships</div>
+        <a href="personalities.html" class="tool-card">
+          <div class="tool-card-icon">&#129504;</div>
+          <div class="tool-card-name">Personalities</div>
+          <div class="tool-card-desc">Create employee traits and relationships</div>
         </a>
-        <a href="meta-editor.html" class="preset-card" style="text-decoration:none;color:inherit;">
-          <div class="preset-icon">📦</div>
-          <div class="preset-name">Mod Metadata</div>
-          <div class="preset-desc">Set mod name, description, and author</div>
+        <a href="meta-editor.html" class="tool-card">
+          <div class="tool-card-icon">&#128230;</div>
+          <div class="tool-card-name">Mod Metadata</div>
+          <div class="tool-card-desc">Set mod name, description, and author</div>
         </a>
-        <a href="https://softwareinc.coredumping.com/wiki/index.php/Modding" target="_blank" class="preset-card" style="text-decoration:none;color:inherit;">
-          <div class="preset-icon">📖</div>
-          <div class="preset-name">Documentation</div>
-          <div class="preset-desc">Official modding wiki and reference</div>
+        <a href="https://softwareinc.coredumping.com/wiki/index.php/Modding" target="_blank" class="tool-card">
+          <div class="tool-card-icon">&#128214;</div>
+          <div class="tool-card-name">Documentation</div>
+          <div class="tool-card-desc">Official modding wiki and reference</div>
         </a>
       </div>
     </section>
@@ -137,140 +130,57 @@
         Not affiliated with Coredumping. <a href="https://softwareinc.coredumping.com/" target="_blank">Software Inc.</a> is a trademark of Coredumping.
       </p>
       <p class="text-xs mt-2" style="color:var(--text-3);">
-        <a href="SoftwareIncModCreatorMainPage.html">Classic Version</a> ·
-        <a href="https://softwareinc.coredumping.com/wiki/index.php/Modding" target="_blank">Wiki</a> ·
+        <a href="SoftwareIncModCreatorMainPage.html">Classic Version</a> &middot;
+        <a href="https://softwareinc.coredumping.com/wiki/index.php/Modding" target="_blank">Wiki</a> &middot;
         <a href="https://github.com/elayindeoh/Software-Inc-Mod-Creator" target="_blank">GitHub</a>
       </p>
     </footer>
   </main>
 
-  <!-- AI Settings Modal -->
-  <div class="modal-overlay" id="ai-settings-modal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="font-semibold">AI Settings</h3>
-        <button class="btn btn-ghost btn-icon" onclick="Studio.closeModal('ai-settings-modal')">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div id="ai-settings-form"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- AI Generate Modal -->
-  <div class="modal-overlay" id="ai-generate-modal">
-    <div class="modal" style="max-width:560px;">
-      <div class="modal-header">
-        <h3 class="font-semibold">Generate with AI</h3>
-        <button class="btn btn-ghost btn-icon" onclick="Studio.closeModal('ai-generate-modal')">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p class="text-sm mb-3" style="color:var(--text-2);">Describe the software type you want to create, and AI will generate a balanced mod for you.</p>
-        <div class="field mb-3">
-          <label class="field-label">What's your idea?</label>
-          <textarea id="ai-idea" rows="3" placeholder="e.g., A futuristic cyberpunk hacking tool..."></textarea>
-        </div>
-        <div class="field mb-3">
-          <label class="field-label">Submarket Names (3)</label>
-          <div class="flex gap-2">
-            <input type="text" id="ai-sub1" placeholder="Gameplay" value="Gameplay">
-            <input type="text" id="ai-sub2" placeholder="Graphics" value="Graphics">
-            <input type="text" id="ai-sub3" placeholder="Story" value="Story">
-          </div>
-        </div>
-        <div id="ai-generate-result" class="mb-3"></div>
-        <button id="ai-generate-btn" onclick="generateWithAi()" class="btn btn-ai btn-block">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-          Generate Software Type
-        </button>
-      </div>
-    </div>
-  </div>
-
   <script src="js/tyd-engine.js"></script>
   <script src="js/presets.js"></script>
   <script src="js/studio.js"></script>
-  <script src="js/ai-assistant.js"></script>
   <script>
     Studio.init();
-    AIAssistant.renderSettingsForm('ai-settings-form');
-    updateAIStatus();
-
-    function updateAIStatus() {
-      const connected = AIAssistant.isConfigured();
-      const card = document.getElementById('ai-banner-card');
-      const icon = document.getElementById('ai-banner-icon');
-      const title = document.getElementById('ai-banner-title');
-      const desc = document.getElementById('ai-banner-desc');
-      const btnText = document.getElementById('ai-banner-btn-text');
-      const heroText = document.getElementById('ai-hero-btn-text');
-
-      if (connected) {
-        card.style.background = 'linear-gradient(135deg, var(--green-light) 0%, rgba(16,185,129,0.08) 100%)';
-        card.style.borderColor = 'var(--green)';
-        icon.textContent = '\u2705';
-        title.textContent = 'AI Connected';
-        title.style.color = 'var(--green)';
-        desc.textContent = 'AI is ready. Generate mods, chat with the assistant, and get help building features.';
-        btnText.textContent = 'Manage AI';
-        heroText.textContent = 'AI Settings';
-      } else {
-        card.style.background = 'linear-gradient(135deg, var(--blue-light) 0%, var(--purple-light) 100%)';
-        card.style.borderColor = 'var(--border)';
-        icon.textContent = '\uD83D\uDE80';
-        title.textContent = 'Self-Hosted Edition';
-        title.style.color = 'var(--purple)';
-        desc.textContent = 'AI assistance is available. Add your API key to generate mods, balance features, and chat with an AI assistant.';
-        btnText.textContent = 'Connect AI';
-        heroText.textContent = 'Connect AI';
-      }
-    }
 
     function renderPresets() {
       const grid = document.getElementById('preset-grid');
       const presets = Presets.getPresetList();
-      grid.innerHTML = presets.map(p => `
-        <div class="preset-card fade-in" onclick="startFromPreset('${p.id}')" style="animation-delay:${presets.indexOf(p) * 0.04}s;">
-          <div class="preset-icon">${p.icon}</div>
-          <div class="preset-name">${p.name}</div>
-          <div class="preset-desc">${p.description}</div>
-        </div>
-      `).join('');
+      grid.innerHTML = presets.map(p =>
+        '<div class="preset-card fade-in" onclick="startFromPreset(\'' + p.id + '\')" style="animation-delay:' + (presets.indexOf(p) * 0.04) + 's;">' +
+          '<div class="preset-icon">' + p.icon + '</div>' +
+          '<div class="preset-name">' + p.name + '</div>' +
+          '<div class="preset-desc">' + p.description + '</div>' +
+        '</div>'
+      ).join('');
     }
 
     function renderProjects() {
       const container = document.getElementById('projects-list');
       const projects = Studio.getProjects();
       if (projects.length === 0) {
-        container.innerHTML = `<div style="border:1px dashed var(--border); border-radius:var(--radius); padding:2rem; text-align:center;">
-          <p style="color:var(--text-3); margin-bottom:0.75rem;">No projects yet. Start from a preset or create a blank project.</p>
-          <button class="btn btn-secondary btn-sm" onclick="createBlankProject()">Create Blank Project</button>
-        </div>`;
+        container.innerHTML = '<div class="empty-state"><p style="margin-bottom:0.75rem;">No projects yet. Start from a preset or create a blank project.</p><button class="btn btn-secondary btn-sm" onclick="createBlankProject()">Create Blank Project</button></div>';
         return;
       }
       container.innerHTML = projects.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(p => {
         const sw = p.softwareTypes?.length || 0;
         const ct = p.companyTypes?.length || 0;
         const ng = p.nameGenerators?.length || 0;
-        return `<div class="fade-in" style="background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
-          <div>
-            <div class="font-semibold">${p.name}</div>
-            <div class="flex gap-2 mt-1" style="flex-wrap:wrap;">
-              <span class="badge badge-info">${sw} SW</span>
-              <span class="badge badge-info">${ct} CT</span>
-              <span class="badge badge-info">${ng} NG</span>
-            </div>
-            <div class="text-xs mt-1" style="color:var(--text-3);">${new Date(p.updatedAt).toLocaleDateString()}</div>
-          </div>
-          <div class="flex gap-1">
-            <a href="software-type.html?project=${p.id}" class="btn btn-primary btn-sm" style="text-decoration:none;">Edit</a>
-            <button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">${Studio.Icons.trash}</button>
-          </div>
-        </div>`;
+        return '<div class="project-item fade-in">' +
+          '<div>' +
+            '<div class="font-semibold">' + p.name + '</div>' +
+            '<div class="flex gap-2 mt-1" style="flex-wrap:wrap;">' +
+              '<span class="badge badge-info">' + sw + ' SW</span>' +
+              '<span class="badge badge-info">' + ct + ' CT</span>' +
+              '<span class="badge badge-info">' + ng + ' NG</span>' +
+            '</div>' +
+            '<div class="text-xs mt-1" style="color:var(--text-3);">' + new Date(p.updatedAt).toLocaleDateString() + '</div>' +
+          '</div>' +
+          '<div class="flex gap-1">' +
+            '<a href="software-type.html?project=' + p.id + '" class="btn btn-primary btn-sm" style="text-decoration:none;">Edit</a>' +
+            '<button class="btn btn-danger btn-sm" onclick="deleteProject(\'' + p.id + '\')">' + Studio.Icons.trash + '</button>' +
+          '</div>' +
+        '</div>';
       }).join('');
     }
 
@@ -282,7 +192,7 @@
       Studio.saveProject(project);
       Studio.toast('Project created from preset!', 'success');
       renderProjects();
-      setTimeout(() => { window.location.href = `software-type.html?project=${project.id}&index=0`; }, 300);
+      setTimeout(() => { window.location.href = 'software-type.html?project=' + project.id + '&index=0'; }, 300);
     }
 
     function createBlankProject() {
@@ -301,43 +211,9 @@
       Studio.toast('Project deleted.', 'info');
     }
 
-    function openAiGenerateModal() {
-      if (!AIAssistant.isConfigured()) {
-        Studio.openModal('ai-settings-modal');
-        Studio.toast('Please configure your AI provider first.', 'warning');
-        return;
-      }
-      Studio.openModal('ai-generate-modal');
-    }
-
-    async function generateWithAi() {
-      const idea = document.getElementById('ai-idea').value.trim();
-      const sub1 = document.getElementById('ai-sub1').value.trim();
-      const sub2 = document.getElementById('ai-sub2').value.trim();
-      const sub3 = document.getElementById('ai-sub3').value.trim();
-      if (!idea) { Studio.toast('Please describe your idea.', 'warning'); return; }
-
-      const resultDiv = document.getElementById('ai-generate-result');
-      const btn = document.getElementById('ai-generate-btn');
-      btn.disabled = true;
-      resultDiv.innerHTML = '<div class="alert alert-info"><span class="pulse">Generating your mod...</span></div>';
-
-      try {
-        const data = await AIAssistant.generateSoftwareType(idea, [sub1, sub2, sub3]);
-        const project = Studio.createProject(data.Name || 'AI Generated Mod');
-        project.softwareTypes.push(data);
-        Studio.saveProject(project);
-        resultDiv.innerHTML = `<div class="alert alert-success">${Studio.Icons.check} <strong>${data.Name}</strong> generated successfully!</div>`;
-        renderProjects();
-        setTimeout(() => { window.location.href = `software-type.html?project=${project.id}&index=0`; }, 800);
-      } catch (err) {
-        resultDiv.innerHTML = `<div class="alert alert-danger">${Studio.Icons.warning} ${err.message}</div>`;
-        btn.disabled = false;
-      }
-    }
-
     renderPresets();
     renderProjects();
   </script>
 </body>
 </html>
+
