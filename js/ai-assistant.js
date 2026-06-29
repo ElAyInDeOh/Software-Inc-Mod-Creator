@@ -152,48 +152,35 @@ const AIAssistant = (function() {
     if (!provider) throw new Error(`Unknown provider: ${config.provider}`);
 
     const model = options.model || config.model || provider.defaultModel;
-    let url = provider.url;
-    let headers = provider.headers(config.apiKey);
 
-    // Use custom URL for compatible/custom providers
-    if ((config.provider === 'custom' || config.provider === 'openaiCompatible') && config.customUrl) {
-      url = config.customUrl;
-    }
-
-    if (provider.authType === 'query' && provider.buildUrl) {
-      url = provider.buildUrl(url, model, config.apiKey);
-      headers = provider.headers();
-    }
-
-    const body = provider.body(messages, model);
-
+    // Route through server proxy to avoid CORS
     try {
-      const response = await fetch(url, {
+      const response = await fetch('/api/ai/chat', {
         method: 'POST',
-        headers,
-        body: JSON.stringify(body)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: config.provider,
+          apiKey: config.apiKey,
+          model,
+          customUrl: config.customUrl || '',
+          messages,
+          options
+        })
       });
 
       if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(`HTTP ${response.status} from ${url}: ${errText.slice(0, 200)}`);
+        const errData = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+        throw new Error(errData.error || `HTTP ${response.status}`);
       }
 
       const data = await response.json();
-      const content = provider.parse(data);
-      if (!content) throw new Error('Empty response from AI.');
-      return content;
+      if (!data.content) throw new Error('Empty response from AI.');
+      return data.content;
     } catch (err) {
-      // Provide much better diagnostics
       if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
         throw new Error(
-          `Connection failed to: ${url}\n\n` +
-          `This is usually a CORS issue. Browsers block cross-origin requests unless the server sends CORS headers.\n\n` +
-          `Solutions:\n` +
-          `1. If using a local server (LM Studio, etc.), enable CORS in its settings\n` +
-          `2. Use a browser extension to bypass CORS (for testing only)\n` +
-          `3. Host this tool on the same domain as the API\n\n` +
-          `If you see this with a cloud provider, check that the URL is correct and the service is running.`
+          'Cannot reach local server. Make sure you are running this via `npm run dev` or `npm start`.\n\n' +
+          'The AI proxy runs on the Node.js server, not in the browser.'
         );
       }
       throw err;
@@ -206,48 +193,23 @@ const AIAssistant = (function() {
     if (!apiUrl) throw new Error('Please enter an API URL first.');
     if (!apiKey) throw new Error('Please enter an API key first.');
 
-    // Derive models endpoint from chat completions URL
-    // e.g. https://api.example.com/v1/chat/completions -> https://api.example.com/v1/models
-    let modelsUrl = apiUrl;
-    if (apiUrl.endsWith('/chat/completions')) {
-      modelsUrl = apiUrl.replace('/chat/completions', '/models');
-    } else if (!apiUrl.endsWith('/models')) {
-      // If URL doesn't end with /models or /chat/completions, try appending /models
-      // But first check if it looks like a base URL
-      modelsUrl = apiUrl.replace(/\/?$/, '') + '/models';
-    }
-
     try {
-      const response = await fetch(modelsUrl, {
+      const response = await fetch(`/api/ai/models?apiUrl=${encodeURIComponent(apiUrl)}&apiKey=${encodeURIComponent(apiKey)}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
       });
 
       if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errText.slice(0, 200)}`);
+        const errData = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+        throw new Error(errData.error || `HTTP ${response.status}`);
       }
 
       const data = await response.json();
-      // OpenAI format: { data: [{ id: 'model-name', ... }, ...] }
-      const models = data.data || data.models || data;
-      if (!Array.isArray(models)) {
-        throw new Error('Unexpected response format from models endpoint.');
-      }
-
-      return models.map(m => typeof m === 'string' ? m : (m.id || m.name || JSON.stringify(m)));
+      return data.models;
     } catch (err) {
       if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
         throw new Error(
-          `Connection failed to: ${modelsUrl}\n\n` +
-          `This is usually a CORS issue. Browsers block cross-origin requests unless the server sends CORS headers.\n\n` +
-          `Solutions:\n` +
-          `1. Enable CORS on your API server\n` +
-          `2. Use a browser extension to bypass CORS (for testing only)\n` +
-          `3. Check that the URL is correct`
+          'Cannot reach local server. Make sure you are running this via `npm run dev` or `npm start`.'
         );
       }
       throw err;

@@ -2,14 +2,14 @@
   "name": "software-inc-mod-studio",
   "version": "1.0.0",
   "description": "Software Inc Mod Studio - Local deployable version with AI assistance",
-  "type": "module",
+  "main": "server.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "start": "vite preview --port 8080 --host"
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "echo 'Static site - no build step needed. Just run npm start'"
   },
-  "devDependencies": {
-    "vite": "^5.0.0"
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
   }
 }
