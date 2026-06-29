@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Software Type Editor — Software Inc Mod Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/studio.css">
+</head>
+<body>
+  <header class="studio-header">
+    <a href="index.html" class="studio-header-brand" style="text-decoration:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>Software Type Editor</span>
+    </a>
+    <div class="studio-header-actions">
+      <button class="studio-btn studio-btn-ghost studio-btn-sm" id="console-cmds-btn" onclick="toggleConsolePanel()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+        Console
+      </button>
+      <button class="studio-btn studio-btn-ghost studio-btn-icon" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="studio-split">
+    <!-- Left: Form -->
+    <div class="studio-split-left">
+      <!-- Validation Panel -->
+      <div id="validation-panel" class="mb-4" style="display:none;"></div>
+
+      <!-- Basic Info -->
+      <div class="studio-card mb-4">
+        <div class="studio-card-header" data-accordion>
+          <div>
+            <div class="studio-card-title">Basic Info</div>
+            <div class="studio-card-subtitle">Name, description, and core properties</div>
+          </div>
+          <svg class="studio-accordion-chevron open" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="studio-accordion-content open studio-card-body">
+          <div class="studio-grid-2">
+            <div class="mb-3">
+              <div class="studio-label-row">
+                <label class="studio-label">Name <span style="color:var(--danger)">*</span></label>
+                <span class="studio-info-icon" data-tooltip="The name as it appears in dropdown menus">?</span>
+              </div>
+              <input type="text" class="studio-input" id="st-name" placeholder="e.g. My Video Game" oninput="updatePreview()">
+            </div>
+            <div class="mb-3">
+              <div class="studio-label-row">
+                <label class="studio-label">Unlock Year</label>
+                <span class="studio-info-icon" data-tooltip="Year this software becomes available">?</span>
+              </div>
+              <input type="number" class="studio-input" id="st-unlock" value="1990" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="studio-label-row">
+              <label class="studio-label">Description</label>
+              <span class="studio-info-icon" data-tooltip="Tooltip shown when hovering over the software in the design document">?</span>
+            </div>
+            <textarea class="studio-textarea" id="st-description" rows="2" placeholder="e.g. An exciting new video game for entertainment." oninput="updatePreview()"></textarea>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-3">
+              <div class="studio-label-row">
+                <label class="studio-label">Random (0-1)</label>
+                <span class="studio-info-icon" data-tooltip="Sales variance. 0.5 for games, 0 for OS.">?</span>
+              </div>
+              <input type="number" class="studio-input" id="st-random" min="0" max="1" step="0.1" value="0.5" oninput="updatePreview()">
+            </div>
+            <div class="mb-3">
+              <div class="studio-label-row">
+                <label class="studio-label">OSSupport</label>
+                <span class="studio-info-icon" data-tooltip="True, False, or specific categories like Computer, Console, Phone, or [Computer; Console]">?</span>
+              </div>
+              <input type="text" class="studio-input" id="st-ossupport" value="True" placeholder="True, False, Computer, [Computer; Console]" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-3">
+              <div class="studio-label-row">
+                <label class="studio-label">Popularity (0-1)</label>
+                <span class="studio-info-icon" data-tooltip="Max consumer cap. 1 for OS, 0.6 for RPGs.">?</span>
+              </div>
+              <input type="number" class="studio-input" id="st-popularity" min="0" max="1" step="0.1" value="0.6" oninput="updatePreview()">
+            </div>
+            <div class="mb-3">
+              <div class="studio-label-row">
+                <label class="studio-label">Retention (months)</label>
+                <span class="studio-info-icon" data-tooltip="How long people use the product. 72 for OS, 24 for games.">?</span>
+              </div>
+              <input type="number" class="studio-input" id="st-retention" value="24" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-3">
+              <div class="studio-label-row">
+                <label class="studio-label">Ideal Price</label>
+                <span class="studio-info-icon" data-tooltip="Ideal cost at 100% quality. Omit if categories define it.">?</span>
+              </div>
+              <input type="number" class="studio-input" id="st-idealprice" value="50" oninput="updatePreview()">
+            </div>
+            <div class="mb-3">
+              <div class="studio-label-row">
+                <label class="studio-label">Optimal Dev Time</label>
+                <span class="studio-info-icon" data-tooltip="Employee-months to develop. 40 for games, 75 for OS.">?</span>
+              </div>
+              <input type="number" class="studio-input" id="st-optimaldevtime" value="40" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-3">
+              <div class="studio-label-row">
+                <label class="studio-label">Iterative (0-1)</label>
+                <span class="studio-info-icon" data-tooltip="AI sequel likelihood. Ignored if categories defined.">?</span>
+              </div>
+              <input type="number" class="studio-input" id="st-iterative" min="0" max="1" step="0.1" value="0.75" oninput="updatePreview()">
+            </div>
+            <div class="mb-3">
+              <div class="studio-label-row">
+                <label class="studio-label">Name Generator</label>
+                <span class="studio-info-icon" data-tooltip="Filename (no .txt) in NameGenerators folder.">?</span>
+              </div>
+              <input type="text" class="studio-input" id="st-namegenerator" placeholder="e.g. rpgnames" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="studio-label-row">
+              <label class="studio-label">Submarket Names <span style="color:var(--danger)">*</span></label>
+              <span class="studio-info-icon" data-tooltip="Exactly 3 names, e.g. Gameplay; Graphics; Story">?</span>
+            </div>
+            <div class="flex gap-2">
+              <input type="text" class="studio-input" id="st-sub1" value="Gameplay" placeholder="Gameplay" oninput="updatePreview()">
+              <input type="text" class="studio-input" id="st-sub2" value="Graphics" placeholder="Graphics" oninput="updatePreview()">
+              <input type="text" class="studio-input" id="st-sub3" value="Story" placeholder="Story" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="flex gap-4 mt-2">
+            <label class="studio-checkbox">
+              <input type="checkbox" id="st-oneclient" onchange="updatePreview()">
+              One Client (contract work)
+            </label>
+            <label class="studio-checkbox">
+              <input type="checkbox" id="st-inhouse" onchange="updatePreview()">
+              In-House (tool dependency)
+            </label>
+            <label class="studio-checkbox">
+              <input type="checkbox" id="st-hardware" onchange="updatePreview()">
+              Hardware Product
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features -->
+      <div class="studio-card mb-4">
+        <div class="studio-card-header" data-accordion>
+          <div>
+            <div class="studio-card-title">Features</div>
+            <div class="studio-card-subtitle">SpecFeatures and their SubFeatures</div>
+          </div>
+          <svg class="studio-accordion-chevron open" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="studio-accordion-content open studio-card-body">
+          <div id="features-container"></div>
+          <button class="studio-btn studio-btn-secondary w-full mt-3" onclick="addSpecFeature()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add SpecFeature
+          </button>
+        </div>
+      </div>
+
+      <!-- Categories (Optional) -->
+      <div class="studio-card mb-4">
+        <div class="studio-card-header" data-accordion>
+          <div>
+            <div class="studio-card-title">Categories <span class="studio-badge studio-badge-warning" style="font-size:0.625rem; margin-left:0.5rem;">Optional</span></div>
+            <div class="studio-card-subtitle">Software specializations (console, phone, etc.)</div>
+          </div>
+          <svg class="studio-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="studio-accordion-content studio-card-body">
+          <div id="categories-container"></div>
+          <button class="studio-btn studio-btn-secondary w-full mt-3" onclick="addCategory()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add Category
+          </button>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-2 mb-8">
+        <button class="studio-btn studio-btn-primary flex-1" onclick="saveAndDownload()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          Download .tyd
+        </button>
+        <button class="studio-btn studio-btn-secondary" onclick="copyToClipboard()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          Copy
+        </button>
+        <button class="studio-btn studio-btn-secondary" onclick="saveProject()">Save</button>
+      </div>
+    </div>
+
+    <!-- Right: Preview -->
+    <div class="studio-split-right">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold">Live Preview</h3>
+        <div class="flex gap-2">
+          <span id="preview-status" class="studio-badge studio-badge-success" style="font-size:0.75rem;">Valid</span>
+        </div>
+      </div>
+      <pre class="studio-preview" id="tyd-preview"><code>SoftwareType
+	{
+		Name		""
+	}</code></pre>
+      <div id="preview-warnings" style="display:none;"></div>
+      <div class="mt-2">
+        <div class="font-semibold text-sm mb-2">Test Commands</div>
+        <div id="console-commands" class="flex flex-col gap-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/tyd-engine.js"></script>
+  <script src="js/presets.js"></script>
+  <script src="js/studio.js"></script>
+  <script>
+    // ─── State ───
+    let projectId = null;
+    let softwareIndex = 0;
+    let specFeatureCount = 0;
+
+    // ─── Init ───
+    function init() {
+      Studio.init();
+      document.getElementById('theme-toggle').addEventListener('click', Studio.toggleTheme);
+      Studio.initAccordions();
+
+      // Load from URL
+      const params = new URLSearchParams(window.location.search);
+      projectId = params.get('project');
+      softwareIndex = parseInt(params.get('index') || '0', 10);
+
+      if (projectId) {
+        const project = Studio.loadProject(projectId);
+        if (project && project.softwareTypes[softwareIndex]) {
+          loadSoftwareType(project.softwareTypes[softwareIndex]);
+        }
+      }
+
+      // If no features, add one default
+      if (document.getElementById('features-container').children.length === 0) {
+        addSpecFeature();
+      }
+
+      updatePreview();
+    }
+
+    // ─── Load Data ───
+    function loadSoftwareType(st) {
+      document.getElementById('st-name').value = st.Name || '';
+      document.getElementById('st-description').value = st.Description || '';
+      document.getElementById('st-unlock').value = st.Unlock || 1990;
+      document.getElementById('st-random').value = st.Random !== undefined ? st.Random : 0.5;
+      document.getElementById('st-ossupport').value = st.OSSupport !== undefined ? st.OSSupport : 'True';
+      document.getElementById('st-popularity').value = st.Popularity !== undefined ? st.Popularity : 0.6;
+      document.getElementById('st-retention').value = st.Retention || 24;
+      document.getElementById('st-idealprice').value = st.IdealPrice || 50;
+      document.getElementById('st-optimaldevtime').value = st.OptimalDevTime || 40;
+      document.getElementById('st-iterative').value = st.Iterative !== undefined ? st.Iterative : 0.75;
+      document.getElementById('st-namegenerator').value = st.NameGenerator || '';
+      document.getElementById('st-oneclient').checked = st.OneClient || false;
+      document.getElementById('st-inhouse').checked = st.InHouse || false;
+      document.getElementById('st-hardware').checked = st.Hardware || false;
+
+      const subs = st.SubmarketNames || ['Gameplay', 'Graphics', 'Story'];
+      document.getElementById('st-sub1').value = subs[0] || '';
+      document.getElementById('st-sub2').value = subs[1] || '';
+      document.getElementById('st-sub3').value = subs[2] || '';
+
+      // Load features
+      document.getElementById('features-container').innerHTML = '';
+      specFeatureCount = 0;
+      if (st.Features) {
+        st.Features.forEach(feat => {
+          const id = addSpecFeature();
+          document.getElementById(`sf-name-${id}`).value = feat.Name || '';
+          document.getElementById(`sf-spec-${id}`).value = feat.Spec || '';
+          document.getElementById(`sf-desc-${id}`).value = feat.Description || '';
+          document.getElementById(`sf-devtime-${id}`).value = feat.DevTime || 5;
+          document.getElementById(`sf-codeart-${id}`).value = feat.CodeArt !== undefined ? feat.CodeArt : 0.5;
+          document.getElementById(`sf-server-${id}`).value = feat.Server || 0;
+          document.getElementById(`sf-optional-${id}`).checked = feat.Optional || false;
+          document.getElementById(`sf-dependencies-${id}`).value = feat.Dependencies || '';
+          document.getElementById(`sf-unlock-${id}`).value = feat.Unlock || 1990;
+          const sm = feat.Submarkets || [1,1,1];
+          document.getElementById(`sf-sm1-${id}`).value = sm[0] || 0;
+          document.getElementById(`sf-sm2-${id}`).value = sm[1] || 0;
+          document.getElementById(`sf-sm3-${id}`).value = sm[2] || 0;
+
+          // Subfeatures
+          if (feat.Features) {
+            feat.Features.forEach(sub => {
+              const sid = addSubFeature(id);
+              document.getElementById(`sub-name-${sid}`).value = sub.Name || '';
+              document.getElementById(`sub-desc-${sid}`).value = sub.Description || '';
+              document.getElementById(`sub-level-${sid}`).value = sub.Level || 1;
+              document.getElementById(`sub-devtime-${sid}`).value = sub.DevTime || 3;
+              document.getElementById(`sub-codeart-${sid}`).value = sub.CodeArt !== undefined ? sub.CodeArt : 0.5;
+              document.getElementById(`sub-unlock-${sid}`).value = sub.Unlock || 1990;
+              const ssm = sub.Submarkets || [1,1,1];
+              document.getElementById(`sub-sm1-${sid}`).value = ssm[0] || 0;
+              document.getElementById(`sub-sm2-${sid}`).value = ssm[1] || 0;
+              document.getElementById(`sub-sm3-${sid}`).value = ssm[2] || 0;
+            });
+          }
+        });
+      }
+      updatePreview();
+    }
+
+    // ─── Build SoftwareType from DOM ───
+    function buildSoftwareType() {
+      const st = {
+        Name: document.getElementById('st-name').value.trim(),
+        Description: document.getElementById('st-description').value.trim(),
+        Unlock: parseInt(document.getElementById('st-unlock').value) || 1990,
+        Random: parseFloat(document.getElementById('st-random').value) || 0,
+        OSSupport: TyDEngine.formatOSSupport(document.getElementById('st-ossupport').value),
+        Popularity: parseFloat(document.getElementById('st-popularity').value),
+        Retention: parseInt(document.getElementById('st-retention').value) || 0,
+        IdealPrice: parseFloat(document.getElementById('st-idealprice').value) || 0,
+        OptimalDevTime: parseInt(document.getElementById('st-optimaldevtime').value) || 0,
+        Iterative: parseFloat(document.getElementById('st-iterative').value) || 0,
+        NameGenerator: document.getElementById('st-namegenerator').value.trim() || null,
+        SubmarketNames: [
+          document.getElementById('st-sub1').value.trim(),
+          document.getElementById('st-sub2').value.trim(),
+          document.getElementById('st-sub3').value.trim()
+        ],
+        OneClient: document.getElementById('st-oneclient').checked,
+        InHouse: document.getElementById('st-inhouse').checked,
+        Hardware: document.getElementById('st-hardware').checked,
+        Features: [],
+        Categories: [],
+        AddOns: []
+      };
+
+      // Remove null/empty fields
+      if (!st.OSSupport) delete st.OSSupport;
+      if (!st.NameGenerator) delete st.NameGenerator;
+      if (!st.OneClient) delete st.OneClient;
+      if (!st.InHouse) delete st.InHouse;
+      if (!st.Hardware) delete st.Hardware;
+
+      // Build features
+      document.querySelectorAll('.spec-feature-card').forEach(card => {
+        const id = card.dataset.id;
+        const feat = {
+          Name: document.getElementById(`sf-name-${id}`).value.trim(),
+          Spec: document.getElementById(`sf-spec-${id}`).value.trim(),
+          Description: document.getElementById(`sf-desc-${id}`).value.trim(),
+          Unlock: parseInt(document.getElementById(`sf-unlock-${id}`).value) || 1990,
+          DevTime: parseInt(document.getElementById(`sf-devtime-${id}`).value) || 0,
+          CodeArt: parseFloat(document.getElementById(`sf-codeart-${id}`).value) || 0,
+          Submarkets: [
+            parseFloat(document.getElementById(`sf-sm1-${id}`).value) || 0,
+            parseFloat(document.getElementById(`sf-sm2-${id}`).value) || 0,
+            parseFloat(document.getElementById(`sf-sm3-${id}`).value) || 0
+          ],
+          Server: parseFloat(document.getElementById(`sf-server-${id}`).value) || 0,
+          Optional: document.getElementById(`sf-optional-${id}`).checked,
+          Features: []
+        };
+        if (document.getElementById(`sf-dependencies-${id}`).value.trim()) {
+          feat.Dependencies = document.getElementById(`sf-dependencies-${id}`).value.trim();
+        }
+        if (!feat.Optional) delete feat.Optional;
+        if (!feat.Server) delete feat.Server;
+        if (!feat.Dependencies) delete feat.Dependencies;
+
+        // Subfeatures
+        card.querySelectorAll('.sub-feature-card').forEach(subCard => {
+          const sid = subCard.dataset.id;
+          const level = parseInt(document.getElementById(`sub-level-${sid}`).value) || 1;
+          const sub = {
+            Name: document.getElementById(`sub-name-${sid}`).value.trim(),
+            Description: document.getElementById(`sub-desc-${sid}`).value.trim(),
+            Level: level,
+            Unlock: parseInt(document.getElementById(`sub-unlock-${sid}`).value) || 1990,
+            DevTime: parseInt(document.getElementById(`sub-devtime-${sid}`).value) || 0,
+            CodeArt: parseFloat(document.getElementById(`sub-codeart-${sid}`).value) || 0,
+            Submarkets: level === 3 ? 0 : [
+              parseFloat(document.getElementById(`sub-sm1-${sid}`).value) || 0,
+              parseFloat(document.getElementById(`sub-sm2-${sid}`).value) || 0,
+              parseFloat(document.getElementById(`sub-sm3-${sid}`).value) || 0
+            ]
+          };
+          feat.Features.push(sub);
+        });
+
+        st.Features.push(feat);
+      });
+
+      return st;
+    }
+
+    // ─── Update Preview ───
+    function updatePreview() {
+      const st = buildSoftwareType();
+      const tyd = TyDEngine.serializeSoftwareType(st);
+      document.getElementById('tyd-preview').textContent = tyd;
+
+      // Validate
+      const validation = TyDEngine.validateSoftwareType(st);
+      const statusBadge = document.getElementById('preview-status');
+      const warningsPanel = document.getElementById('preview-warnings');
+      const validationPanel = document.getElementById('validation-panel');
+
+      if (validation.valid && validation.warnings.length === 0) {
+        statusBadge.textContent = 'Valid';
+        statusBadge.className = 'studio-badge studio-badge-success';
+        warningsPanel.style.display = 'none';
+        validationPanel.style.display = 'none';
+      } else if (validation.valid) {
+        statusBadge.textContent = 'Warnings';
+        statusBadge.className = 'studio-badge studio-badge-warning';
+        warningsPanel.innerHTML = validation.warnings.map(w =>
+          `<div class="studio-alert studio-alert-warning mt-2" style="padding:0.5rem 0.75rem; font-size:0.875rem;">${Studio.Icons.warning} <strong>${w.field}:</strong> ${w.message}</div>`
+        ).join('');
+        warningsPanel.style.display = 'block';
+        validationPanel.style.display = 'none';
+      } else {
+        statusBadge.textContent = 'Errors';
+        statusBadge.className = 'studio-badge studio-badge-danger';
+        validationPanel.innerHTML = validation.errors.map(e =>
+          `<div class="studio-alert studio-alert-danger" style="padding:0.5rem 0.75rem; font-size:0.875rem; margin-bottom:0.5rem;">${Studio.Icons.warning} <strong>${e.field}:</strong> ${e.message}</div>`
+        ).join('');
+        validationPanel.style.display = 'block';
+        if (validation.warnings.length > 0) {
+          warningsPanel.innerHTML = validation.warnings.map(w =>
+            `<div class="studio-alert studio-alert-warning mt-2" style="padding:0.5rem 0.75rem; font-size:0.875rem;">${Studio.Icons.warning} <strong>${w.field}:</strong> ${w.message}</div>`
+          ).join('');
+          warningsPanel.style.display = 'block';
+        }
+      }
+
+      // Console commands
+      const cmds = Presets.getConsoleCommands(
+        projectId ? 'MyMod' : 'MyMod',
+        st.Name || 'MySoftware',
+        'Default'
+      );
+      document.getElementById('console-commands').innerHTML = cmds.map(c => `
+        <div class="studio-console-command">
+          <code>${c.cmd}</code>
+          <button class="studio-btn studio-btn-ghost studio-btn-sm" onclick="Studio.copyToClipboard('${c.cmd.replace(/'/g, "\\'")}')" title="Copy">${Studio.Icons.copy}</button>
+        </div>
+      `).join('');
+    }
+
+    // ─── SpecFeature Management ───
+    function addSpecFeature() {
+      specFeatureCount++;
+      const id = specFeatureCount;
+      const container = document.getElementById('features-container');
+      const div = document.createElement('div');
+      div.className = 'studio-card mb-3 spec-feature-card';
+      div.dataset.id = id;
+      div.innerHTML = `
+        <div class="studio-card-header" data-accordion>
+          <div class="studio-card-title">SpecFeature #${id}</div>
+          <div class="flex gap-2">
+            <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="event.stopPropagation(); removeSpecFeature(${id})" title="Remove">${Studio.Icons.trash}</button>
+            <svg class="studio-accordion-chevron open" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+        <div class="studio-accordion-content open studio-card-body">
+          <div class="studio-grid-2">
+            <div class="mb-3">
+              <label class="studio-label">Name</label>
+              <input type="text" class="studio-input" id="sf-name-${id}" placeholder="e.g. Graphics Engine" oninput="updatePreview()">
+            </div>
+            <div class="mb-3">
+              <label class="studio-label">Spec</label>
+              <input type="text" class="studio-input" id="sf-spec-${id}" placeholder="e.g. 3D, Audio, System" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="studio-label">Description</label>
+            <textarea class="studio-textarea" id="sf-desc-${id}" rows="2" placeholder="Tooltip description..." oninput="updatePreview()"></textarea>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-3">
+              <label class="studio-label">Dev Time</label>
+              <input type="number" class="studio-input" id="sf-devtime-${id}" value="5" min="0" oninput="updatePreview()">
+            </div>
+            <div class="mb-3">
+              <label class="studio-label">CodeArt (0-1)</label>
+              <input type="number" class="studio-input" id="sf-codeart-${id}" value="0.5" min="0" max="1" step="0.1" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="studio-label">Submarkets (3 values)</label>
+            <div class="flex gap-2">
+              <input type="number" class="studio-input" id="sf-sm1-${id}" value="1" step="0.1" oninput="updatePreview()">
+              <input type="number" class="studio-input" id="sf-sm2-${id}" value="1" step="0.1" oninput="updatePreview()">
+              <input type="number" class="studio-input" id="sf-sm3-${id}" value="1" step="0.1" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-3">
+              <label class="studio-label">Unlock Year</label>
+              <input type="number" class="studio-input" id="sf-unlock-${id}" value="1990" oninput="updatePreview()">
+            </div>
+            <div class="mb-3">
+              <label class="studio-label">Server (mbps)</label>
+              <input type="number" class="studio-input" id="sf-server-${id}" value="0" step="0.001" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="studio-label">Dependencies</label>
+            <input type="text" class="studio-input" id="sf-dependencies-${id}" placeholder="e.g. 2D Editor or [2D Editor; 3D Editor]" oninput="updatePreview()">
+          </div>
+          <div class="mb-3">
+            <label class="studio-checkbox">
+              <input type="checkbox" id="sf-optional-${id}" onchange="updatePreview()">
+              Optional (player can toggle off)
+            </label>
+          </div>
+          <div class="sub-features-container" id="sub-features-${id}"></div>
+          <button class="studio-btn studio-btn-secondary w-full mt-2" onclick="addSubFeature(${id})">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add SubFeature
+          </button>
+        </div>
+      `;
+      container.appendChild(div);
+      Studio.initAccordions();
+      return id;
+    }
+
+    function removeSpecFeature(id) {
+      const card = document.querySelector(`.spec-feature-card[data-id="${id}"]`);
+      if (card) card.remove();
+      updatePreview();
+    }
+
+    let subFeatureCount = 0;
+    function addSubFeature(parentId) {
+      subFeatureCount++;
+      const sid = subFeatureCount;
+      const container = document.getElementById(`sub-features-${parentId}`);
+      const div = document.createElement('div');
+      div.className = 'studio-card mb-2 sub-feature-card';
+      div.dataset.id = sid;
+      div.style.background = 'var(--bg-secondary)';
+      div.innerHTML = `
+        <div class="p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold text-sm">SubFeature</span>
+            <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="removeSubFeature(${sid})" title="Remove">${Studio.Icons.trash}</button>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-2">
+              <label class="studio-label">Name</label>
+              <input type="text" class="studio-input" id="sub-name-${sid}" placeholder="e.g. Basic Shaders" oninput="updatePreview()">
+            </div>
+            <div class="mb-2">
+              <label class="studio-label">Level</label>
+              <select class="studio-select" id="sub-level-${sid}" onchange="updatePreview()">
+                <option value="1">1 (Basic)</option>
+                <option value="2">2 (Advanced)</option>
+                <option value="3">3 (Scripted)</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="studio-label">Description</label>
+            <textarea class="studio-textarea" id="sub-desc-${sid}" rows="1" placeholder="Tooltip..." oninput="updatePreview()"></textarea>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-2">
+              <label class="studio-label">Dev Time</label>
+              <input type="number" class="studio-input" id="sub-devtime-${sid}" value="3" min="0" oninput="updatePreview()">
+            </div>
+            <div class="mb-2">
+              <label class="studio-label">CodeArt</label>
+              <input type="number" class="studio-input" id="sub-codeart-${sid}" value="0.5" min="0" max="1" step="0.1" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="studio-label">Submarkets</label>
+            <div class="flex gap-2">
+              <input type="number" class="studio-input" id="sub-sm1-${sid}" value="1" step="0.1" oninput="updatePreview()">
+              <input type="number" class="studio-input" id="sub-sm2-${sid}" value="1" step="0.1" oninput="updatePreview()">
+              <input type="number" class="studio-input" id="sub-sm3-${sid}" value="1" step="0.1" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="studio-label">Unlock Year</label>
+            <input type="number" class="studio-input" id="sub-unlock-${sid}" value="1990" oninput="updatePreview()">
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+      return sid;
+    }
+
+    function removeSubFeature(sid) {
+      const card = document.querySelector(`.sub-feature-card[data-id="${sid}"]`);
+      if (card) card.remove();
+      updatePreview();
+    }
+
+    // ─── Category Management ───
+    let categoryCount = 0;
+    function addCategory() {
+      categoryCount++;
+      const id = categoryCount;
+      const container = document.getElementById('categories-container');
+      const div = document.createElement('div');
+      div.className = 'studio-card mb-2';
+      div.innerHTML = `
+        <div class="p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold text-sm">Category</span>
+            <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="this.closest('.studio-card').remove(); updatePreview();" title="Remove">${Studio.Icons.trash}</button>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-2">
+              <label class="studio-label">Name</label>
+              <input type="text" class="studio-input" placeholder="e.g. Console" oninput="updatePreview()">
+            </div>
+            <div class="mb-2">
+              <label class="studio-label">Unlock</label>
+              <input type="number" class="studio-input" value="1990" oninput="updatePreview()">
+            </div>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+
+    // ─── Actions ───
+    function saveAndDownload() {
+      const st = buildSoftwareType();
+      const validation = TyDEngine.validateSoftwareType(st);
+      if (!validation.valid) {
+        Studio.toast('Please fix errors before downloading.', 'danger');
+        return;
+      }
+      const tyd = TyDEngine.serializeSoftwareType(st);
+      Studio.downloadTextFile(tyd, `${st.Name || 'software'}.tyd`);
+      saveProject();
+      Studio.toast('Downloaded!', 'success');
+    }
+
+    function copyToClipboard() {
+      const st = buildSoftwareType();
+      const tyd = TyDEngine.serializeSoftwareType(st);
+      Studio.copyToClipboard(tyd);
+    }
+
+    function saveProject() {
+      if (!projectId) {
+        // Create new project
+        const name = document.getElementById('st-name').value.trim() || 'Untitled Mod';
+        const project = Studio.createProject(name + ' Mod');
+        projectId = project.id;
+      }
+      const project = Studio.loadProject(projectId) || Studio.createProject('Mod');
+      project.id = projectId;
+      const st = buildSoftwareType();
+      if (!project.softwareTypes) project.softwareTypes = [];
+      project.softwareTypes[softwareIndex] = st;
+      Studio.saveProject(project);
+      Studio.toast('Project saved!', 'success');
+    }
+
+    // ─── AI Generation ───
+    // ─── Console Panel ───
+    function toggleConsolePanel() {
+      document.querySelector('.studio-split-right').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ─── AI Chat Panel ───
+    // ─── Start ───
+    init();
+  </script>
+</body>
+</html>

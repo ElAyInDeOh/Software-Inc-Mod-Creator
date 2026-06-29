@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Type Editor — Software Inc Mod Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/studio.css">
+</head>
+<body>
+  <header class="studio-header">
+    <a href="index.html" class="studio-header-brand" style="text-decoration:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>Company Type Editor</span>
+    </a>
+    <div class="studio-header-actions">
+      <button class="studio-btn studio-btn-ghost studio-btn-icon" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="studio-split">
+    <div class="studio-split-left">
+      <div id="validation-panel" class="mb-4" style="display:none;"></div>
+
+      <div class="studio-card mb-4">
+        <div class="studio-card-header" data-accordion>
+          <div>
+            <div class="studio-card-title">Company Info</div>
+            <div class="studio-card-subtitle">Core company type properties</div>
+          </div>
+          <svg class="studio-accordion-chevron open" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="studio-accordion-content open studio-card-body">
+          <div class="studio-grid-2">
+            <div class="mb-3">
+              <label class="studio-label">Specialization <span style="color:var(--danger)">*</span></label>
+              <input type="text" class="studio-input" id="ct-specialization" placeholder="e.g. Game Dev" oninput="updatePreview()">
+            </div>
+            <div class="mb-3">
+              <label class="studio-label">NameGen</label>
+              <input type="text" class="studio-input" id="ct-namegen" placeholder="Name generator (optional)" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-3">
+              <label class="studio-label">Per Year (0-1)</label>
+              <input type="number" class="studio-input" id="ct-peryear" value="0.2" min="0" max="1" step="0.05" oninput="updatePreview()">
+            </div>
+            <div class="mb-3">
+              <label class="studio-label">Frameworks</label>
+              <select class="studio-select" id="ct-frameworks" onchange="updatePreview()">
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
+            </div>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-3">
+              <label class="studio-label">Min Companies</label>
+              <input type="number" class="studio-input" id="ct-min" value="3" min="0" oninput="updatePreview()">
+            </div>
+            <div class="mb-3">
+              <label class="studio-label">Max Companies</label>
+              <input type="number" class="studio-input" id="ct-max" value="6" min="0" oninput="updatePreview()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="studio-card mb-4">
+        <div class="studio-card-header" data-accordion>
+          <div>
+            <div class="studio-card-title">Software Types</div>
+            <div class="studio-card-subtitle">What this company will develop</div>
+          </div>
+          <svg class="studio-accordion-chevron open" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="studio-accordion-content open studio-card-body">
+          <div id="types-container"></div>
+          <button class="studio-btn studio-btn-secondary w-full mt-3" onclick="addType()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add Software Type
+          </button>
+        </div>
+      </div>
+
+      <div class="studio-card mb-4">
+        <div class="studio-card-header" data-accordion>
+          <div>
+            <div class="studio-card-title">Add-ons <span class="studio-badge studio-badge-warning" style="font-size:0.625rem; margin-left:0.5rem;">Optional</span></div>
+            <div class="studio-card-subtitle">Hardware add-ons this company develops</div>
+          </div>
+          <svg class="studio-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="studio-accordion-content studio-card-body">
+          <div id="addons-container"></div>
+          <button class="studio-btn studio-btn-secondary w-full mt-3" onclick="addAddon()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add Add-on
+          </button>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mb-8">
+        <button class="studio-btn studio-btn-primary flex-1" onclick="saveAndDownload()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          Download .tyd
+        </button>
+        <button class="studio-btn studio-btn-secondary" onclick="copyToClipboard()">Copy</button>
+      </div>
+    </div>
+
+    <div class="studio-split-right">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold">Live Preview</h3>
+        <span id="preview-status" class="studio-badge studio-badge-success" style="font-size:0.75rem;">Valid</span>
+      </div>
+      <pre class="studio-preview" id="tyd-preview"><code>CompanyType
+	{
+		Specialization		""
+	}</code></pre>
+      <div id="preview-warnings" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script src="js/tyd-engine.js"></script>
+  <script src="js/studio.js"></script>
+  <script>
+    Studio.init();
+    document.getElementById('theme-toggle').addEventListener('click', Studio.toggleTheme);
+    Studio.initAccordions();
+
+    let typeCount = 0;
+    let addonCount = 0;
+
+    function addType() {
+      typeCount++;
+      const id = typeCount;
+      const container = document.getElementById('types-container');
+      const div = document.createElement('div');
+      div.className = 'studio-card mb-2';
+      div.innerHTML = `
+        <div class="p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold text-sm">Software #${id}</span>
+            <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="this.closest('.studio-card').remove(); updatePreview();">${Studio.Icons.trash}</button>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-2">
+              <label class="studio-label">Software Name</label>
+              <input type="text" class="studio-input" id="type-sw-${id}" placeholder="e.g. RPG" oninput="updatePreview()">
+            </div>
+            <div class="mb-2">
+              <label class="studio-label">Chance</label>
+              <input type="number" class="studio-input" id="type-chance-${id}" value="1" min="0" max="1" step="0.25" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-2">
+              <label class="studio-label">Category</label>
+              <input type="text" class="studio-input" id="type-cat-${id}" placeholder="Optional category" oninput="updatePreview()">
+            </div>
+            <div class="mb-2">
+              <label class="studio-label">Force</label>
+              <select class="studio-select" id="type-force-${id}" onchange="updatePreview()">
+                <option value="false">False</option>
+                <option value="true">True</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+
+    function addAddon() {
+      addonCount++;
+      const id = addonCount;
+      const container = document.getElementById('addons-container');
+      const div = document.createElement('div');
+      div.className = 'studio-card mb-2';
+      div.innerHTML = `
+        <div class="p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold text-sm">Add-on #${id}</span>
+            <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="this.closest('.studio-card').remove(); updatePreview();">${Studio.Icons.trash}</button>
+          </div>
+          <div class="studio-grid-2">
+            <div class="mb-2">
+              <label class="studio-label">Software</label>
+              <input type="text" class="studio-input" id="addon-sw-${id}" placeholder="Parent software" oninput="updatePreview()">
+            </div>
+            <div class="mb-2">
+              <label class="studio-label">Addon</label>
+              <input type="text" class="studio-input" id="addon-name-${id}" placeholder="Add-on name" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="studio-label">Chance</label>
+            <input type="number" class="studio-input" id="addon-chance-${id}" value="0.05" min="0" max="1" step="0.05" oninput="updatePreview()">
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+
+    function buildCompanyType() {
+      const ct = {
+        Specialization: document.getElementById('ct-specialization').value.trim(),
+        PerYear: parseFloat(document.getElementById('ct-peryear').value) || 0.2,
+        Min: parseInt(document.getElementById('ct-min').value) || 0,
+        Max: parseInt(document.getElementById('ct-max').value) || 0,
+        Frameworks: document.getElementById('ct-frameworks').value === 'true',
+        Types: [],
+        Addons: []
+      };
+      if (document.getElementById('ct-namegen').value.trim()) {
+        ct.NameGen = document.getElementById('ct-namegen').value.trim();
+      }
+
+      document.querySelectorAll('#types-container .studio-card').forEach((card, i) => {
+        const id = i + 1;
+        const sw = document.getElementById(`type-sw-${id}`)?.value.trim();
+        if (!sw) return;
+        const type = { Software: sw, Chance: parseFloat(document.getElementById(`type-chance-${id}`).value) || 1 };
+        const cat = document.getElementById(`type-cat-${id}`)?.value.trim();
+        if (cat) type.Category = cat;
+        if (document.getElementById(`type-force-${id}`)?.value === 'true') type.Force = true;
+        ct.Types.push(type);
+      });
+
+      document.querySelectorAll('#addons-container .studio-card').forEach((card, i) => {
+        const id = i + 1;
+        const sw = document.getElementById(`addon-sw-${id}`)?.value.trim();
+        const addon = document.getElementById(`addon-name-${id}`)?.value.trim();
+        if (!sw || !addon) return;
+        ct.Addons.push({
+          Software: sw,
+          Addon: addon,
+          Chance: parseFloat(document.getElementById(`addon-chance-${id}`).value) || 0.05
+        });
+      });
+
+      if (ct.Addons.length === 0) delete ct.Addons;
+      return ct;
+    }
+
+    function updatePreview() {
+      const ct = buildCompanyType();
+      const tyd = TyDEngine.serializeCompanyType(ct);
+      document.getElementById('tyd-preview').textContent = tyd;
+
+      const validation = TyDEngine.validateCompanyType(ct);
+      const status = document.getElementById('preview-status');
+      const warnings = document.getElementById('preview-warnings');
+      const panel = document.getElementById('validation-panel');
+
+      if (validation.valid && validation.warnings.length === 0) {
+        status.textContent = 'Valid';
+        status.className = 'studio-badge studio-badge-success';
+        warnings.style.display = 'none';
+        panel.style.display = 'none';
+      } else if (validation.valid) {
+        status.textContent = 'Warnings';
+        status.className = 'studio-badge studio-badge-warning';
+        warnings.innerHTML = validation.warnings.map(w => `<div class="studio-alert studio-alert-warning mt-2" style="padding:0.5rem 0.75rem; font-size:0.875rem;">${Studio.Icons.warning} ${w.message}</div>`).join('');
+        warnings.style.display = 'block';
+        panel.style.display = 'none';
+      } else {
+        status.textContent = 'Errors';
+        status.className = 'studio-badge studio-badge-danger';
+        panel.innerHTML = validation.errors.map(e => `<div class="studio-alert studio-alert-danger" style="padding:0.5rem 0.75rem; font-size:0.875rem; margin-bottom:0.5rem;">${Studio.Icons.warning} <strong>${e.field}:</strong> ${e.message}</div>`).join('');
+        panel.style.display = 'block';
+      }
+    }
+
+    function saveAndDownload() {
+      const ct = buildCompanyType();
+      const validation = TyDEngine.validateCompanyType(ct);
+      if (!validation.valid) {
+        Studio.toast('Please fix errors before downloading.', 'danger');
+        return;
+      }
+      const tyd = TyDEngine.serializeCompanyType(ct);
+      Studio.downloadTextFile(tyd, `${ct.Specialization || 'company'}.tyd`);
+      Studio.toast('Downloaded!', 'success');
+    }
+
+    function copyToClipboard() {
+      const ct = buildCompanyType();
+      const tyd = TyDEngine.serializeCompanyType(ct);
+      Studio.copyToClipboard(tyd);
+    }
+
+    // Add default type
+    addType();
+    updatePreview();
+  </script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Name Generator — Software Inc Mod Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/studio.css">
+</head>
+<body>
+  <header class="studio-header">
+    <a href="index.html" class="studio-header-brand" style="text-decoration:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>Name Generator</span>
+    </a>
+    <div class="studio-header-actions">
+      <button class="studio-btn studio-btn-ghost studio-btn-sm" onclick="Studio.openModal('ai-settings-modal')">AI</button>
+      <button class="studio-btn studio-btn-ghost studio-btn-icon" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="studio-container" style="padding-top: 2rem; max-width: 900px;">
+    <div class="studio-card mb-6">
+      <div class="studio-card-body">
+        <h2 class="text-xl font-bold mb-2">Name Generator Editor</h2>
+        <p class="text-sm mb-4" style="color: var(--text-secondary);">Create tree-based name generators for Software Inc. Nodes define paths, words are picked randomly from each node.</p>
+
+        <div class="mb-4">
+          <label class="studio-label">File Name (no extension)</label>
+          <input type="text" class="studio-input" id="ng-filename" placeholder="e.g. rpgnames" value="mynames">
+        </div>
+
+        <div class="mb-4">
+          <label class="studio-label">Mode</label>
+          <div class="flex gap-2">
+            <button class="studio-btn studio-btn-primary studio-btn-sm" id="mode-simple-btn" onclick="setMode('simple')">Simple</button>
+            <button class="studio-btn studio-btn-secondary studio-btn-sm" id="mode-advanced-btn" onclick="setMode('advanced')">Advanced / Raw</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Simple Mode -->
+    <div id="simple-mode">
+      <div class="studio-card mb-4">
+        <div class="studio-card-body">
+          <h3 class="font-semibold mb-3">Base Words (start of name)</h3>
+          <p class="text-sm mb-3" style="color: var(--text-secondary);">Words like "Cyber", "Tech", "Super" — one per line</p>
+          <textarea class="studio-textarea font-mono" id="ng-base1" rows="5" placeholder="Cyber&#10;Tech&#10;Super&#10;Ultra&#10;Mega"></textarea>
+        </div>
+      </div>
+      <div class="studio-card mb-4">
+        <div class="studio-card-body">
+          <h3 class="font-semibold mb-3">Base 2 Words (middle)</h3>
+          <p class="text-sm mb-3" style="color: var(--text-secondary);">Words like "System", "Works", "Soft" — one per line</p>
+          <textarea class="studio-textarea font-mono" id="ng-base2" rows="5" placeholder="System&#10;Works&#10;Soft&#10;Ware&#10;Net"></textarea>
+        </div>
+      </div>
+      <div class="studio-card mb-4">
+        <div class="studio-card-body">
+          <h3 class="font-semibold mb-3">End Words (suffix)</h3>
+          <p class="text-sm mb-3" style="color: var(--text-secondary);">Words like "Pro", "Max", "Lite" — one per line</p>
+          <textarea class="studio-textarea font-mono" id="ng-end" rows="5" placeholder="Pro&#10;Max&#10;Lite&#10;OS&#10;X"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Advanced Mode -->
+    <div id="advanced-mode" style="display:none;">
+      <div class="studio-card mb-4">
+        <div class="studio-card-body">
+          <h3 class="font-semibold mb-3">Raw Name Generator</h3>
+          <p class="text-sm mb-3" style="color: var(--text-secondary);">Edit the full text file directly. Nodes start with "-", words are picked randomly from each section.</p>
+          <textarea class="studio-textarea font-mono" id="ng-raw" rows="20" placeholder="-start(base)&#10;-base(base2,end,stop)&#10;Hello&#10;Hi&#10;-base2(end,stop)&#10;, you&#10;-end(stop)&#10;."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap-2 mb-8">
+      <button class="studio-btn studio-btn-primary flex-1" onclick="downloadNameGen()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        Download .txt
+      </button>
+      <button class="studio-btn studio-btn-secondary" onclick="copyNameGen()">Copy</button>
+      <button class="studio-btn studio-btn-ai" onclick="aiGenerateNameGen()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        AI Generate
+      </button>
+    </div>
+
+    <div class="studio-card mb-8">
+      <div class="studio-card-body">
+        <h3 class="font-semibold mb-3">Preview</h3>
+        <pre class="studio-preview" id="ng-preview" style="max-height: 300px;"></pre>
+      </div>
+    </div>
+  </main>
+
+  <!-- AI Settings Modal -->
+  <div class="studio-modal-overlay" id="ai-settings-modal">
+    <div class="studio-modal">
+      <div class="studio-modal-header">
+        <h3 class="text-lg font-semibold">AI Settings</h3>
+        <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="Studio.closeModal('ai-settings-modal')">&times;</button>
+      </div>
+      <div class="studio-modal-body">
+        <div id="ai-settings-form"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/studio.js"></script>
+  <script src="js/ai-assistant.js"></script>
+  <script>
+    Studio.init();
+    document.getElementById('theme-toggle').addEventListener('click', Studio.toggleTheme);
+    AIAssistant.renderSettingsForm('ai-settings-form');
+
+    let currentMode = 'simple';
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('simple-mode').style.display = mode === 'simple' ? 'block' : 'none';
+      document.getElementById('advanced-mode').style.display = mode === 'advanced' ? 'block' : 'none';
+      document.getElementById('mode-simple-btn').className = mode === 'simple' ? 'studio-btn studio-btn-primary studio-btn-sm' : 'studio-btn studio-btn-secondary studio-btn-sm';
+      document.getElementById('mode-advanced-btn').className = mode === 'advanced' ? 'studio-btn studio-btn-primary studio-btn-sm' : 'studio-btn studio-btn-secondary studio-btn-sm';
+      updatePreview();
+    }
+
+    function buildText() {
+      if (currentMode === 'advanced') {
+        return document.getElementById('ng-raw').value;
+      }
+      const base1 = document.getElementById('ng-base1').value.trim();
+      const base2 = document.getElementById('ng-base2').value.trim();
+      const end = document.getElementById('ng-end').value.trim();
+      if (!base1 && !base2 && !end) return '';
+      return `-start(base)\n-base(base2,end,stop)\n${base1}\n-base2(end,stop)\n${base2}\n-end(stop)\n${end}`;
+    }
+
+    function updatePreview() {
+      document.getElementById('ng-preview').textContent = buildText();
+    }
+
+    function downloadNameGen() {
+      const text = buildText();
+      const name = document.getElementById('ng-filename').value.trim() || 'names';
+      Studio.downloadTextFile(text, `${name}.txt`);
+      Studio.toast('Downloaded!', 'success');
+    }
+
+    function copyNameGen() {
+      Studio.copyToClipboard(buildText());
+    }
+
+    async function aiGenerateNameGen() {
+      if (!AIAssistant.isConfigured()) {
+        Studio.openModal('ai-settings-modal');
+        Studio.toast('Please configure AI first.', 'warning');
+        return;
+      }
+      const theme = prompt('What theme? (e.g. fantasy, cyberpunk, space, medieval)', 'technology');
+      if (!theme) return;
+      Studio.toast('AI is generating...', 'info');
+      try {
+        const text = await AIAssistant.generateNameGenerator(theme);
+        if (currentMode === 'advanced') {
+          document.getElementById('ng-raw').value = text;
+        } else {
+          // Try to parse simple structure
+          document.getElementById('ng-raw').value = text;
+          setMode('advanced');
+        }
+        updatePreview();
+        Studio.toast('Name generator created!', 'success');
+      } catch (err) {
+        Studio.toast('AI generation failed: ' + err.message, 'danger');
+      }
+    }
+
+    // Listeners
+    ['ng-base1', 'ng-base2', 'ng-end', 'ng-raw'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updatePreview);
+    });
+
+    updatePreview();
+  </script>
+</body>
+</html>

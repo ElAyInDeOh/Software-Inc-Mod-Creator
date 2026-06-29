@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personalities — Software Inc Mod Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/studio.css">
+</head>
+<body>
+  <header class="studio-header">
+    <a href="index.html" class="studio-header-brand" style="text-decoration:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>Personalities Editor</span>
+    </a>
+    <div class="studio-header-actions">
+      <button class="studio-btn studio-btn-ghost studio-btn-icon" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="studio-split">
+    <div class="studio-split-left">
+      <div class="studio-card mb-4">
+        <div class="studio-card-body">
+          <label class="studio-checkbox mb-3">
+            <input type="checkbox" id="pg-replace" onchange="updatePreview()">
+            Replace Base Personalities (add <code>Replace True</code>)
+          </label>
+          <p class="text-sm" style="color: var(--text-secondary);">Only check this if your mod has more than 2 new personalities and you want to replace the game's defaults entirely.</p>
+        </div>
+      </div>
+
+      <div class="studio-card mb-4">
+        <div class="studio-card-header" data-accordion>
+          <div>
+            <div class="studio-card-title">Personalities</div>
+            <div class="studio-card-subtitle">Employee traits and relationships</div>
+          </div>
+          <svg class="studio-accordion-chevron open" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="studio-accordion-content open studio-card-body">
+          <div id="personalities-container"></div>
+          <button class="studio-btn studio-btn-secondary w-full mt-3" onclick="addPersonality()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add Personality
+          </button>
+        </div>
+      </div>
+
+      <div class="studio-card mb-4">
+        <div class="studio-card-header" data-accordion>
+          <div>
+            <div class="studio-card-title">Incompatibilities</div>
+            <div class="studio-card-subtitle">Personality pairs that cannot coexist</div>
+          </div>
+          <svg class="studio-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="studio-accordion-content studio-card-body">
+          <div id="incompatibilities-container"></div>
+          <button class="studio-btn studio-btn-secondary w-full mt-3" onclick="addIncompatibility()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add Incompatibility Pair
+          </button>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mb-8">
+        <button class="studio-btn studio-btn-primary flex-1" onclick="saveAndDownload()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          Download .tyd
+        </button>
+        <button class="studio-btn studio-btn-secondary" onclick="copyToClipboard()">Copy</button>
+      </div>
+    </div>
+
+    <div class="studio-split-right">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold">Live Preview</h3>
+      </div>
+      <pre class="studio-preview" id="tyd-preview"><code>PersonalityGraph
+	{
+	}</code></pre>
+    </div>
+  </div>
+
+  <script src="js/tyd-engine.js"></script>
+  <script src="js/studio.js"></script>
+  <script>
+    Studio.init();
+    document.getElementById('theme-toggle').addEventListener('click', Studio.toggleTheme);
+    Studio.initAccordions();
+
+    const ALL_TRAITS = {
+      good: ['FastLearner','Independant','BigBrain','Humble','Capacitor','WalkItOff','ThisIsFine','Skyscraper','Sunshine','RGBThumb'],
+      bad: ['Stressed','Hypochondriac','SlowEater','NervousBladder','BumLeg','Forgetful','Cupholder','NeatFreak','SilentButDeadly','WalkInstead','UnderTheWeather','OldSole'],
+      neutral: ['NightOwl','BornLeader','FirmwareInc','SuperFocus','Unphased','JustTheFlu','Detached','Watch']
+    };
+
+    let personalityCount = 0;
+    let incompatibilityCount = 0;
+
+    function addPersonality() {
+      personalityCount++;
+      const id = personalityCount;
+      const container = document.getElementById('personalities-container');
+      const div = document.createElement('div');
+      div.className = 'studio-card mb-3';
+      div.innerHTML = `
+        <div class="p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold text-sm">Personality #${id}</span>
+            <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="this.closest('.studio-card').remove(); updatePreview();">${Studio.Icons.trash}</button>
+          </div>
+          <div class="mb-2">
+            <label class="studio-label">Name</label>
+            <input type="text" class="studio-input" id="p-name-${id}" placeholder="e.g. Optimist" oninput="updatePreview()">
+          </div>
+          <div class="mb-2">
+            <label class="studio-label">Traits (1 good + 1 bad, or 1 neutral)</label>
+            <div class="flex gap-2">
+              <select class="studio-select" id="p-trait1-${id}" onchange="updatePreview()">
+                <option value="">Select trait...</option>
+                <optgroup label="Good">
+                  ${ALL_TRAITS.good.map(t => `<option value="${t}">${t}</option>`).join('')}
+                </optgroup>
+                <optgroup label="Bad">
+                  ${ALL_TRAITS.bad.map(t => `<option value="${t}">${t}</option>`).join('')}
+                </optgroup>
+                <optgroup label="Neutral">
+                  ${ALL_TRAITS.neutral.map(t => `<option value="${t}">${t}</option>`).join('')}
+                </optgroup>
+              </select>
+              <select class="studio-select" id="p-trait2-${id}" onchange="updatePreview()">
+                <option value="">(Optional second trait)</option>
+                <optgroup label="Good">
+                  ${ALL_TRAITS.good.map(t => `<option value="${t}">${t}</option>`).join('')}
+                </optgroup>
+                <optgroup label="Bad">
+                  ${ALL_TRAITS.bad.map(t => `<option value="${t}">${t}</option>`).join('')}
+                </optgroup>
+                <optgroup label="Neutral">
+                  ${ALL_TRAITS.neutral.map(t => `<option value="${t}">${t}</option>`).join('')}
+                </optgroup>
+              </select>
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="studio-label">Relationships (optional)</label>
+            <div id="p-rels-${id}"></div>
+            <button class="studio-btn studio-btn-ghost studio-btn-sm mt-1" onclick="addRelationship(${id})">+ Add Relationship</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+
+    function addRelationship(pid) {
+      const container = document.getElementById(`p-rels-${pid}`);
+      const div = document.createElement('div');
+      div.className = 'flex gap-2 mb-1';
+      div.innerHTML = `
+        <input type="text" class="studio-input studio-input-sm" placeholder="Personality name" oninput="updatePreview()">
+        <input type="number" class="studio-input studio-input-sm" style="width:80px;" placeholder="-1 to 1" min="-1" max="1" step="0.1" value="0" oninput="updatePreview()">
+        <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="this.parentElement.remove(); updatePreview();">${Studio.Icons.trash}</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function addIncompatibility() {
+      incompatibilityCount++;
+      const id = incompatibilityCount;
+      const container = document.getElementById('incompatibilities-container');
+      const div = document.createElement('div');
+      div.className = 'flex gap-2 mb-2';
+      div.innerHTML = `
+        <input type="text" class="studio-input" placeholder="Personality 1" id="inc-a-${id}" oninput="updatePreview()">
+        <input type="text" class="studio-input" placeholder="Personality 2" id="inc-b-${id}" oninput="updatePreview()">
+        <button class="studio-btn studio-btn-ghost studio-btn-icon" onclick="this.parentElement.remove(); updatePreview();">${Studio.Icons.trash}</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function buildPersonalityGraph() {
+      const pg = {
+        Personalities: [],
+        Incompatibilities: []
+      };
+      if (document.getElementById('pg-replace').checked) {
+        pg.Replace = true;
+      }
+
+      document.querySelectorAll('#personalities-container > .studio-card').forEach((card, i) => {
+        const id = i + 1;
+        const name = document.getElementById(`p-name-${id}`)?.value.trim();
+        if (!name) return;
+        const p = { Name: name };
+        const t1 = document.getElementById(`p-trait1-${id}`)?.value;
+        const t2 = document.getElementById(`p-trait2-${id}`)?.value;
+        if (t1 && t2) {
+          p.Traits = [t1, t2];
+        } else if (t1) {
+          p.Traits = [t1];
+        }
+        // Relationships
+        const rels = {};
+        card.querySelectorAll('#p-rels-' + id + ' > div').forEach(row => {
+          const inputs = row.querySelectorAll('input');
+          const rName = inputs[0]?.value.trim();
+          const rVal = parseFloat(inputs[1]?.value);
+          if (rName) rels[rName] = rVal;
+        });
+        if (Object.keys(rels).length > 0) {
+          p.Relationships = rels;
+        }
+        pg.Personalities.push(p);
+      });
+
+      document.querySelectorAll('#incompatibilities-container > div').forEach((row, i) => {
+        const id = i + 1;
+        const a = document.getElementById(`inc-a-${id}`)?.value.trim();
+        const b = document.getElementById(`inc-b-${id}`)?.value.trim();
+        if (a && b) pg.Incompatibilities.push([a, b]);
+      });
+
+      if (pg.Incompatibilities.length === 0) delete pg.Incompatibilities;
+      return pg;
+    }
+
+    function updatePreview() {
+      const pg = buildPersonalityGraph();
+      const tyd = TyDEngine.serializePersonalities(pg);
+      document.getElementById('tyd-preview').textContent = tyd;
+    }
+
+    function saveAndDownload() {
+      const pg = buildPersonalityGraph();
+      const tyd = TyDEngine.serializePersonalities(pg);
+      Studio.downloadTextFile(tyd, 'Personalities.tyd');
+      Studio.toast('Downloaded!', 'success');
+    }
+
+    function copyToClipboard() {
+      const pg = buildPersonalityGraph();
+      const tyd = TyDEngine.serializePersonalities(pg);
+      Studio.copyToClipboard(tyd);
+    }
+
+    // Add one default
+    addPersonality();
+    updatePreview();
+  </script>
+</body>
+</html>

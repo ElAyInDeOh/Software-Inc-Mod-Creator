@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mod Metadata — Software Inc Mod Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/studio.css">
+</head>
+<body>
+  <header class="studio-header">
+    <a href="index.html" class="studio-header-brand" style="text-decoration:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>Mod Metadata</span>
+    </a>
+    <div class="studio-header-actions">
+      <button class="studio-btn studio-btn-ghost studio-btn-icon" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="studio-container" style="padding-top: 2rem; max-width: 700px;">
+    <div class="studio-card mb-6">
+      <div class="studio-card-body">
+        <h2 class="text-xl font-bold mb-2">Mod Metadata (meta.tyd)</h2>
+        <p class="text-sm mb-4" style="color: var(--text-secondary);">This file defines your mod's name, description, and author as shown in the game's mod list. Place it in the root of your mod folder.</p>
+
+        <div class="mb-4">
+          <label class="studio-label">Mod Name</label>
+          <input type="text" class="studio-input" id="meta-name" placeholder="My Awesome Mod" oninput="updatePreview()">
+        </div>
+        <div class="mb-4">
+          <label class="studio-label">Description</label>
+          <textarea class="studio-textarea" id="meta-desc" rows="3" placeholder="A brief description of what your mod adds..." oninput="updatePreview()"></textarea>
+        </div>
+        <div class="mb-4">
+          <label class="studio-label">Author</label>
+          <input type="text" class="studio-input" id="meta-author" placeholder="Your name" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap-2 mb-6">
+      <button class="studio-btn studio-btn-primary flex-1" onclick="saveAndDownload()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        Download meta.tyd
+      </button>
+      <button class="studio-btn studio-btn-secondary" onclick="copyToClipboard()">Copy</button>
+    </div>
+
+    <div class="studio-card mb-8">
+      <div class="studio-card-body">
+        <h3 class="font-semibold mb-3">Preview</h3>
+        <pre class="studio-preview" id="meta-preview"></pre>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/tyd-engine.js"></script>
+  <script src="js/studio.js"></script>
+  <script>
+    Studio.init();
+    document.getElementById('theme-toggle').addEventListener('click', Studio.toggleTheme);
+
+    function buildMeta() {
+      return {
+        name: document.getElementById('meta-name').value.trim(),
+        description: document.getElementById('meta-desc').value.trim(),
+        author: document.getElementById('meta-author').value.trim()
+      };
+    }
+
+    function updatePreview() {
+      const meta = buildMeta();
+      const tyd = TyDEngine.serializeMeta(meta);
+      document.getElementById('meta-preview').textContent = tyd || '(Empty — fill in at least a name)';
+    }
+
+    function saveAndDownload() {
+      const meta = buildMeta();
+      if (!meta.name) {
+        Studio.toast('Please enter a mod name.', 'warning');
+        return;
+      }
+      const tyd = TyDEngine.serializeMeta(meta);
+      Studio.downloadTextFile(tyd, 'meta.tyd');
+      Studio.toast('Downloaded meta.tyd!', 'success');
+    }
+
+    function copyToClipboard() {
+      const meta = buildMeta();
+      const tyd = TyDEngine.serializeMeta(meta);
+      Studio.copyToClipboard(tyd);
+    }
+
+    updatePreview();
+  </script>
+</body>
+</html>
