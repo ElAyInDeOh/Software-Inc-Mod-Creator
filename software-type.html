@@ -225,30 +225,36 @@
 
     <!-- Live Preview Panel (Desktop) -->
     <div class="split-right desktop-only" id="desktop-preview">
-      <div class="card" style="margin-bottom:0;">
-        <div class="card-header">
+      <div class="card" id="preview-card" style="margin-bottom:0;">
+        <div class="card-header preview-header" id="preview-toggle" style="cursor:pointer; user-select:none;">
           <svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          Live Preview
-          <span id="preview-status" class="badge badge-success ml-auto" style="margin-left:auto;">Valid</span>
+          <span>Live Preview</span>
+          <span id="preview-status" class="badge badge-success" style="margin-left:auto;">Valid</span>
+          <svg class="preview-chevron" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
         </div>
-        <div class="card-body" style="padding:0;">
-          <pre class="code-preview" id="tyd-preview" style="border-radius:0; border:none; margin:0; max-height:400px;"><code>SoftwareType
+        <div class="card-body preview-body" id="preview-body" style="padding:0;">
+          <pre class="code-preview" id="tyd-preview" style="border-radius:0; border:none; margin:0; max-height:300px; overflow-y:auto;"><code>SoftwareType
 {
 	Name		""
 }</code></pre>
           <div id="preview-warnings" style="display:none;"></div>
-          <div style="padding:1rem; border-top:1px solid var(--border);">
-            <div class="font-semibold text-sm mb-2">Test Commands</div>
+          <div class="preview-test-cmds" style="padding:0.75rem 1rem; border-top:1px solid var(--border);">
+            <div class="font-semibold text-sm mb-1">Test Commands</div>
+            <p class="text-xs mb-2" style="color:var(--text-3); line-height:1.4;">In-game console (~). Click to copy.</p>
             <div id="console-commands" class="flex flex-col gap-2"></div>
           </div>
-          <div class="action-bar" style="position:static; border-top:1px solid var(--border);">
-            <button class="btn btn-primary" onclick="saveAndDownload()">
+          <div class="action-bar preview-actions">
+            <button class="btn btn-primary" onclick="saveAndDownload()" title="Download .tyd file">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Download .tyd
+              <span class="btn-label">.tyd</span>
             </button>
-            <button class="btn btn-secondary" onclick="copyToClipboard()">
+            <button class="btn btn-secondary" onclick="copyToClipboard()" title="Copy to clipboard">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-              Copy
+              <span class="btn-label">Copy</span>
+            </button>
+            <button class="btn btn-ai" onclick="downloadExampleStructure()" title="Download example folder structure (zip)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+              <span class="btn-label">Examples</span>
             </button>
           </div>
         </div>
@@ -307,11 +313,11 @@
     </div>
   </div>
 
-  <script src="js/tyd-engine.js"></script>
-  <script src="js/presets.js"></script>
-  <script src="js/studio.js"></script>
-  <script src="js/ai-assistant.js"></script>
-  <script src="js/ai-chat.js"></script>
+  <script src="js/tyd-engine.js?v=6"></script>
+  <script src="js/presets.js?v=6"></script>
+  <script src="js/studio.js?v=6"></script>
+  <script src="js/ai-assistant.js?v=6"></script>
+  <script src="js/ai-chat.js?v=6"></script>
   <script>
     /* ========== State ========== */
     let projectId = null;
@@ -333,6 +339,11 @@
       }
     }
 
+    function togglePreview() {
+      const card = document.getElementById('preview-card');
+      if (card) card.classList.toggle('collapsed');
+    }
+
     function renderMobilePreview() {
       const desktopPreview = document.getElementById('desktop-preview');
       const mobileContainer = document.getElementById('mobile-preview-container');
@@ -348,6 +359,21 @@
       AIAssistant.renderSettingsForm('ai-settings-form');
       Studio.initAccordions();
       updateAIChatStatus();
+
+      // Collapsible preview panel toggle
+      const previewToggle = document.getElementById('preview-toggle');
+      if (previewToggle) previewToggle.addEventListener('click', togglePreview);
+
+      // Delegated click for change items — robust against any selector characters
+      const chatBody = document.getElementById('ai-chat-messages');
+      if (chatBody) {
+        chatBody.addEventListener('click', function(e) {
+          const item = e.target.closest('.ai-change-item');
+          if (!item) return;
+          const sel = item.getAttribute('data-scroll-target');
+          if (sel) scrollToChange(sel);
+        });
+      }
 
       const params = new URLSearchParams(window.location.search);
       projectId = params.get('project');
@@ -603,7 +629,13 @@
       const cmdContainer = document.getElementById('console-commands');
       if (cmdContainer) {
         cmdContainer.innerHTML = cmds.map(c =>
-          '<div class="console-cmd"><code>' + c.cmd + '</code><button class="btn btn-ghost btn-sm" onclick="Studio.copyToClipboard(\'' + c.cmd.replace(/'/g, "\\'") + '\')" title="Copy">' + Studio.Icons.copy + '</button></div>'
+          '<div class="console-cmd">' +
+            '<div class="console-cmd-main" style="flex:1; min-width:0;">' +
+              '<code>' + c.cmd + '</code>' +
+              '<div class="console-cmd-desc" style="font-size:0.7rem; color:var(--text-3); margin-top:0.2rem; font-family:var(--font-sans);">' + c.desc + '</div>' +
+            '</div>' +
+            '<button class="btn btn-ghost btn-sm" onclick="Studio.copyToClipboard(\'' + c.cmd.replace(/'/g, "\\'") + '\')" title="Copy command">' + Studio.Icons.copy + '</button>' +
+          '</div>'
         ).join('');
       }
     }
@@ -616,6 +648,7 @@
       const div = document.createElement('div');
       div.className = 'feature-block spec-feature-card';
       div.dataset.id = id;
+      div.id = 'sf-card-' + id;
       div.innerHTML =
         '<div class="feature-block-header" data-accordion>' +
           '<div class="feature-block-title" id="sf-title-' + id + '">Feature 1</div>' +
@@ -684,6 +717,7 @@
       const div = document.createElement('div');
       div.className = 'subfeature-block sub-feature-card';
       div.dataset.id = sid;
+      div.id = 'sub-card-' + sid;
       div.innerHTML =
         '<div class="feature-block-header" data-accordion>' +
           '<span class="feature-block-title" id="sub-title-' + sid + '">SubFeature</span>' +
@@ -759,6 +793,18 @@
       Studio.copyToClipboard(tyd);
     }
 
+    function downloadExampleStructure() {
+      // Download the pre-made zip with full folder structure and example files
+      const link = document.createElement('a');
+      link.href = 'SoftwareIncFolderStructureAndExamples.zip';
+      link.download = 'SoftwareIncFolderStructureAndExamples.zip';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      Studio.toast('Example structure zip downloaded! Extract it to see the full mod folder layout.', 'success');
+    }
+
     function saveProject() {
       if (!projectId) {
         const name = document.getElementById('st-name').value.trim() || 'Untitled Mod';
@@ -821,7 +867,7 @@
           }
         }
         updateSpecFeatureTitle(id);
-        pendingChanges.push({ label: 'Added feature "' + name + '"', selector: '.spec-feature-card[data-id="' + id + '"]' });
+        pendingChanges.push({ label: 'Added feature "' + name + '"', selector: '#sf-card-' + id });
       },
       'MODIFY_SPECFEATURE': function(op) {
         const cards = document.querySelectorAll('.spec-feature-card');
@@ -880,7 +926,7 @@
             }
           }
           updateSubFeatureTitle(sid);
-          pendingChanges.push({ label: 'Added subfeature "' + name + '" to "' + featName + '"', selector: '.sub-feature-card[data-id="' + sid + '"]' });
+          pendingChanges.push({ label: 'Added subfeature "' + name + '" to "' + featName + '"', selector: '#sub-card-' + sid });
         }
       },
       'SET_SUBMARKETS': function(op) {
@@ -914,22 +960,40 @@
       if (!selector) return;
       const target = document.querySelector(selector);
       if (!target) return;
-      const parentSpecCard = target.closest('.spec-feature-card');
-      if (parentSpecCard) {
-        const content = parentSpecCard.querySelector('.feature-block-body');
-        const chevron = parentSpecCard.querySelector('.chevron');
-        if (content && content.style.display === 'none') {
-          content.style.display = 'block';
-          if (chevron) chevron.classList.add('open');
+
+      // Determine which tab contains the target
+      const tabPanel = target.closest('.tab-panel');
+      const needsTabSwitch = tabPanel && !tabPanel.classList.contains('active');
+
+      // The actual scroll + highlight logic (called after tab switch if needed)
+      function doScrollAndHighlight() {
+        // Expand collapsed feature card if needed
+        const parentSpecCard = target.closest('.spec-feature-card');
+        if (parentSpecCard) {
+          const content = parentSpecCard.querySelector('.feature-block-body');
+          const chevron = parentSpecCard.querySelector('.chevron');
+          if (content && content.style.display === 'none') {
+            content.style.display = 'block';
+            if (chevron) chevron.classList.add('open');
+          }
+        }
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.remove('ai-highlight');
+        void target.offsetWidth;
+        target.classList.add('ai-highlight');
+        setTimeout(function() { target.classList.remove('ai-highlight'); }, 3200);
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+          setTimeout(function() { target.focus(); }, 600);
         }
       }
-      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      target.classList.remove('ai-highlight');
-      void target.offsetWidth;
-      target.classList.add('ai-highlight');
-      setTimeout(function() { target.classList.remove('ai-highlight'); }, 3200);
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
-        setTimeout(function() { target.focus(); }, 600);
+
+      if (needsTabSwitch) {
+        const tabId = tabPanel.id.replace('tab-', '');
+        if (typeof switchTab === 'function') switchTab(tabId);
+        // Wait for tab to become visible before scrolling
+        setTimeout(doScrollAndHighlight, 100);
+      } else {
+        doScrollAndHighlight();
       }
     }
 
@@ -965,6 +1029,20 @@
           AIChat.init({ getState: getCurrentEditorState });
           aiChatInitialized = true;
         }
+        // If not yet verified, show "Verifying..." then test connection (lazy, one-time)
+        if (!AIChat.isConnectionVerified()) {
+          document.getElementById(loadingId).innerHTML = '<span class="pulse">Verifying connection...</span>';
+          const check = await AIChat.verifyConnection();
+          if (!check.ok) {
+            document.getElementById(loadingId).remove();
+            // Reset so next attempt re-initializes and re-tests
+            aiChatInitialized = false;
+            messagesContainer.innerHTML += '<div class="ai-message ai-message-assistant" style="color:var(--red)"><strong>Connection check failed:</strong> ' + check.error.replace(/</g, '&lt;') + '<br><br><a href="#" onclick="event.preventDefault(); Studio.openModal(\'ai-settings-modal\');" style="color:var(--blue); text-decoration:underline;">Open AI settings</a> to fix your configuration.</div>';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return;
+          }
+          document.getElementById(loadingId).innerHTML = '<span class="pulse">Thinking...</span>';
+        }
         const response = await AIChat.sendMessage(message, { getState: getCurrentEditorState });
         document.getElementById(loadingId).remove();
         messagesContainer.innerHTML += '<div class="ai-message ai-message-assistant">' + response.message.replace(/</g, '&lt;').replace(/\n/g, '<br>') + '</div>';
@@ -988,7 +1066,8 @@
             pendingChanges.forEach(function(ch) {
               const escaped = ch.label.replace(/</g, '&lt;').replace(/"/g, '&quot;');
               if (ch.selector) {
-                changesHtml += '<div class="ai-change-item" onclick="scrollToChange(\'' + ch.selector.replace(/'/g, "\\'") + '\')">';
+                const safeSel = ch.selector.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                changesHtml += '<div class="ai-change-item" data-scroll-target="' + safeSel + '">';
                 changesHtml += escaped;
                 changesHtml += '<span class="ai-change-item-arrow">&#8594;</span>';
                 changesHtml += '</div>';
@@ -1092,6 +1171,25 @@
     @media (max-width: 1024px) {
       .desktop-only { display: none !important; }
     }
+
+    /* Collapsible Preview Panel */
+    #preview-card { display: flex; flex-direction: column; max-height: calc(100vh - var(--header-h) - var(--tab-h) - 3rem); }
+    #preview-card .preview-header .preview-chevron { transition: transform 0.2s ease; flex-shrink: 0; }
+    #preview-card .preview-body { overflow-y: auto; flex: 1; min-height: 0; }
+    #preview-card.collapsed .preview-body { display: none; }
+    #preview-card.collapsed .preview-chevron { transform: rotate(-90deg); }
+    #preview-card.collapsed { max-height: none; }
+
+    /* Preview action buttons — wrap on narrow, icon-only labels */
+    .preview-actions { flex-wrap: wrap; position: static; padding: 0.625rem; }
+    .preview-actions .btn { flex: 1 1 auto; min-width: 0; }
+    .preview-actions .btn .btn-label { font-size: 0.75rem; }
+    @media (max-width: 480px) {
+      .preview-actions .btn { flex: 1 1 100%; }
+    }
+
+    /* Sticky preview — stays in view, scrolls internally */
+    .split-right.desktop-only { position: sticky; top: calc(var(--header-h) + var(--tab-h) + 1rem); height: auto; max-height: calc(100vh - var(--header-h) - var(--tab-h) - 2rem); overflow: visible; align-self: start; }
   </style>
 </body>
 </html>

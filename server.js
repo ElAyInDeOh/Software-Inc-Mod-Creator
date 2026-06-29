@@ -8,6 +8,17 @@ const HOST = '0.0.0.0';
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
+
+// Disable caching for JS/CSS/HTML so browser always loads latest versions
+app.use((req, res, next) => {
+  if (/\.(js|css|html)$/.test(req.path)) {
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+  }
+  next();
+});
+
 app.use(express.static(__dirname));
 
 // ─── AI Proxy Endpoint ───
@@ -25,7 +36,7 @@ app.post('/api/ai/chat', async (req, res) => {
       case 'openai':
         url = 'https://api.openai.com/v1/chat/completions';
         headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-        body = { model, messages, temperature: 0.7, max_tokens: 2000, ...options };
+        body = { model, messages, temperature: 0.7, max_tokens: 4000, ...options };
         break;
 
       case 'anthropic':
@@ -54,7 +65,7 @@ app.post('/api/ai/chat', async (req, res) => {
       case 'openrouter':
         url = 'https://openrouter.ai/api/v1/chat/completions';
         headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json', 'HTTP-Referer': 'http://localhost:8080', 'X-Title': 'Software Inc Mod Studio' };
-        body = { model, messages, temperature: 0.7, max_tokens: 2000, ...options };
+        body = { model, messages, temperature: 0.7, max_tokens: 4000, ...options };
         break;
 
       case 'openaiCompatible':
@@ -62,7 +73,7 @@ app.post('/api/ai/chat', async (req, res) => {
         if (!customUrl) return res.status(400).json({ error: 'Missing custom URL' });
         url = customUrl;
         headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-        body = { model, messages, temperature: 0.7, max_tokens: 2000, ...options };
+        body = { model, messages, temperature: 0.7, max_tokens: 4000, ...options };
         break;
 
       default:
@@ -82,7 +93,7 @@ app.post('/api/ai/chat', async (req, res) => {
 
     const data = await response.json();
 
-    // Parse content based on provider format
+    // Parse content based on provider format — try multiple paths for resilience
     let content = '';
     if (provider === 'anthropic') {
       content = data.content?.[0]?.text || '';
@@ -91,10 +102,21 @@ app.post('/api/ai/chat', async (req, res) => {
     } else if (provider === 'ollama') {
       content = data.response || '';
     } else {
-      content = data.choices?.[0]?.message?.content || '';
+      // OpenAI-compatible: try standard path, then reasoning_content, then alternatives
+      const msg = data.choices?.[0]?.message;
+      if (msg) {
+        content = msg.content || msg.reasoning_content || msg.text || '';
+      }
+      if (!content) {
+        content = data.choices?.[0]?.delta?.content || data.choices?.[0]?.text || '';
+      }
     }
 
-    if (!content) return res.status(500).json({ error: 'Empty response from AI' });
+    if (!content) {
+      // Include raw response snippet in error so it's diagnosable
+      const rawSnippet = JSON.stringify(data).slice(0, 500);
+      return res.status(500).json({ error: `Empty response from AI. Raw response: ${rawSnippet}` });
+    }
     res.json({ content, raw: data });
 
   } catch (err) {
