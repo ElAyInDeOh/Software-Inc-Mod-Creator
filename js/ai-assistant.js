@@ -586,6 +586,7 @@ Return a brief analysis (3-5 bullet points). Be constructive.`;
         const response = await chat(buildMessages('Say "Hello from Software Inc Mod Studio!" in exactly those words.'), { model: newConfig.model });
         document.getElementById('ai-test-result').innerHTML = `<span style="color:var(--success)">Connected! AI says: "${response.replace(/"/g, '&quot;').slice(0, 100)}"</span>`;
         Studio.toast('AI connection successful!', 'success');
+        if (typeof window.updateAIStatus === 'function') window.updateAIStatus();
       } catch (err) {
         const errorHtml = err.message.replace(/\n/g, '<br>');
         document.getElementById('ai-test-result').innerHTML = `<div style="color:var(--danger); font-size:0.875rem; line-height:1.5;"><strong>Connection failed:</strong><br>${errorHtml}</div>`;
@@ -639,6 +640,7 @@ Return a brief analysis (3-5 bullet points). Be constructive.`;
       container.querySelector('#ai-key').value = '';
       document.getElementById('ai-test-result').innerHTML = '';
       Studio.toast('AI key forgotten.', 'info');
+      if (typeof window.updateAIStatus === 'function') window.updateAIStatus();
     });
   }
 

@@ -186,12 +186,17 @@ const Studio = (function() {
   // ─── Accordion ───
 
   function initAccordions() {
-    document.querySelectorAll('.studio-card-header[data-accordion]').forEach(header => {
+    document.querySelectorAll('[data-accordion]').forEach(header => {
+      if (header.dataset.accordionBound) return;
+      header.dataset.accordionBound = '1';
+      const body = header.nextElementSibling;
+      const chevron = header.querySelector('.chevron, .studio-accordion-chevron');
       header.addEventListener('click', () => {
-        const body = header.nextElementSibling;
-        const chevron = header.querySelector('.studio-accordion-chevron');
-        if (body) body.classList.toggle('open');
-        if (chevron) chevron.classList.toggle('open');
+        if (body) {
+          const isOpen = body.style.display !== 'none';
+          body.style.display = isOpen ? 'none' : 'block';
+          if (chevron) chevron.classList.toggle('open', !isOpen);
+        }
       });
     });
   }
