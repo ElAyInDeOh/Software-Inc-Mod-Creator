@@ -1,52 +1,117 @@
-# Software Inc Mod Studio — Local Deploy
+# Software Inc Mod Studio
 
-A modern mod creator for **Software Inc.** with optional AI assistance.
+[![GitHub release](https://img.shields.io/github/v/release/ElAyInDeOh/Software-Inc-Mod-Creator?include_prereleases&style=flat-square)](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/releases)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-blue?style=flat-square&logo=github)](https://elayindeoh.github.io/Software-Inc-Mod-Creator)
+[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-This branch is optimized for **local development** and **VPS hosting** using Node.js + Express.
+A modern, browser-based mod creator for [**Software Inc.**](https://softwareinc.coredumping.com/).
+
+Build mods with a live TyD preview, guided form editors, and optional AI assistance — all without touching a text editor.
 
 ---
 
-## Quick Start
+## Two Ways to Use It
 
+### ☁️ 1. GitHub Pages (Classic) — Zero Setup
+
+The original static tool that runs entirely in your browser. No install, no server, no account.
+
+🔗 **[Open the Live Tool](https://elayindeoh.github.io/Software-Inc-Mod-Creator)**
+
+**Includes:**
+- Software Type Editor (basic)
+- Company Type Editor
+- Name Generator
+- Classic form-based layout
+
+**Limitation:** Browser security blocks AI API calls from `github.io`, so this version has **no AI features**.
+
+---
+
+### 💻 2. Local Deployment (Recommended) — Full Power
+
+The redesigned studio with AI chat, live preview on every editor, and a modern split-pane interface.
+
+📦 **[Download Latest Release](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/releases/latest)**
+
+**What you get:**
+- **Software Type Editor** — SpecFeatures, SubFeatures, categories, hardware
+- **Company Type Editor** — AI companies with spawn rates and software focus
+- **Name Generator** — Simple + advanced tree-based modes
+- **Personalities Editor** — Employee traits with relationships & incompatibilities
+- **Mod Metadata Editor** — `meta.tyd` for your mod's name, description, author
+- **Floating AI Assistant** — Generate content, get suggestions, apply changes directly to forms (BYOK)
+- **Live TyD Preview** — See the output update as you type
+- **Validation** — Catch errors before you download
+
+**Requirements:**
+- [Node.js](https://nodejs.org/) v16+
+
+**Quick Start:**
 ```bash
-# Install dependencies
+# 1. Download and extract the release zip
+# 2. In the folder:
+
 npm install
-
-# Start dev server with live reload
-npm run dev
-
-# Build for production
-npm run build
-
-# Serve production build on port 8080
 npm start
+
+# 3. Open http://localhost:8080
 ```
 
-Then open `http://localhost:8080`.
+**Even easier:**
+- **Windows:** Double-click `start.bat`
+- **macOS/Linux:** Run `./start.sh`
 
-Full deployment guide: [README_LOCAL_DEPLOY.md](README_LOCAL_DEPLOY.md)
-Self-hosting guide: [SELF_HOSTING.md](SELF_HOSTING.md)
+**AI Setup (Optional):**
+Click the chat bubble → Settings → choose your provider → paste your API key.
 
----
-
-## Branches
-
-| Branch | Purpose |
-|--------|---------|
-| `local-deploy` | **This branch** — Node.js/Express server |
-| `self-hosted` | Static files with AI (any static server) |
-| `NewUI` | GitHub Pages (no AI UI) |
+Supported: OpenAI, Anthropic Claude, Google Gemini, OpenRouter, Ollama, and any OpenAI-compatible endpoint.
 
 ---
 
-## Tools
+## Releases
 
-- **Software Type** — Create software with AI chat assistant
-- **Company Type** — AI company definitions
-- **Name Generator** — Tree-based names + AI generate
-- **Personalities** — Employee traits
-- **Mod Metadata** — meta.tyd generator
+| Release | Branch | Description |
+|---------|--------|-------------|
+| [v2.0.0 (Latest)](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/releases/tag/v2.0.0) | `local-deploy` | Modern redesign, AI chat on every editor, easy start scripts |
+| [Original (Classic)](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/releases) | `main` | Static form editors, GitHub Pages compatible |
 
 ---
 
-**[Open GitHub Pages Version →](https://elayindeoh.github.io/Software-Inc-Mod-Creator/)**
+## Project Files
+
+Place downloaded `.tyd` files into your mod folder:
+
+```
+MyMod/
+  meta.tyd
+  SoftwareTypes/
+    MySoftware.tyd
+  CompanyTypes/
+    MyCompany.tyd
+  NameGenerators/
+    mynames.txt
+  Personalities/
+    Personalities.tyd
+  Thumbnail.png
+```
+
+The included `SoftwareIncFolderStructureAndExamples.zip` has a complete working example.
+
+---
+
+## Tech Stack
+
+- Vanilla HTML/CSS/JS — no build step, no bundler
+- Express server for AI proxy (local version only)
+- AI calls go directly from your browser to your chosen provider
+
+---
+
+## Contributing
+
+Issues and PRs welcome! Check the [issue tracker](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/issues).
+
+---
+
+Not affiliated with Coredumping. Software Inc. is a trademark of Coredumping.

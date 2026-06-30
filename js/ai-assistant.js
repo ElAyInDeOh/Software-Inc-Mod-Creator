@@ -363,6 +363,34 @@ ${theme === 'fantasy' ? 'Online\nEternal\nUltimate' : 'Pro\nMax\nLite\nOS'}
 Create at least 5 words per section, fitting the theme. The output should be a valid name generator file that can be used directly in Software Inc.`;
     },
 
+    generatePersonalities: (theme) => {
+      return `Create a PersonalityGraph mod for Software Inc. with the theme: "${theme || 'balanced'}".
+
+Return ONLY this JSON structure:
+{
+  "Replace": false,
+  "Personalities": [
+    {
+      "Name": "PersonalityName",
+      "Traits": ["FastLearner", "Stressed"],
+      "Relationships": { "Optimist": 0.5, "Pessimist": -0.5 }
+    }
+  ],
+  "Incompatibilities": [
+    ["PersonalityName1", "PersonalityName2"]
+  ]
+}
+
+Rules:
+- Each personality needs 1 good + 1 bad trait, OR 1 neutral trait.
+- Good traits: FastLearner, Independant, BigBrain, Humble, Capacitor, WalkItOff, ThisIsFine, Skyscraper, Sunshine, RGBThumb
+- Bad traits: Stressed, Hypochondriac, SlowEater, NervousBladder, BumLeg, Forgetful, Cupholder, NeatFreak, SilentButDeadly, WalkInstead, UnderTheWeather, OldSole
+- Neutral traits: NightOwl, BornLeader, FirmwareInc, SuperFocus, Unphased, JustTheFlu, Detached, Watch
+- Relationships are optional maps of personality name -> value from -1 to 1.
+- Incompatibilities are pairs of personality names that cannot coexist.
+- Generate 3-5 personalities and 1-2 incompatibilities that feel thematically coherent.`;
+    },
+
     explainField: (fieldName, context) => {
       return `Explain the "${fieldName}" field in Software Inc. modding${context ? ` in the context of ${context}` : ''}.
 
@@ -406,6 +434,11 @@ Return a brief analysis (3-5 bullet points). Be constructive.`;
 
   async function generateNameGenerator(theme) {
     return await chat(buildMessages(Prompts.generateNameGenerator(theme)));
+  }
+
+  async function generatePersonalities(theme) {
+    const content = await chat(buildMessages(Prompts.generatePersonalities(theme)));
+    return extractJson(content);
   }
 
   async function explainField(fieldName, context) {
@@ -586,6 +619,7 @@ Return a brief analysis (3-5 bullet points). Be constructive.`;
         const response = await chat(buildMessages('Say "Hello from Software Inc Mod Studio!" in exactly those words.'), { model: newConfig.model });
         document.getElementById('ai-test-result').innerHTML = `<span style="color:var(--success)">Connected! AI says: "${response.replace(/"/g, '&quot;').slice(0, 100)}"</span>`;
         Studio.toast('AI connection successful!', 'success');
+        if (typeof window.updateAIStatus === 'function') window.updateAIStatus();
       } catch (err) {
         const errorHtml = err.message.replace(/\n/g, '<br>');
         document.getElementById('ai-test-result').innerHTML = `<div style="color:var(--danger); font-size:0.875rem; line-height:1.5;"><strong>Connection failed:</strong><br>${errorHtml}</div>`;
@@ -639,6 +673,7 @@ Return a brief analysis (3-5 bullet points). Be constructive.`;
       container.querySelector('#ai-key').value = '';
       document.getElementById('ai-test-result').innerHTML = '';
       Studio.toast('AI key forgotten.', 'info');
+      if (typeof window.updateAIStatus === 'function') window.updateAIStatus();
     });
   }
 
@@ -656,6 +691,7 @@ Return a brief analysis (3-5 bullet points). Be constructive.`;
     generateSubFeature,
     generateCompanyType,
     generateNameGenerator,
+    generatePersonalities,
     explainField,
     balanceCheck,
     getProviderList,

@@ -1,9 +1,16 @@
-node_modules/
-dist/
-*.log
+# Research and internal docs
+modding_research.md
+PROJECT_OVERVIEW_AND_IMPROVEMENTS.md
+
+# OS files
 .DS_Store
 Thumbs.db
+
+# Editor files
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# Dependencies
+node_modules/

@@ -125,12 +125,12 @@ You don't run `npm` on your phone. Instead:
 | Branch | Purpose |
 |--------|---------|
 | `main` | GitHub Pages version. No AI UI, fully static, zero config. |
-| `self-hosted` | Full AI capability. Clone this branch to run locally or on a VPS. |
+| `local-deploy` | Full AI capability. Clone this branch to run locally or on a VPS. |
 
 To switch branches:
 
 ```bash
-git checkout self-hosted
+git checkout local-deploy
 ```
 
 ## Troubleshooting
