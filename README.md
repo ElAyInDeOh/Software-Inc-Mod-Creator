@@ -12,37 +12,25 @@ Build mods with a live TyD preview, guided form editors, and optional AI assista
 
 ## Two Ways to Use It
 
-### ☁️ 1. GitHub Pages (Classic) — Zero Setup
+The same codebase serves both deployments. A runtime check (`js/runtime.js`) detects whether the page is loaded from `localhost` or `github.io` and automatically enables or hides AI features — no build step, no branching.
 
-The original static tool that runs entirely in your browser. No install, no server, no account.
+### ☁️ 1. GitHub Pages — Zero Setup
+
+Runs entirely in your browser. No install, no server, no account.
 
 🔗 **[Open the Live Tool](https://elayindeoh.github.io/Software-Inc-Mod-Creator)**
 
-**Includes:**
-- Software Type Editor (basic)
-- Company Type Editor
-- Name Generator
-- Classic form-based layout
+**Includes:** every editor, live preview, validation, presets, and the Level 3 scriptable feature editor.
 
-**Limitation:** Browser security blocks AI API calls from `github.io`, so this version has **no AI features**.
+**AI features are hidden on github.io** because the AI proxy runs in the bundled Node server (not in the browser). A "Download local for AI" banner points visitors to the local build.
 
 ---
 
-### 💻 2. Local Deployment (Recommended) — Full Power
+### 💻 2. Local Deployment — Full Power (AI Enabled)
 
-The redesigned studio with AI chat, live preview on every editor, and a modern split-pane interface.
+Run the same code through the bundled Node server to unlock AI assistance.
 
 📦 **[Download Latest Release](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/releases/latest)**
-
-**What you get:**
-- **Software Type Editor** — SpecFeatures, SubFeatures, categories, hardware
-- **Company Type Editor** — AI companies with spawn rates and software focus
-- **Name Generator** — Simple + advanced tree-based modes
-- **Personalities Editor** — Employee traits with relationships & incompatibilities
-- **Mod Metadata Editor** — `meta.tyd` for your mod's name, description, author
-- **Floating AI Assistant** — Generate content, get suggestions, apply changes directly to forms (BYOK)
-- **Live TyD Preview** — See the output update as you type
-- **Validation** — Catch errors before you download
 
 **Requirements:**
 - [Node.js](https://nodejs.org/) v16+
@@ -63,18 +51,9 @@ npm start
 - **macOS/Linux:** Run `./start.sh`
 
 **AI Setup (Optional):**
-Click the chat bubble → Settings → choose your provider → paste your API key.
+Click the chat bubble → Settings → choose your provider → paste your API key. BYOK (bring your own key) — your key never leaves your machine.
 
 Supported: OpenAI, Anthropic Claude, Google Gemini, OpenRouter, Ollama, and any OpenAI-compatible endpoint.
-
----
-
-## Releases
-
-| Release | Branch | Description |
-|---------|--------|-------------|
-| [v2.0.0 (Latest)](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/releases/tag/v2.0.0) | `local-deploy` | Modern redesign, AI chat on every editor, easy start scripts |
-| [Original (Classic)](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/releases) | `main` | Static form editors, GitHub Pages compatible |
 
 ---
 
@@ -103,12 +82,14 @@ The included `SoftwareIncFolderStructureAndExamples.zip` has a complete working 
 ## Tech Stack
 
 - Vanilla HTML/CSS/JS — no build step, no bundler
-- Express server for AI proxy (local version only)
-- AI calls go directly from your browser to your chosen provider
+- Express server (`server.js`) for the AI proxy at `/api/ai/*` (local only)
+- Single branch (`main`) serves both github.io and `npm start` via runtime gating
 
 ---
 
 ## Contributing
+
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the branching workflow, the AI gating pattern, and how to test both deployment modes locally.
 
 Issues and PRs welcome! Check the [issue tracker](https://github.com/ElAyInDeOh/Software-Inc-Mod-Creator/issues).
 
