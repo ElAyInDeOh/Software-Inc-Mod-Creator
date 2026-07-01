@@ -74,9 +74,79 @@
     </div>
   </div>
 
+  <!-- Pull from Studio (existing projects) modal -->
+  <div class="modal-overlay" id="pull-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="font-semibold">Pull from Studio</h3>
+        <button class="btn btn-ghost btn-icon" onclick="Studio.closeModal('pull-modal')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-sm mb-3" style="color:var(--text-2);">Import existing projects from the main page into this mod. Each .tyd file is serialized into the matching canonical folder (SoftwareTypes/, CompanyTypes/, etc.) and the project's meta is written to <code>meta.tyd</code>.</p>
+        <div id="pull-project-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating AI Chat (gated by runtime: hidden on web-only build) -->
+  <button class="chat-fab" id="chat-fab" onclick="AIChatPage.toggleChatWidget()">
+    <span class="chat-fab-badge" id="chat-fab-badge"></span>
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </button>
+
+  <div class="chat-window" id="chat-window">
+    <div class="chat-header">
+      <div class="chat-header-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        AI Assistant
+      </div>
+      <div class="chat-header-actions">
+        <button class="btn btn-ghost btn-icon" onclick="Studio.openModal('ai-settings-modal')" title="AI Settings">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="btn btn-ghost btn-icon" onclick="AIChatPage.toggleChatWidget()" title="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="chat-body" id="ai-chat-messages">
+      <div class="ai-message ai-message-assistant">
+        Hi! I'm your AI modding assistant for the Mod Studio workspace. I can create files and folders, edit file contents, rename, or remove files in your current mod.
+      </div>
+    </div>
+    <div class="chat-footer">
+      <div class="flex gap-2">
+        <input type="text" id="ai-chat-input" class="input" placeholder="Ask the AI..." onkeydown="if(event.key==='Enter') AIChatPage.sendAIChatMessage()">
+        <button class="btn btn-ai" onclick="AIChatPage.sendAIChatMessage()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Settings Modal -->
+  <div class="modal-overlay" id="ai-settings-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="font-semibold">AI Settings</h3>
+        <button class="btn btn-ghost btn-icon" onclick="Studio.closeModal('ai-settings-modal')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="ai-settings-form"></div>
+      </div>
+    </div>
+  </div>
+
   <script src="js/tyd-engine.js?v=6"></script>
   <script src="js/studio.js?v=6"></script>
-  <script src="js/mod-studio.js?v=1"></script>
+  <script src="js/mod-studio.js?v=3"></script>
+  <script src="js/ai-assistant.js?v=7"></script>
+  <script src="js/ai-chat.js?v=7"></script>
+  <script src="js/ai-chat-page.js?v=7"></script>
   <script>
     Studio.init();
     document.getElementById('theme-toggle').addEventListener('click', Studio.toggleTheme);
@@ -142,6 +212,9 @@
           <div class="studio-explorer-header">
             <span class="studio-explorer-title">${escapeHtml(state.mod.name)}</span>
             <div class="studio-explorer-actions">
+              <button class="btn btn-ghost btn-icon" title="Pull files from a Studio project" onclick="openPullModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+              </button>
               <button class="btn btn-ghost btn-icon" title="New file" onclick="openNewFile()">${Studio.Icons.plus}</button>
               <button class="btn btn-ghost btn-icon" title="New folder" onclick="openNewFolder()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="M12 10v6"/><path d="M9 13h6"/></svg>
@@ -428,6 +501,169 @@
       }
     }
 
+    /* ─── Pull from Studio (existing projects) ─── */
+
+    function openPullModal() {
+      const list = Studio.getProjects();
+      const container = document.getElementById('pull-project-list');
+      if (!list || list.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p style="margin-bottom:0.5rem;">No existing projects yet.</p><p class="text-xs" style="color:var(--text-3);">Create one from the <a href="software-type.html" style="color:var(--blue);">Software Type editor</a> first, then come back here to pull it in.</p></div>';
+      } else {
+        container.innerHTML = list.map(p => {
+          const sw = (p.softwareTypes || []).length;
+          const ct = (p.companyTypes || []).length;
+          const ng = (p.nameGenerators || []).length;
+          const pg = p.personalities ? 1 : 0;
+          const total = sw + ct + ng + pg + (p.meta ? 1 : 0);
+          return '<div class="studio-recent-item" style="margin-bottom:0.5rem;">' +
+            '<div>' +
+              '<div class="studio-recent-name">' + escapeHtml(p.name) + '</div>' +
+              '<div class="studio-recent-meta">' + total + ' files · ' + sw + ' SW / ' + ct + ' CT / ' + ng + ' NG' + (pg ? ' / 1 PG' : '') + '</div>' +
+            '</div>' +
+            '<button class="btn btn-primary btn-sm" onclick="pullFromProject(\'' + p.id + '\')">Import</button>' +
+          '</div>';
+        }).join('');
+      }
+      Studio.openModal('pull-modal');
+    }
+
+    function pullFromProject(projectId) {
+      const project = Studio.loadProject(projectId);
+      if (!project) { Studio.toast('Project not found.', 'danger'); return; }
+      try {
+        const result = ModStudio.importFromProject(project);
+        /* Merge into current mod OR replace it. Strategy: if no mod open, use the imported mod; otherwise merge files into the current mod. */
+        if (!state.mod) {
+          state.mod = result.mod;
+        } else {
+          /* Merge: keep current mod id/name, but bring in files (overwriting same paths). */
+          Object.keys(result.mod.files).forEach(p => {
+            state.mod.files[p] = result.mod.files[p];
+          });
+          if (!state.mod.description && project.meta && project.meta.description) {
+            state.mod.description = project.meta.description;
+          }
+        }
+        ModStudio.saveMod(state.mod);
+        state.selectedPath = state.mod.files['meta.tyd'] ? 'meta.tyd' : null;
+        expandedFolders.clear();
+        ModStudio.CANONICAL_FOLDERS.forEach(f => expandedFolders.add(f));
+        Studio.closeModal('pull-modal');
+        renderWorkspace();
+        Studio.toast('Imported ' + result.added + ' file(s) from "' + (project.name || 'project') + '".', 'success');
+      } catch (err) {
+        Studio.toast('Import failed: ' + err.message, 'danger');
+      }
+    }
+
+    /* ─── AI Chat integration (local build only — stubbed on web) ─── */
+
+    function getCurrentModState() {
+      if (!state.mod) return null;
+      /* Return a compact view of the mod + current file content for AI context. */
+      return {
+        name: state.mod.name,
+        description: state.mod.description || '',
+        files: Object.keys(state.mod.files).filter(p => {
+          const r = state.mod.files[p]; return r && !r.folder && !r.isFolder;
+        }).map(p => ({
+          path: p,
+          content: (state.mod.files[p].content || '').slice(0, 2000) /* truncate to keep token budget reasonable */
+        })),
+        selectedPath: state.selectedPath
+      };
+    }
+
+    AIChatPage.init({
+      getState: getCurrentModState,
+      systemPrompt: `You are the AI modding assistant for the Software Inc Mod Studio — currently on the Mod Studio workspace.
+
+The Mod Studio is a file/folder workspace for assembling complete Software Inc mods. It treats a mod as a folder structure:
+- meta.tyd at the root (mod name, description, author)
+- SoftwareTypes/*.tyd — software product definitions
+- CompanyTypes/*.tyd — AI companies
+- NameGenerators/*.txt — tree-based name generators
+- Personalities/*.tyd — employee personality graphs
+
+CURRENT MOD STATE is provided via getState(); it contains: name, description, files (array of {path, content}), and selectedPath.
+
+You can create, edit, rename, and delete files/folders by returning OPERATIONS in strict JSON.
+
+OPERATIONS (return in JSON "operations" array):
+- CREATE_FILE: {"type":"CREATE_FILE","path":"SoftwareTypes/MyApp.tyd","content":"SoftwareType\\n\\t{\\n\\t\\tName\\t\\t\\\"MyApp\\\"\\n\\t}"}
+   If content is omitted, file is created empty.
+   Folders in the path are auto-created.
+- CREATE_FOLDER: {"type":"CREATE_FOLDER","path":"CustomAssets/"}
+- EDIT_FILE: {"type":"EDIT_FILE","path":"meta.tyd","content":"Name\\t\\t\\\"New Name\\\""}
+   Overwrites the entire file content with "content".
+- DELETE_PATH: {"type":"DELETE_PATH","path":"SoftwareTypes/Old.tyd"}
+   Removes a file or a folder (and its contents).
+- RENAME_PATH: {"type":"RENAME_PATH","from":"SoftwareTypes/Old.tyd","to":"SoftwareTypes/New.tyd"}
+
+NOTES:
+- Always use forward slashes in paths.
+- File extensions: .tyd for SoftwareTypes/CompanyTypes/Personalities, .txt for NameGenerators.
+- For TyD content, respect the Software Inc TyD format (tabs for indentation, "True"/"False" booleans, quoted strings with spaces).
+- When creating a software type, generate valid TyD with required fields: Name, Description, SubmarketNames (3), Random, Popularity, Retention, OptimalDevTime, Iterative, OSSupport, Unlock, Features.
+- When creating a company type, include Specialization, PerYear, Min, Max, Types.
+- Prefer returning 1-3 operations per response unless the user asks for more.
+
+RESPONSE FORMAT (strict JSON):
+{"responseType":"question|action|chat","message":"text","quickReplies":["opt1","opt2"],"operations":[...]}`,
+      welcomeMessage: "Hi! I'm your AI modding assistant for the Mod Studio workspace. I can create files and folders, edit file contents, rename, or remove files in your current mod. Try \"create a game software type\" or \"add a meta.tyd\".",
+      starterReplies: ['Create a game software type', 'Add a meta.tyd', 'List my files', 'Create a CompanyType folder'],
+      operationCallbacks: {
+        'CREATE_FILE': function(op) {
+          if (!state.mod) { return; }
+          const content = op.content !== undefined ? op.content : '';
+          const r = ModStudio.addFile(state.mod, op.path, content);
+          if (r.error) { Studio.toast('AI: ' + r.error, 'danger'); return; }
+          state.selectedPath = r.path;
+          const parent = ModStudio.getParentDir(r.path);
+          if (parent) expandedFolders.add(parent);
+          ModStudio.saveMod(state.mod);
+          AIChatPage.addPendingChange({ label: 'Created ' + r.path, selector: null });
+        },
+        'CREATE_FOLDER': function(op) {
+          if (!state.mod) { return; }
+          const r = ModStudio.addFolder(state.mod, op.path);
+          if (r.error) { Studio.toast('AI: ' + r.error, 'danger'); return; }
+          expandedFolders.add(ModStudio.normalizePath(op.path).replace(/\/?$/, '/'));
+          ModStudio.saveMod(state.mod);
+          AIChatPage.addPendingChange({ label: 'Created folder ' + op.path, selector: null });
+        },
+        'EDIT_FILE': function(op) {
+          if (!state.mod) { return; }
+          if (state.mod.files[op.path] === undefined) { Studio.toast('AI: file not found: ' + op.path, 'danger'); return; }
+          ModStudio.setFileContent(state.mod, op.path, op.content || '');
+          if (state.selectedPath === op.path) { renderSelectedFile(); }
+          ModStudio.saveMod(state.mod);
+          AIChatPage.addPendingChange({ label: 'Edited ' + op.path, selector: null });
+        },
+        'DELETE_PATH': function(op) {
+          if (!state.mod) { return; }
+          ModStudio.deletePath(state.mod, op.path);
+          if (state.selectedPath === op.path || (op.path.endsWith('/') && state.selectedPath && state.selectedPath.startsWith(op.path))) {
+            state.selectedPath = null;
+          }
+          ModStudio.saveMod(state.mod);
+          AIChatPage.addPendingChange({ label: 'Deleted ' + op.path, selector: null });
+        },
+        'RENAME_PATH': function(op) {
+          if (!state.mod) { return; }
+          const r = ModStudio.renamePath(state.mod, op.from, op.to);
+          if (r.error) { Studio.toast('AI: ' + r.error, 'danger'); return; }
+          if (state.selectedPath === op.from) state.selectedPath = ModStudio.normalizePath(op.to);
+          ModStudio.saveMod(state.mod);
+          AIChatPage.addPendingChange({ label: 'Renamed ' + op.from + ' → ' + op.to, selector: null });
+        }
+      },
+      onUpdate: function() {
+        /* Re-render workspace after AI operations so the tree/editor reflect changes. */
+        renderWorkspace();
+      }
+    });
+
     /* ─── Persistence debounce ─── */
 
     function schedulePersist() {
@@ -485,6 +721,8 @@
     document.getElementById('rename-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmRename(); });
 
     /* Init: open last mod if present, else empty state */
+    if (typeof AIAssistant.renderSettingsForm === 'function') AIAssistant.renderSettingsForm('ai-settings-form');
+    if (typeof updateAIStatus === 'function') updateAIStatus();
     const lastId = ModStudio.getCurrentModId();
     if (lastId && ModStudio.loadMod(lastId)) {
       openMod(lastId);

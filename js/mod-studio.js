@@ -221,22 +221,26 @@ const ModStudio = (function () {
         const isLast = i === parts.length - 1;
         acc += parts[i] + (isLast ? '' : '/');
         const isFolder = isLast && isFolderRecord(rec);
+        /* Normalize key to trailing-slash form so folder markers
+           ('SoftwareTypes/') and file ancestors ('SoftwareTypes')
+           resolve to the same node. */
+        const folderKey = acc.endsWith('/') ? acc : acc + '/';
         if (isFolder) {
-          if (!seen[acc]) {
-            seen[acc] = { name: parts[i], path: acc + '/', folder: true, children: [] };
-            cursor.children.push(seen[acc]);
+          if (!seen[folderKey]) {
+            seen[folderKey] = { name: parts[i], path: folderKey, folder: true, children: [] };
+            cursor.children.push(seen[folderKey]);
           }
-          cursor = seen[acc];
+          cursor = seen[folderKey];
         } else if (i === parts.length - 1 && !isFolder) {
           /* file */
           cursor.children.push({ name: parts[i], path: p, folder: false, kind: rec.kind || inferKind(p) });
         } else {
           /* implicit ancestor folder */
-          if (!seen[acc]) {
-            seen[acc] = { name: parts[i], path: acc + '/', folder: true, children: [] };
-            cursor.children.push(seen[acc]);
+          if (!seen[folderKey]) {
+            seen[folderKey] = { name: parts[i], path: folderKey, folder: true, children: [] };
+            cursor.children.push(seen[folderKey]);
           }
-          cursor = seen[acc];
+          cursor = seen[folderKey];
         }
       }
     });
