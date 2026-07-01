@@ -212,7 +212,30 @@ Respond with JSON only.`;
         if (!parsed.quickReplies) parsed.quickReplies = [];
         return parsed;
       } catch (e2) {
-        return { responseType: 'chat', message: text, operations: [], quickReplies: [] };
+        console.warn('[AIChat] Could not parse JSON response. Raw text:', text);
+        /* Last resort: try regex-extracting the message field so the user
+           sees a friendly message instead of raw JSON.
+           Matches: "message": "..." or "message":"..." */
+        var msgMatch = text.match(/"message"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+        var extractedMsg = msgMatch ? msgMatch[1].replace(/\\"/g, '"').replace(/\\n/g, '\n') : '';
+        var qrMatch = text.match(/"quickReplies"\s*:\s*\[([\s\S]*?)\]/);
+        var extractedQr = [];
+        if (qrMatch) {
+          var qrRaw = qrMatch[1];
+          var qrItems = qrRaw.match(/"((?:[^"\\]|\\.)*)"/g);
+          if (qrItems) extractedQr = qrItems.map(function(s) { return s.slice(1, -1).replace(/\\"/g, '"'); });
+        }
+        var opMatch = text.match(/"operations"\s*:\s*\[([\s\S]*?)\]/);
+        var extractedOps = [];
+        if (opMatch && opMatch[1].trim()) {
+          try { extractedOps = JSON.parse('[' + opMatch[1] + ']'); } catch(e3) { /* ignore */ }
+        }
+        return {
+          responseType: 'chat',
+          message: extractedMsg || text,
+          operations: extractedOps,
+          quickReplies: extractedQr
+        };
       }
     }
   }
