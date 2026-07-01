@@ -105,6 +105,12 @@ Respond with JSON only.`;
 
   function buildStateContext(editorState) {
     if (!editorState) return '';
+    // If the page provides a pre-built context string, use it directly.
+    // This lets non-software-type pages (e.g. Mod Studio) supply their own
+    // state layout without being forced through the software-type mapping.
+    if (typeof editorState.__stateContext === 'string') {
+      return '\n' + editorState.__stateContext;
+    }
     // Compact summary — only essential fields, no pretty-print whitespace
     const s = {
       Name: editorState.Name || '',
