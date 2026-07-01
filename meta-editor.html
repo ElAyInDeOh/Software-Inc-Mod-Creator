@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mod Metadata â€” Software Inc Mod Studio</title>
+  <title>Mod Metadata — Software Inc Mod Creator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/studio.css?v=2">
@@ -74,7 +74,7 @@
           <svg class="preview-chevron" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
         </div>
         <div class="card-body preview-body" id="preview-body" style="padding:0;">
-          <pre class="code-preview" id="meta-preview" style="border-radius:0; border:none; margin:0; max-height:400px; overflow-y:auto;"><code>(Empty â€” fill in at least a name)</code></pre>
+          <pre class="code-preview" id="meta-preview" style="border-radius:0; border:none; margin:0; max-height:400px; overflow-y:auto;"><code>(Empty — fill in at least a name)</code></pre>
         </div>
       </div>
     </div>
@@ -156,7 +156,7 @@
     function updatePreview() {
       const meta = buildMeta();
       const tyd = TyDEngine.serializeMeta(meta);
-      document.getElementById('meta-preview').textContent = tyd || '(Empty â€” fill in at least a name)';
+      document.getElementById('meta-preview').textContent = tyd || '(Empty — fill in at least a name)';
       const status = document.getElementById('preview-status');
       if (status) {
         if (meta.name) { status.textContent = 'Valid'; status.className = 'badge badge-success'; }
@@ -182,7 +182,7 @@
 
     AIChatPage.init({
       getState: getCurrentEditorState,
-      systemPrompt: `You are the AI modding assistant for the Software Inc Mod Studio â€” currently on the Mod Metadata editor.
+      systemPrompt: `You are the AI modding assistant for the Software Inc Mod Creator — currently on the Mod Metadata editor.
 
 meta.tyd defines your mod's name, description, and author as shown in the game's mod list. Place it in the root of your mod folder.
 

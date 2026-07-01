@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Software Type Editor - Software Inc Mod Studio</title>
+  <title>Software Type Editor - Software Inc Mod Creator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/studio.css?v=2">
@@ -367,7 +367,7 @@
       const previewToggle = document.getElementById('preview-toggle');
       if (previewToggle) previewToggle.addEventListener('click', togglePreview);
 
-      // Delegated click for change items â€” robust against any selector characters
+      // Delegated click for change items — robust against any selector characters
       const chatBody = document.getElementById('ai-chat-messages');
       if (chatBody) {
         chatBody.addEventListener('click', function(e) {
@@ -795,7 +795,7 @@
 
     function buildPresetOptions(entryPoint, selectedId) {
       const scripts = ScriptPresets.listScripts(entryPoint);
-      const opts = ['<option value="">(blank â€” write your own)</option>']
+      const opts = ['<option value="">(blank — write your own)</option>']
         .concat(scripts.map(function (p) {
           const sel = p.id === selectedId ? ' selected' : '';
           return '<option value="' + p.id + '"' + sel + '>' + p.name + '</option>';
@@ -1425,7 +1425,7 @@
     #preview-card.collapsed .preview-chevron { transform: rotate(-90deg); }
     #preview-card.collapsed { max-height: none; }
 
-    /* Preview action buttons â€” wrap on narrow, icon-only labels */
+    /* Preview action buttons — wrap on narrow, icon-only labels */
     .preview-actions { flex-wrap: wrap; position: static; padding: 0.625rem; }
     .preview-actions .btn { flex: 1 1 auto; min-width: 0; }
     .preview-actions .btn .btn-label { font-size: 0.75rem; }
@@ -1433,7 +1433,7 @@
       .preview-actions .btn { flex: 1 1 100%; }
     }
 
-    /* Sticky preview â€” stays in view, scrolls internally */
+    /* Sticky preview — stays in view, scrolls internally */
     .split-right.desktop-only { position: sticky; top: calc(var(--header-h) + var(--tab-h) + 1rem); height: auto; max-height: calc(100vh - var(--header-h) - var(--tab-h) - 2rem); overflow: visible; align-self: start; }
   </style>
 </body>

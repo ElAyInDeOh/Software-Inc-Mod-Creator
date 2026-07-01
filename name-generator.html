@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Name Generator â€” Software Inc Mod Studio</title>
+  <title>Name Generator — Software Inc Mod Creator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/studio.css?v=2">
@@ -62,7 +62,7 @@
           <div class="card-body">
             <div class="field">
               <textarea class="input font-mono" id="ng-base1" rows="5" placeholder="Cyber&#10;Tech&#10;Super&#10;Ultra&#10;Mega" oninput="updatePreview()"></textarea>
-              <span class="field-desc">Words like "Cyber", "Tech", "Super" â€” one per line</span>
+              <span class="field-desc">Words like "Cyber", "Tech", "Super" — one per line</span>
             </div>
           </div>
         </div>
@@ -74,7 +74,7 @@
           <div class="card-body">
             <div class="field">
               <textarea class="input font-mono" id="ng-base2" rows="5" placeholder="System&#10;Works&#10;Soft&#10;Ware&#10;Net" oninput="updatePreview()"></textarea>
-              <span class="field-desc">Words like "System", "Works", "Soft" â€” one per line</span>
+              <span class="field-desc">Words like "System", "Works", "Soft" — one per line</span>
             </div>
           </div>
         </div>
@@ -86,7 +86,7 @@
           <div class="card-body">
             <div class="field">
               <textarea class="input font-mono" id="ng-end" rows="5" placeholder="Pro&#10;Max&#10;Lite&#10;OS&#10;X" oninput="updatePreview()"></textarea>
-              <span class="field-desc">Words like "Pro", "Max", "Lite" â€” one per line</span>
+              <span class="field-desc">Words like "Pro", "Max", "Lite" — one per line</span>
             </div>
           </div>
         </div>
@@ -189,10 +189,10 @@
     </div>
   </div>
 
-  <script src="js/studio.js?v=6"></script>
-  <script src="js/ai-assistant.js?v=6"></script>
-  <script src="js/ai-chat.js?v=6"></script>
-  <script src="js/ai-chat-page.js?v=6"></script>
+  <script src="js/studio.js?v=7"></script>
+  <script src="js/ai-assistant.js?v=8"></script>
+  <script src="js/ai-chat.js?v=8"></script>
+  <script src="js/ai-chat-page.js?v=8"></script>
   <script>
     Studio.init();
     document.getElementById('theme-toggle').addEventListener('click', Studio.toggleTheme);
@@ -265,33 +265,46 @@
 
     AIChatPage.init({
       getState: getCurrentEditorState,
-      systemPrompt: `You are the AI modding assistant for the Software Inc Mod Studio â€” currently on the Name Generator editor.
+      systemPrompt: `You are the AI modding assistant for the Software Inc Mod Creator — currently on the Name Generator editor.
 
-Name generators use a tree-based system where nodes define paths and words are picked randomly.
+Name generators use a tree-based system where nodes define paths and words are picked randomly. This is NOT section-based — it's a tree walk.
 
 Format documentation:
-- Nodes start with "-"
-- Each node lists possible words, one per line
+- Nodes start with a hyphen "-"
+- The first node MUST be named "start"
 - Node syntax: -nodeName(nextNode1,nextNode2,stop)
+- Words are listed one per line beneath each node
 - "stop" ends the name generation
-- Example:
-  -start(base)
-  -base(end,stop)
-  Hello
-  Hi
-  -end(stop)
-  Pro
-  Max
+- The generator walks from "start" through randomly-picked child nodes until reaching a terminal node
+- Writing [REPLACE] as the first line replaces a built-in name generator with the same filename
+
+Example with 3 nodes (matches simple mode output):
+-start(base)
+-base(base2,end,stop)
+Cyber
+Tech
+Super
+-base2(end,stop)
+System
+Works
+Soft
+-end(stop)
+Pro
+Max
+Lite
+
+This generates names like: Cyber, Tech, Cyber Pro, Cyber Max, Cyber System Pro, Cyber System Max, Tech Works Lite, etc.
 
 The editor has two modes:
-- Simple: 3 text areas for Base (start), Middle, and End words. Each word on its own line.
-- Advanced: Raw text editing with full tree syntax.
+- Simple: 3 text areas that map to tree nodes — base1?base node, base2?base2 node, end?end node. The buildText() function assembles them into the tree format above. Each word on its own line.
+- Advanced: Raw text editing with full tree syntax. Can use any number of nodes.
 
-File is saved as a .txt file in the NameGenerators/ folder of a mod.
+File is saved as a .txt file in the NameGenerators/ folder of a mod. The filename (without .txt) is referenced by the NameGenerator field on SoftwareTypes and CompanyTypes.
 
 OPERATIONS (return in JSON operations array):
 - SET_FILENAME: {"type":"SET_FILENAME","value":"filename"}
-- SET_SIMPLE_WORDS: {"type":"SET_SIMPLE_WORDS","base1":"word\nword","base2":"word\nword","end":"word\nword"}
+- SET_SIMPLE_WORDS: {"type":"SET_SIMPLE_WORDS","base1":"word\\nword","base2":"word\\nword","end":"word\\nword"}
+  base1 = words for the base node (start of name), base2 = middle words, end = suffix words
 - SET_MODE: {"type":"SET_MODE","mode":"simple|advanced"}
 
 RESPONSE FORMAT (strict JSON):

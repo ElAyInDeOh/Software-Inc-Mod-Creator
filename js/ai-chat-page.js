@@ -238,7 +238,15 @@ const AIChatPage = (function() {
     } catch (err) {
       const el = document.getElementById(loadingId);
       if (el) el.remove();
-      messagesContainer.innerHTML += '<div class="ai-message ai-message-assistant" style="color:var(--red)">Error: ' + err.message.replace(/</g, '&lt;') + '</div>';
+      console.error('[AIChat] sendAIChatMessage error:', err);
+      var errHtml = '<div class="ai-message ai-message-assistant" style="color:var(--red);">';
+      if (err.message && err.message.indexOf('connection') >= 0) {
+        errHtml += '<strong>Connection issue.</strong> ' + err.message.replace(/</g, '&lt;') + '<br><br><a href="#" onclick="event.preventDefault(); Studio.openModal(\'ai-settings-modal\');" style="color:var(--blue); text-decoration:underline;">Open AI settings</a>';
+      } else {
+        errHtml += 'Sorry, I had trouble with that request. ' + err.message.replace(/</g, '&lt;');
+      }
+      errHtml += '</div>';
+      messagesContainer.innerHTML += errHtml;
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
   }
