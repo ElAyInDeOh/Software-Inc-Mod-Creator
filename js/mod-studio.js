@@ -420,7 +420,7 @@ const ModStudio = (function () {
     }
 
     mod.files['NameGenerators/example_names.txt'] = {
-      content: '# Example name generator\n# Tree format — see wiki for syntax\n[First]\n  ExampleFoo\n  ExampleBar\n  ExampleBaz\n[Last]\n  Studios\n  Interactive\n  Games',
+      content: '-start(base)\n-base(end,stop)\nCyber\nTech\nSuper\nUltra\nMega\n-end(stop)\nStudios\nInteractive\nGames\nSystems',
       kind: 'text'
     };
 

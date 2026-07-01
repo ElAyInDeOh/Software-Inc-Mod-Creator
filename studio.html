@@ -706,17 +706,19 @@ Author		"Your Name"
 \`\`\`
 
 ### NameGenerators .txt format:
-Tree-based, uses [Section] headers and indented entries:
+Tree-based, NOT section headers. Nodes start with a hyphen, the first node MUST be named "start". Parentheses list child nodes to randomly traverse to. Words are listed one per line beneath each node. The generator walks from "start" through randomly-picked children until reaching a terminal node (one with no children or "stop").
 \`\`\`
-[First]
-  Acme
-  Tech
-  Global
-[Last]
-  Studios
-  Industries
-  Labs
+-start(base)
+-base(base2,end,stop)
+Hello
+Hi
+-base2(end,stop)
+, you
+-end(stop)
+.
 \`\`\`
+This generates: "Hello", "Hi", "Hello.", "Hi.", "Hello, you", "Hi, you", "Hello, you.", "Hi, you."
+Writing [REPLACE] as the first line replaces a built-in name generator with the same filename.
 
 ## OPERATIONS (return in JSON "operations" array)
 - CREATE_FILE: {"type":"CREATE_FILE","path":"SoftwareTypes/MyApp.tyd","content":"<full TyD content>"}
