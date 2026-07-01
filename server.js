@@ -191,7 +191,7 @@ pages.forEach(page => {
 app.listen(PORT, HOST, () => {
   console.log(`
 ===============================================
-   Software Inc Mod Studio — Local Deploy
+   Software Inc Mod Creator — Local Deploy
 ===============================================
    Server:  http://localhost:${PORT}
    Network: http://192.168.x.x:${PORT}

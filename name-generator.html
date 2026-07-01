@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Name Generator â€” Software Inc Mod Studio</title>
+  <title>Name Generator — Software Inc Mod Creator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/studio.css?v=2">
@@ -62,7 +62,7 @@
           <div class="card-body">
             <div class="field">
               <textarea class="input font-mono" id="ng-base1" rows="5" placeholder="Cyber&#10;Tech&#10;Super&#10;Ultra&#10;Mega" oninput="updatePreview()"></textarea>
-              <span class="field-desc">Words like "Cyber", "Tech", "Super" â€” one per line</span>
+              <span class="field-desc">Words like "Cyber", "Tech", "Super" — one per line</span>
             </div>
           </div>
         </div>
@@ -74,7 +74,7 @@
           <div class="card-body">
             <div class="field">
               <textarea class="input font-mono" id="ng-base2" rows="5" placeholder="System&#10;Works&#10;Soft&#10;Ware&#10;Net" oninput="updatePreview()"></textarea>
-              <span class="field-desc">Words like "System", "Works", "Soft" â€” one per line</span>
+              <span class="field-desc">Words like "System", "Works", "Soft" — one per line</span>
             </div>
           </div>
         </div>
@@ -86,7 +86,7 @@
           <div class="card-body">
             <div class="field">
               <textarea class="input font-mono" id="ng-end" rows="5" placeholder="Pro&#10;Max&#10;Lite&#10;OS&#10;X" oninput="updatePreview()"></textarea>
-              <span class="field-desc">Words like "Pro", "Max", "Lite" â€” one per line</span>
+              <span class="field-desc">Words like "Pro", "Max", "Lite" — one per line</span>
             </div>
           </div>
         </div>
@@ -265,9 +265,9 @@
 
     AIChatPage.init({
       getState: getCurrentEditorState,
-      systemPrompt: `You are the AI modding assistant for the Software Inc Mod Studio â€” currently on the Name Generator editor.
+      systemPrompt: `You are the AI modding assistant for the Software Inc Mod Creator — currently on the Name Generator editor.
 
-Name generators use a tree-based system where nodes define paths and words are picked randomly. This is NOT section-based â€” it's a tree walk.
+Name generators use a tree-based system where nodes define paths and words are picked randomly. This is NOT section-based — it's a tree walk.
 
 Format documentation:
 - Nodes start with a hyphen "-"
@@ -296,7 +296,7 @@ Lite
 This generates names like: Cyber, Tech, Cyber Pro, Cyber Max, Cyber System Pro, Cyber System Max, Tech Works Lite, etc.
 
 The editor has two modes:
-- Simple: 3 text areas that map to tree nodes â€” base1â†’base node, base2â†’base2 node, endâ†’end node. The buildText() function assembles them into the tree format above. Each word on its own line.
+- Simple: 3 text areas that map to tree nodes — base1?base node, base2?base2 node, end?end node. The buildText() function assembles them into the tree format above. Each word on its own line.
 - Advanced: Raw text editing with full tree syntax. Can use any number of nodes.
 
 File is saved as a .txt file in the NameGenerators/ folder of a mod. The filename (without .txt) is referenced by the NameGenerator field on SoftwareTypes and CompanyTypes.
