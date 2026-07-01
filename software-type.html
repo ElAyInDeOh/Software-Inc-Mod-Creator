@@ -313,17 +313,19 @@
     </div>
   </div>
 
-  <script src="js/tyd-engine.js?v=6"></script>
-  <script src="js/presets.js?v=6"></script>
-  <script src="js/studio.js?v=6"></script>
-  <script src="js/ai-assistant.js?v=6"></script>
-  <script src="js/ai-chat.js?v=6"></script>
+  <script src="js/tyd-engine.js?v=7"></script>
+  <script src="js/presets.js?v=7"></script>
+  <script src="js/script-presets.js?v=7"></script>
+  <script src="js/studio.js?v=7"></script>
+  <script src="js/ai-assistant.js?v=7"></script>
+  <script src="js/ai-chat.js?v=7"></script>
   <script>
     /* ========== State ========== */
     let projectId = null;
     let softwareIndex = 0;
     let specFeatureCount = 0;
     let subFeatureCount = 0;
+    let subScriptCount = 0;
     let categoryCount = 0;
     let aiChatInitialized = false;
     let pendingChanges = [];
@@ -488,6 +490,10 @@
               document.getElementById('sub-sm1-' + sid).value = ssm[0] || 0;
               document.getElementById('sub-sm2-' + sid).value = ssm[1] || 0;
               document.getElementById('sub-sm3-' + sid).value = ssm[2] || 0;
+
+              // Restore Level 3 scripts (accept both flat Script_* and a Scripts map)
+              loadSubScripts(sid, sub);
+
               updateSubFeatureTitle(sid);
             });
           }
@@ -571,6 +577,28 @@
               parseFloat(document.getElementById('sub-sm3-' + sid).value) || 0
             ]
           };
+
+          // Level 3 features: flatten script entries into Script_<EntryPoint> fields.
+          // The TyD serializer outputs these as sibling records on the subfeature,
+          // exactly matching the official Software Inc. mod format.
+          if (level === 3) {
+            subCard.querySelectorAll('.script-entry').forEach(entry => {
+              const idx = entry.dataset.id;
+              const epSelect = entry.querySelector('#script-ep-' + idx);
+              const codeArea = entry.querySelector('#script-code-' + idx);
+              if (!epSelect || !codeArea) return;
+              const ep = epSelect.value;
+              const code = codeArea.value.trim();
+              if (ep && code) {
+                sub['Script_' + ep] = code;
+              }
+            });
+            const runTypeEl = document.getElementById('sub-runtype-' + sid);
+            if (runTypeEl && runTypeEl.value && runTypeEl.value !== 'Local') {
+              sub.RunType = runTypeEl.value;
+            }
+          }
+
           feat.Features.push(sub);
         });
 
@@ -726,7 +754,7 @@
         '<div class="feature-block-body" style="display:block; padding:0.75rem;">' +
           '<div class="field-grid field-grid-2">' +
             '<div class="field"><label class="field-label">Name</label><input type="text" class="input" id="sub-name-' + sid + '" placeholder="e.g. Basic Shaders" oninput="updateSubFeatureTitle(' + sid + '); updatePreview()"></div>' +
-            '<div class="field"><label class="field-label">Level</label><select class="input" id="sub-level-' + sid + '" onchange="updateSubFeatureTitle(' + sid + '); updatePreview()"><option value="1">1 (Basic)</option><option value="2">2 (Advanced)</option><option value="3">3 (Scripted)</option></select></div>' +
+            '<div class="field"><label class="field-label">Level</label><select class="input" id="sub-level-' + sid + '" onchange="updateSubFeatureTitle(' + sid + '); toggleSubScripts(' + sid + '); updatePreview()"><option value="1">1 (Basic)</option><option value="2">2 (Advanced)</option><option value="3">3 (Scripted)</option></select></div>' +
           '</div>' +
           '<div class="field mt-2"><label class="field-label">Description</label><textarea class="input" id="sub-desc-' + sid + '" rows="1" placeholder="Tooltip..." oninput="updatePreview()"></textarea></div>' +
           '<div class="field-grid field-grid-2 mt-2">' +
@@ -735,9 +763,162 @@
           '</div>' +
           '<div class="field mt-2"><label class="field-label">Submarkets</label><div class="flex gap-2"><input type="number" class="input" id="sub-sm1-' + sid + '" value="1" step="0.1" oninput="updatePreview()"><input type="number" class="input" id="sub-sm2-' + sid + '" value="1" step="0.1" oninput="updatePreview()"><input type="number" class="input" id="sub-sm3-' + sid + '" value="1" step="0.1" oninput="updatePreview()"></div></div>' +
           '<div class="field mt-2"><label class="field-label">Unlock Year</label><input type="number" class="input" id="sub-unlock-' + sid + '" value="1990" oninput="updatePreview()"></div>' +
+          '<div class="lvl3-scripts-section" id="sub-scripts-section-' + sid + '" style="display:none; margin-top:0.75rem; padding:0.75rem; border:1px dashed var(--border); border-radius:0.5rem;">' +
+            '<div class="field-label mb-1">SIPL Scripts (Level 3)</div>' +
+            '<p class="text-sm text-secondary" style="margin-bottom:0.5rem;">Level 3 features run custom game logic in <a href="https://softwareinc.coredumping.com/wiki/index.php/SIPL" target="_blank" rel="noopener">SIPL</a>. They never get picked by the AI; treat them as small player-selectable bonuses.</p>' +
+            '<div class="field-grid field-grid-2" style="align-items:end;">' +
+              '<div class="field"><label class="field-label">RunType</label><select class="input" id="sub-runtype-' + sid + '" onchange="updatePreview()"><option value="Local">Local (default)</option><option value="Host">Host</option><option value="Everyone">Everyone</option></select><span class="field-hint">Only valid for EndOfDay, OnRelease, NewCopies.</span></div>' +
+              '<div class="field" style="display:flex; align-items:end; justify-content:flex-end;"><button class="btn btn-secondary btn-sm" onclick="addSubScript(' + sid + ')">' + Studio.Icons.plus + ' Add Script</button></div>' +
+            '</div>' +
+            '<div id="sub-scripts-list-' + sid + '" style="display:flex; flex-direction:column; gap:0.5rem;"></div>' +
+          '</div>' +
         '</div>';
       container.appendChild(div);
       return sid;
+    }
+
+    function toggleSubScripts(sid) {
+      const levelEl = document.getElementById('sub-level-' + sid);
+      const section = document.getElementById('sub-scripts-section-' + sid);
+      if (!levelEl || !section) return;
+      const isLvl3 = String(levelEl.value) === '3';
+      section.style.display = isLvl3 ? 'block' : 'none';
+    }
+
+    function buildEntryPointOptions(selectedKey) {
+      return ScriptPresets.listEntryPoints().map(function (ep) {
+        const sel = ep.key === selectedKey ? ' selected' : '';
+        return '<option value="' + ep.key + '"' + sel + '>' + ep.key + ' (' + ep.scope + ')</option>';
+      }).join('');
+    }
+
+    function buildPresetOptions(entryPoint, selectedId) {
+      const scripts = ScriptPresets.listScripts(entryPoint);
+      const opts = ['<option value="">(blank — write your own)</option>']
+        .concat(scripts.map(function (p) {
+          const sel = p.id === selectedId ? ' selected' : '';
+          return '<option value="' + p.id + '"' + sel + '>' + p.name + '</option>';
+        }));
+      return opts.join('');
+    }
+
+    function addSubScript(parentSid, opts) {
+      subScriptCount++;
+      const idx = subScriptCount;
+      const container = document.getElementById('sub-scripts-list-' + parentSid);
+      if (!container) return null;
+      const opts2 = opts || {};
+      const entryKey = opts2.entryPoint || 'EndOfDay';
+      const presetId = opts2.presetId || '';
+      const code = opts2.code || '';
+      const div = document.createElement('div');
+      div.className = 'script-entry';
+      div.dataset.id = String(idx);
+      div.style.cssText = 'padding:0.5rem; border:1px solid var(--border); border-radius:0.375rem; background:var(--bg-secondary, transparent);';
+      div.innerHTML =
+        '<div class="flex items-center justify-between mb-2">' +
+          '<span class="font-semibold text-sm">Script #' + idx + '</span>' +
+          '<button class="btn btn-ghost btn-icon" onclick="removeSubScript(' + parentSid + ', ' + idx + ')" title="Remove script">' + Studio.Icons.trash + '</button>' +
+        '</div>' +
+        '<div class="field-grid field-grid-2 mb-2">' +
+          '<div class="field"><label class="field-label">Entry point</label><select class="input" id="script-ep-' + idx + '" onchange="onScriptEntryPointChange(' + idx + '); updatePreview()">' + buildEntryPointOptions(entryKey) + '</select></div>' +
+          '<div class="field"><label class="field-label">Preset template</label><select class="input" id="script-preset-' + idx + '" onchange="loadScriptPreset(' + idx + ')">' + buildPresetOptions(entryKey, presetId) + '</select></div>' +
+        '</div>' +
+        '<div class="field"><label class="field-label">SIPL code</label><textarea class="input" id="script-code-' + idx + '" rows="6" style="font-family:JetBrains Mono, monospace; font-size:0.8125rem;" placeholder="// SIPL code runs in the entry point\'s scope" oninput="updatePreview()">' + code.replace(/</g, '&lt;') + '</textarea></div>';
+      container.appendChild(div);
+      onScriptEntryPointChange(idx, true);
+      return idx;
+    }
+
+    function onScriptEntryPointChange(idx, preserveCode) {
+      const epSelect = document.getElementById('script-ep-' + idx);
+      const presetSelect = document.getElementById('script-preset-' + idx);
+      if (!epSelect || !presetSelect) return;
+      const newKey = epSelect.value;
+      const currentPresetId = presetSelect.value;
+      presetSelect.innerHTML = buildPresetOptions(newKey, currentPresetId);
+      if (!preserveCode) updatePreview();
+    }
+
+    function loadScriptPreset(idx) {
+      const epSelect = document.getElementById('script-ep-' + idx);
+      const presetSelect = document.getElementById('script-preset-' + idx);
+      const codeArea = document.getElementById('script-code-' + idx);
+      if (!epSelect || !presetSelect || !codeArea) return;
+      const preset = ScriptPresets.findScript(presetSelect.value);
+      if (!preset) return;
+      if (preset.entryPoint && preset.entryPoint !== epSelect.value) {
+        epSelect.value = preset.entryPoint;
+        onScriptEntryPointChange(idx, true);
+      }
+      codeArea.value = preset.script;
+      updatePreview();
+    }
+
+    function removeSubScript(parentSid, idx) {
+      const container = document.getElementById('sub-scripts-list-' + parentSid);
+      if (!container) return;
+      const entry = container.querySelector('.script-entry[data-id="' + idx + '"]');
+      if (entry) entry.remove();
+      updatePreview();
+    }
+
+    // Read current script entries for a subfeature as { EntryPoint: code } map.
+    // Used by the AI MODIFY_SUBFEATURE handler so Script_* edits preserve the
+    // other scripts already on the same feature.
+    function collectSubScripts(sid) {
+      const map = {};
+      const subCard = document.getElementById('sub-card-' + sid);
+      if (!subCard) return map;
+      subCard.querySelectorAll('.script-entry').forEach(function (entry) {
+        const idx = entry.dataset.id;
+        const epSelect = entry.querySelector('#script-ep-' + idx);
+        const codeArea = entry.querySelector('#script-code-' + idx);
+        if (!epSelect || !codeArea) return;
+        const ep = epSelect.value;
+        const code = codeArea.value.trim();
+        if (ep && code) map[ep] = code;
+      });
+      return map;
+    }
+
+    function loadSubScripts(sid, sub) {
+      const runTypeEl = document.getElementById('sub-runtype-' + sid);
+      let runType = sub && sub.RunType ? sub.RunType : 'Local';
+      if (runTypeEl) runTypeEl.value = runType;
+
+      const scriptsList = document.getElementById('sub-scripts-list-' + sid);
+      if (scriptsList) scriptsList.innerHTML = '';
+
+      let scriptsMap = null;
+      if (sub && sub.Scripts && typeof sub.Scripts === 'object' && !Array.isArray(sub.Scripts)) {
+        scriptsMap = sub.Scripts;
+      } else if (sub && typeof sub === 'object') {
+        scriptsMap = {};
+        Object.keys(sub).forEach(function (key) {
+          if (key.indexOf('Script_') === 0 && typeof sub[key] === 'string' && sub[key].trim()) {
+            const ep = key.substring('Script_'.length);
+            scriptsMap[ep] = sub[key];
+          }
+        });
+      }
+
+      if (scriptsMap && Object.keys(scriptsMap).length > 0) {
+        Object.keys(scriptsMap).forEach(function (ep) {
+          const code = String(scriptsMap[ep]);
+          let presetId = '';
+          const candidates = ScriptPresets.listScripts(ep);
+          for (let i = 0; i < candidates.length; i++) {
+            if (candidates[i].script.trim() === code.trim()) {
+              presetId = candidates[i].id;
+              break;
+            }
+          }
+          addSubScript(sid, { entryPoint: ep, code: code, presetId: presetId });
+        });
+      }
+
+      toggleSubScripts(sid);
     }
 
     function updateSubFeatureTitle(sid) {
@@ -924,9 +1105,72 @@
               const unlockEl = document.getElementById('sub-unlock-' + sid);
               if (unlockEl) unlockEl.value = op.feature.Unlock;
             }
+            // Restore Level 3 scripts if the AI emitted Script_* fields
+            loadSubScripts(sid, op.feature);
           }
           updateSubFeatureTitle(sid);
           pendingChanges.push({ label: 'Added subfeature "' + name + '" to "' + featName + '"', selector: '#sub-card-' + sid });
+        }
+      },
+      'MODIFY_SUBFEATURE': function(op) {
+        const cards = document.querySelectorAll('.spec-feature-card');
+        const parentCard = cards[op.specIndex];
+        if (!parentCard) return;
+        const subCards = parentCard.querySelectorAll('.sub-feature-card');
+        const subCard = subCards[op.subIndex];
+        if (!subCard) return;
+        const sid = subCard.dataset.id;
+        const field = op.field;
+        const value = op.value;
+        if (!field) return;
+
+        // Script_* fields add or replace a single script entry point.
+        if (field.indexOf('Script_') === 0) {
+          const ep = field.substring('Script_'.length);
+          // Rebuild scripts from current form state, then inject/replace this one.
+          const current = collectSubScripts(sid);
+          if (value && String(value).trim()) {
+            current[ep] = String(value);
+          } else {
+            delete current[ep];
+          }
+          const sub = { Level: parseInt(document.getElementById('sub-level-' + sid).value) || 1, RunType: (document.getElementById('sub-runtype-' + sid) || {}).value || 'Local' };
+          Object.keys(current).forEach(function (k) { sub['Script_' + k] = current[k]; });
+          loadSubScripts(sid, sub);
+          updatePreview();
+          pendingChanges.push({ label: 'Set ' + field + ' on subfeature #' + (op.subIndex + 1), selector: '#sub-card-' + sid });
+          return;
+        }
+
+        const simpleMap = {
+          'Name': 'sub-name-' + sid,
+          'Description': 'sub-desc-' + sid,
+          'DevTime': 'sub-devtime-' + sid,
+          'CodeArt': 'sub-codeart-' + sid,
+          'Unlock': 'sub-unlock-' + sid,
+          'RunType': 'sub-runtype-' + sid
+        };
+        if (field === 'Level') {
+          document.getElementById('sub-level-' + sid).value = value;
+          toggleSubScripts(sid);
+          updateSubFeatureTitle(sid);
+        } else if (simpleMap[field]) {
+          const el = document.getElementById(simpleMap[field]);
+          if (el) el.value = value;
+        }
+        updatePreview();
+        pendingChanges.push({ label: 'Set ' + field + ' on subfeature #' + (op.subIndex + 1), selector: '#sub-card-' + sid });
+      },
+      'REMOVE_SUBFEATURE': function(op) {
+        const cards = document.querySelectorAll('.spec-feature-card');
+        const parentCard = cards[op.specIndex];
+        if (!parentCard) return;
+        const subCards = parentCard.querySelectorAll('.sub-feature-card');
+        const subCard = subCards[op.subIndex];
+        if (subCard) {
+          subCard.remove();
+          updatePreview();
+          pendingChanges.push({ label: 'Removed subfeature #' + (op.subIndex + 1) });
         }
       },
       'SET_SUBMARKETS': function(op) {

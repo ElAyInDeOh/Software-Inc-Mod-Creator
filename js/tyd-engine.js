@@ -184,6 +184,13 @@ const TyDEngine = (function() {
             if (sub.Level === 3 && sub.Submarkets && sub.Submarkets.length === 3 && (sub.Submarkets[0] !== 0 || sub.Submarkets[1] !== 0 || sub.Submarkets[2] !== 0)) {
               warnings.push({ field: `Feature${fi}.Sub${si}.Submarkets`, message: `Level 3 features should have Submarkets 0.` });
             }
+            // Level 3 features with no Script_* fields do nothing in-game.
+            if (sub.Level === 3) {
+              const hasScript = Object.keys(sub).some(k => k.indexOf('Script_') === 0 && sub[k] && String(sub[k]).trim() !== '');
+              if (!hasScript) {
+                warnings.push({ field: `Feature${fi}.Sub${si}.Scripts`, message: `Level 3 features run SIPL scripts, but this one has none. Add at least one Script_* entry point or it does nothing.` });
+              }
+            }
             if (sub.DevTime > 0) totalDevTime += sub.DevTime;
           });
         }

@@ -225,10 +225,57 @@ Rules for generating content:
 2. Submarkets are arrays of 3 numbers that get normalized by the game
 3. CodeArt: 1 = programmers only, 0 = artists only, 0.5 = balanced
 4. Level 1 subfeatures require basic education, Level 2 requires advanced
-5. Level 3 features don't satisfy submarkets and are for scripts only
+5. Level 3 features are SCRIPTED. They do NOT satisfy submarkets (use Submarkets: 0) and are never picked by the AI — think of them as small player-selectable bonuses.
 6. Keep descriptions concise but flavorful (1-2 sentences)
 7. Feature names should be clear and professional
 8. Submarkets should reflect what the feature actually does
+
+=== LEVEL 3 SCRIPTING (SIPL) ===
+Level 3 features run SIPL (Software Inc Programming Language) scripts. Scripts are attached to a subfeature as flat sibling fields named "Script_<EntryPoint>". A subfeature may have several (e.g. Script_EndOfDay and Script_OnRelease). RunType may be set to "Local" (default), "Host", or "Everyone".
+
+Valid entry points and their scopes:
+- Script_EndOfDay      -> ProductScope  (runs every day after release, after the market simulates sales)
+- Script_AfterSales    -> SaleScope     (runs right after daily sales units are calculated; PhysicalSales, DigitalSales and Refunds are editable here)
+- Script_OnRelease     -> ProductScope  (runs once when the product is created, before it is registered in the market)
+- Script_NewCopies     -> CopyScope     (runs when new physical copies are shipped; NewCopies is read-only)
+- Script_WorkItemChange-> DevScope      (runs when a work item related to the product is created/stopped; use the "is" keyword, e.g. "if (WorkItem is MarketingPlan)")
+
+RunType is only valid for EndOfDay, OnRelease, and NewCopies. AfterSales is always host-only; WorkItemChange is always local-only.
+
+Key scope members you can use:
+- All scopes: Now (SDateTime), DaysPerMonth, PlayerCompany, MarketSimulation, Localize(s), LaunchLawsuit(subject, amount, difficulty), CreateDate(y,m,d,h,min), AddPopUp(text, importance, icon, sfx)
+- ProductScope: Product (SoftwareProduct), Time (release date)
+- SaleScope: Product, Time, PhysicalSales, DigitalSales, Refunds (editable)
+- CopyScope: Product, NewCopies (read-only)
+- DevScope: WorkItem, Ended, Cancelled
+
+Common SoftwareProduct members: Product.Name, Product.Bugs, Product.Userbase, Product.Sum, Product.Category (has .Popularity), Product.DevCompany (has MakeTransaction(amount, category, desc), AddFans(amount, category)), Product.GetVar(name, default), Product.PutVar(name, value), Product.Awareness, Product.KillAwareness()
+
+SIPL syntax rules (important — it is NOT exactly C#):
+- NO namespaces, classes, or function definitions
+- Use "var" for variables; you cannot specify types
+- NO +=, ++, or compound assignment; write i = i + 1
+- NO && / || / ! ; use chained comparisons instead (e.g. "if (0 < x < 10)") or nested if/else
+- "for" loops are NOT supported; use "foreach (element in list)"
+- Arrays use ~[1, 2, 3]; constructors are called by type name, e.g. Color(1,0,0)
+- Enums must NOT be qualified: write Bills (not TransactionCategory.Bills), Female (not Human.Gender.Female)
+- Comparisons can be chained: if (10 < x < 20)
+- Single quotes do nothing; use double quotes for strings
+- NO multiline comments; use // for line comments
+- ^ raises a number to a power (or xor on booleans)
+
+Built-in helpers: Abs, Min, Max, Pow, Sqrt, Round, Ceil, Floor, Clamp, Clamp01, Lerp, Sign, Sin, Cos, Random, RandomRange, RandomInteger, String, Debug. Enumerable helpers: Where, Select, ForEach, Count, First, Last, OrderBy, etc.
+
+Example Level 3 subfeature JSON (note flat Script_* fields, Submarkets: 0):
+{
+  "Name": "Daily Upkeep",
+  "Description": "Costs the owner $1000 per day when released.",
+  "Level": 3,
+  "DevTime": 2,
+  "CodeArt": 1,
+  "Submarkets": 0,
+  "Script_EndOfDay": "Product.DevCompany.MakeTransaction(-1000, Bills, \\"Owned\\");"
+}
 
 Always respond with valid JSON only. No markdown code blocks, no explanations outside the JSON.`;
 
@@ -279,7 +326,7 @@ Return ONLY this JSON structure:
   ]
 }
 
-Generate 2-3 SpecFeatures, each with 2-3 SubFeatures. Make sure the submarket ratios make sense for the software type.`;
+Generate 2-3 SpecFeatures, each with 2-3 SubFeatures. Use Level 1 and 2 only unless scriptable Level 3 features are explicitly requested. Make sure the submarket ratios make sense for the software type.`;
     },
 
     generateFeature: (softwareName, submarkets, specHint) => {
@@ -308,19 +355,49 @@ Return ONLY this JSON structure:
   ]
 }
 
-Generate 2-3 subfeatures with meaningful submarket distributions.`;
+Generate 2-3 subfeatures with meaningful submarket distributions. Use Level 1 and 2 only unless scriptable Level 3 features are explicitly requested.`;
     },
 
     generateSubFeature: (parentName, parentSpec, submarkets, level) => {
+      const lvl = level || 1;
+      if (String(lvl) === '3') {
+        return `Generate a Level 3 SubFeature for the "${parentName}" SpecFeature (${parentSpec} specialization) in Software Inc.
+The submarkets for this software type are: [${submarkets.join(', ')}].
+Target level: 3 (scripted — runs SIPL code, does NOT satisfy submarkets).
+
+Pick ONE realistic entry point from: EndOfDay, AfterSales, OnRelease, NewCopies, WorkItemChange.
+Write valid SIPL (no &&, ||, !, no +=, no++; use chained comparisons). Familiar scope members: Product, Product.Bugs, Product.Userbase, Product.DevCompany.MakeTransaction(amount, category, desc), Product.GetVar(name, default), Product.PutVar(name, value), Product.Category.Popularity, Product.Awareness, Now, AddPopUp(text, importance, icon, sfx), LaunchLawsuit(subject, amount, difficulty). In SaleScope: DigitalSales, PhysicalSales, Refunds (editable). Keep the script short and focused.
+
+Pick a theme that fits the feature name. Common helpful patterns (50 presets available):
+- Money/income: passive_income, subscription_churn, monopoly_bonus, rainy_day_fund, quality_premium, bug_free_subsidy, launch_extravaganza, release_fee, per_sale_royalty, anniversary_celebration
+- Costs/penalties: progressive_income_tax, server_bandwidth_cost (quadratic scaling), release_fee, daily_upkeep, market_crash_vulnerable, product_recall
+- Fans: stable_quality_fans, loyal_user_fans, user_milestone_bonus, viral_milestone_1m, cult_following, charity_drive, influencer_endorsement
+- Bugs: self_healing_bugs, community_patch_cycle, community_qa, beta_tester_feedback, quality_moat, emergency_hotfix (one-time), bug_avalanche (doom loop), legacy_code, codrot
+- Sales: flash_sale, seasonal_sale_spike, early_adopter_bonus, refund_fraud_detection, viral_sales_boost, refund_wave_buggy
+- Server/cyber events: server_overload_outage, ddos_attack, security_breach, antitrust_lawsuit, bad_press_cascade, negative_review_bomb, controversy_backfire, inflation_erosion (planned obsolescence), random_audit
+
+Return ONLY this JSON structure:
+{
+  "Name": "SubFeature name",
+  "Description": "tooltip description of what the script does",
+  "Level": 3,
+  "DevTime": number (2-4),
+  "CodeArt": 1,
+  "Submarkets": 0,
+  "Script_EndOfDay": "valid SIPL code"
+}
+
+Replace "Script_EndOfDay" with whichever entry point you chose (e.g. Script_AfterSales, Script_OnRelease, Script_NewCopies, Script_WorkItemChange). You may include multiple Script_* fields if it makes sense.`;
+      }
       return `Generate a SubFeature for the "${parentName}" SpecFeature (${parentSpec} specialization) in Software Inc.
 The submarkets are: [${submarkets.join(', ')}].
-Target level: ${level || 1}.
+Target level: ${lvl}.
 
 Return ONLY this JSON structure:
 {
   "Name": "SubFeature name",
   "Description": "tooltip description",
-  "Level": ${level || 1},
+  "Level": ${lvl},
   "DevTime": number (2-6),
   "CodeArt": 0.0-1.0,
   "Submarkets": [n, n, n]
