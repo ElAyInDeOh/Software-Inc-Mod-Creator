@@ -7,6 +7,35 @@
 const AIAssistant = (function() {
   'use strict';
 
+  /* Build variant gate: web (github.io / file://) build exposes
+     no-op stubs so the page still renders without AI. The real
+     implementation only runs on the local-deploy build where
+     window.LOCAL_BUILD is true (set by js/runtime.js in <head>). */
+  if (typeof window !== 'undefined' && !window.LOCAL_BUILD) {
+    var lockedErr = function () {
+      return new Error('AI features require the local build. Download from GitHub and run with Node.js to enable AI.');
+    };
+    return {
+      getConfig: function () { return null; },
+      saveConfig: function () {},
+      clearConfig: function () {},
+      isConfigured: function () { return false; },
+      chat: function () { return Promise.reject(lockedErr()); },
+      fetchModels: function () { return Promise.reject(lockedErr()); },
+      generateSoftwareType: function () { return Promise.reject(lockedErr()); },
+      generateFeature: function () { return Promise.reject(lockedErr()); },
+      generateSubFeature: function () { return Promise.reject(lockedErr()); },
+      generateCompanyType: function () { return Promise.reject(lockedErr()); },
+      generateNameGenerator: function () { return Promise.reject(lockedErr()); },
+      generatePersonalities: function () { return Promise.reject(lockedErr()); },
+      explainField: function () { return Promise.reject(lockedErr()); },
+      balanceCheck: function () { return Promise.reject(lockedErr()); },
+      getProviderList: function () { return []; },
+      renderSettingsForm: function () {},
+      PROVIDERS: {}
+    };
+  }
+
   const STORAGE_KEY = 'simc_ai_config';
 
   const PROVIDERS = {

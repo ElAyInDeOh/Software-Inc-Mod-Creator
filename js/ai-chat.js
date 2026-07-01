@@ -4,6 +4,19 @@
 const AIChat = (function() {
   'use strict';
 
+  /* Build variant gate: stub everything on the web build.
+     See js/runtime.js for the LOCAL_BUILD check. */
+  if (typeof window !== 'undefined' && !window.LOCAL_BUILD) {
+    return {
+      init: function () {},
+      sendMessage: function () { return Promise.reject(new Error('AI features require the local build.')); },
+      verifyConnection: function () { return Promise.reject(new Error('AI features require the local build.')); },
+      isConnectionVerified: function () { return false; },
+      parseAIResponse: function () { return []; },
+      executeOperations: function () { return []; }
+    };
+  }
+
   const SYSTEM_PROMPT = `You are the AI modding assistant for Software Inc Mod Studio. You build SoftwareType mods via conversation, editing form fields directly with operations.
 
 ## CORE BEHAVIOR

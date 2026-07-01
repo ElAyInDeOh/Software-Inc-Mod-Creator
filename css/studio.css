@@ -776,3 +776,18 @@ select {
 @media (max-width: 768px) { .studio-grid-2 { grid-template-columns: 1fr; } }
 @media (max-width: 1024px) { .studio-grid-3 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) { .studio-grid-3 { grid-template-columns: 1fr; } }
+
+/* ──────────────────────────────────────────────────────────────
+   Build variant gating (web vs local-deploy)
+   js/runtime.js tags <html> with 'ai-enabled' (local) or
+   'web-only' (github.io / file://) based on host detection.
+   ────────────────────────────────────────────────────────────── */
+html:not(.ai-enabled) .chat-fab,
+html:not(.ai-enabled) .chat-window,
+html:not(.ai-enabled) #ai-settings-modal,
+html:not(.ai-enabled) .btn-ai {
+  display: none !important;
+}
+html.ai-enabled [data-web-only] {
+  display: none !important;
+}

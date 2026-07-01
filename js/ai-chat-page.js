@@ -16,6 +16,22 @@
 const AIChatPage = (function() {
   'use strict';
 
+  /* Build variant gate: stub everything on the web build.
+     See js/runtime.js for the LOCAL_BUILD check. */
+  if (typeof window !== 'undefined' && !window.LOCAL_BUILD) {
+    return {
+      init: function () {},
+      toggleChatWidget: function () {},
+      updateAIChatStatus: function () {},
+      handleStarterClick: function () {},
+      handleQuickReply: function () {},
+      scrollToChange: function () {},
+      toggleChangesList: function () {},
+      sendAIChatMessage: function () {},
+      addPendingChange: function () {}
+    };
+  }
+
   let config = null;
   let chatInitialized = false;
   let pendingChanges = [];
