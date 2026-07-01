@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mod Studio — Software Inc Mod Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/studio.css?v=3">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2'><path d='M12 2L2 7l10 5 10-5-10-5z'/><path d='M2 17l10 5 10-5'/><path d='M2 12l10 5 10-5'/></svg>">
+  <script src="js/runtime.js?v=1"></script>
+  <script src="js/vendor/jszip.min.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <a href="index.html" class="app-header-brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>Mod Studio</span>
+    </a>
+    <div class="app-header-actions">
+      <a href="index.html" class="btn btn-ghost btn-sm" style="text-decoration:none;">Home</a>
+      <button class="btn btn-ghost btn-icon" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="studio-workspace" id="workspace">
+    <!-- Empty state rendered by JS when no mod loaded -->
+  </div>
+
+  <!-- New file/folder modal -->
+  <div class="modal-overlay" id="new-item-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="font-semibold" id="new-item-title">New File</h3>
+        <button class="btn btn-ghost btn-icon" onclick="Studio.closeModal('new-item-modal')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="field-label" id="new-item-path-label">Path</label>
+          <input type="text" class="input" id="new-item-input" placeholder="e.g. SoftwareTypes/MyApp.tyd">
+          <span class="field-desc" id="new-item-hint">Use folders in the path — they'll be created automatically.</span>
+        </div>
+        <div class="flex gap-2 justify-end">
+          <button class="btn btn-ghost" onclick="Studio.closeModal('new-item-modal')">Cancel</button>
+          <button class="btn btn-primary" id="new-item-create">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rename modal -->
+  <div class="modal-overlay" id="rename-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="font-semibold">Rename</h3>
+        <button class="btn btn-ghost btn-icon" onclick="Studio.closeModal('rename-modal')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="field-label">New path</label>
+          <input type="text" class="input" id="rename-input">
+        </div>
+        <div class="flex gap-2 justify-end">
+          <button class="btn btn-ghost" onclick="Studio.closeModal('rename-modal')">Cancel</button>
+          <button class="btn btn-primary" id="rename-confirm">Rename</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/tyd-engine.js?v=6"></script>
+  <script src="js/studio.js?v=6"></script>
+  <script src="js/mod-studio.js?v=1"></script>
+  <script>
+    Studio.init();
+    document.getElementById('theme-toggle').addEventListener('click', Studio.toggleTheme);
+
+    const state = {
+      mod: null,
+      selectedPath: null,
+      newItemMode: null,        /* 'file' | 'folder' */
+      renameFrom: null,
+      dirtyTimer: null
+    };
+
+    /* ─── Rendering ─── */
+
+    function renderEmptyState() {
+      const mods = ModStudio.getMods();
+      const recentHtml = mods.length === 0 ? '' : `
+        <div class="studio-recent-list">
+          ${mods.map(m => `
+            <div class="studio-recent-item" onclick="openMod('${m.id}')">
+              <div>
+                <div class="studio-recent-name">${escapeHtml(m.name)}</div>
+                <div class="studio-recent-meta">${countFiles(m)} files · updated ${new Date(m.updatedAt).toLocaleDateString()}</div>
+              </div>
+              <div class="flex gap-1">
+                <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); openMod('${m.id}')">Open</button>
+                <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); confirmDeleteMod('${m.id}')">${Studio.Icons.trash}</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      const ws = document.getElementById('workspace');
+      ws.innerHTML = `
+        <div class="studio-empty-hero">
+          <div class="studio-empty-hero-icon">&#128193;</div>
+          <div>
+            <h2>Build a Complete Mod</h2>
+            <p>The Mod Studio workspace treats your mod as a full folder structure — meta, software types, companies, name generators, personalities — all in one place. Create files, organize folders, validate, and download as a ready-to-install .zip.</p>
+          </div>
+          <div class="studio-empty-hero-actions">
+            <button class="btn btn-primary" onclick="createBlankMod()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              Create Blank Mod
+            </button>
+            <button class="btn btn-secondary" onclick="createExampleMod()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+              One-Click Example Mod
+            </button>
+          </div>
+          ${recentHtml}
+        </div>
+      `;
+    }
+
+    function renderWorkspace() {
+      if (!state.mod) { renderEmptyState(); return; }
+      const tree = ModStudio.buildTree(state.mod);
+      const ws = document.getElementById('workspace');
+      ws.innerHTML = `
+        <aside class="studio-explorer">
+          <div class="studio-explorer-header">
+            <span class="studio-explorer-title">${escapeHtml(state.mod.name)}</span>
+            <div class="studio-explorer-actions">
+              <button class="btn btn-ghost btn-icon" title="New file" onclick="openNewFile()">${Studio.Icons.plus}</button>
+              <button class="btn btn-ghost btn-icon" title="New folder" onclick="openNewFolder()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="M12 10v6"/><path d="M9 13h6"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="studio-tree" id="tree-root"></div>
+        </aside>
+        <section class="studio-editor-pane">
+          <div class="studio-editor-toolbar">
+            <span class="studio-editor-path" id="editor-path">No file selected</span>
+            <span class="text-xs" style="color:var(--text-3);" id="editor-status"></span>
+          </div>
+          <div class="studio-editor-body" id="editor-body"></div>
+        </section>
+        <aside class="studio-info-pane" id="info-pane"></aside>
+      `;
+      renderTree(tree, document.getElementById('tree-root'));
+      renderInfoPane();
+      renderSelectedFile();
+    }
+
+    function renderTree(node, container) {
+      const list = document.createElement('div');
+      list.className = 'tree-children';
+      node.children.forEach(child => {
+        const item = document.createElement('div');
+        const isFolder = child.folder;
+        const expanded = !isFolder || isPathExpanded(child.path);
+        item.className = 'tree-item' + (expanded ? '' : ' collapsed') + (state.selectedPath === child.path ? ' selected' : '');
+        item.innerHTML = `
+          ${isFolder ? `<svg class="tree-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>` : '<span class="tree-chevron"></span>'}
+          <span class="tree-icon">${isFolder ? '&#128193;' : fileIcon(child.kind)}</span>
+          <span class="tree-name">${escapeHtml(child.name)}</span>
+          <span class="tree-item-actions">
+            <button title="Rename" data-action="rename">${Studio.Icons.copy && renameIcon()}</button>
+            <button title="Delete" data-action="delete">${Studio.Icons.trash}</button>
+          </span>
+        `;
+        item.addEventListener('click', (e) => {
+          const btn = e.target.closest('button[data-action]');
+          if (btn) {
+            e.stopPropagation();
+            if (btn.dataset.action === 'rename') openRename(child.path);
+            else if (btn.dataset.action === 'delete') confirmDeletePath(child.path);
+            return;
+          }
+          if (isFolder) { toggleFolder(child.path); renderWorkspace(); }
+          else { selectFile(child.path); }
+        });
+        list.appendChild(item);
+        if (isFolder && child.children.length > 0) {
+          const childContainer = document.createElement('div');
+          childContainer.className = 'tree-children' + (expanded ? '' : ' collapsed');
+          renderTree(child, childContainer);
+          list.appendChild(childContainer);
+        }
+      });
+      container.appendChild(list);
+    }
+
+    function renderInfoPane() {
+      const validation = ModStudio.validateStructure(state.mod);
+      const mods = ModStudio.getMods().filter(m => m.id === state.mod.id);
+      const pane = document.getElementById('info-pane');
+      if (!pane) return;
+      const checksHtml = [];
+      if (validation.errors.length === 0 && validation.warnings.length === 0) {
+        checksHtml.push('<div class="studio-info-check ok">' + checkSvg() + '<span>Structure looks good.</span></div>');
+      }
+      validation.errors.forEach(e => checksHtml.push('<div class="studio-info-check err">' + warnSvg() + '<span>' + escapeHtml(e.message) + '</span></div>'));
+      validation.warnings.forEach(w => checksHtml.push('<div class="studio-info-check warn">' + warnSvg() + '<span>' + escapeHtml(w.message) + '</span></div>'));
+
+      pane.innerHTML = `
+        <div class="studio-info-section">
+          <h4>Mod</h4>
+          <input type="text" class="input" id="mod-name-input" value="${escapeAttr(state.mod.name)}" placeholder="Mod name">
+          <textarea class="input mt-2" id="mod-desc-input" placeholder="Short description" style="min-height:48px; font-size:0.8125rem; resize:vertical;">${escapeHtml(state.mod.description || '')}</textarea>
+        </div>
+        <div class="studio-info-section">
+          <h4>Stats</h4>
+          <div class="studio-info-stat"><span class="studio-info-stat-label">Files</span><span class="studio-info-stat-value">${validation.fileCount}</span></div>
+          <div class="studio-info-stat"><span class="studio-info-stat-label">Created</span><span class="studio-info-stat-value">${new Date(state.mod.createdAt).toLocaleDateString()}</span></div>
+          <div class="studio-info-stat"><span class="studio-info-stat-label">Updated</span><span class="studio-info-stat-value">${new Date(state.mod.updatedAt).toLocaleDateString()}</span></div>
+        </div>
+        <div class="studio-info-section">
+          <h4>Structure Check</h4>
+          <div class="studio-info-checks">${checksHtml.join('')}</div>
+        </div>
+        <div class="studio-info-section">
+          <h4>Package</h4>
+          <button class="btn btn-primary w-full" onclick="downloadZip()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            Download ZIP
+          </button>
+          <button class="btn btn-ghost btn-sm w-full mt-2" onclick="closeMod()">Back to list</button>
+        </div>
+      `;
+      document.getElementById('mod-name-input').addEventListener('input', (e) => {
+        state.mod.name = e.target.value;
+        schedulePersist();
+      });
+      document.getElementById('mod-desc-input').addEventListener('input', (e) => {
+        state.mod.description = e.target.value;
+        schedulePersist();
+      });
+    }
+
+    function renderSelectedFile() {
+      const body = document.getElementById('editor-body');
+      const pathEl = document.getElementById('editor-path');
+      const statusEl = document.getElementById('editor-status');
+      if (!body) return;
+      if (!state.selectedPath) {
+        body.innerHTML = '<div class="studio-editor-empty"><div style="font-size:2rem; opacity:0.4;">&#128196;</div><p>Select a file from the tree to edit it.</p><p class="text-xs">Or create a new one with the + button above.</p></div>';
+        if (pathEl) pathEl.textContent = 'No file selected';
+        if (statusEl) statusEl.textContent = '';
+        return;
+      }
+      const content = ModStudio.getFileContent(state.mod, state.selectedPath);
+      if (content === null) {
+        body.innerHTML = '<div class="studio-editor-empty"><p>Cannot read this file.</p></div>';
+        return;
+      }
+      if (pathEl) pathEl.textContent = state.selectedPath;
+      if (statusEl) statusEl.textContent = 'auto-saving';
+      body.innerHTML = `<textarea class="studio-code-textarea" id="code-textarea" spellcheck="false" placeholder="File contents...">${escapeHtml(content)}</textarea>`;
+      const ta = document.getElementById('code-textarea');
+      ta.addEventListener('input', () => {
+        ModStudio.setFileContent(state.mod, state.selectedPath, ta.value);
+        schedulePersist();
+      });
+      ta.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const s = ta.selectionStart, en = ta.selectionEnd;
+          ta.value = ta.value.slice(0, s) + '\t' + ta.value.slice(en);
+          ta.selectionStart = ta.selectionEnd = s + 1;
+        }
+      });
+    }
+
+    /* ─── Actions ─── */
+
+    function createBlankMod() {
+      const name = prompt('Mod name:', 'My Mod');
+      if (!name) return;
+      state.mod = ModStudio.createMod(name);
+      ModStudio.saveMod(state.mod);
+      state.selectedPath = 'meta.tyd';
+      if (!state.mod.files['meta.tyd']) ModStudio.addFile(state.mod, 'meta.tyd', 'Name\t\t"' + name + '"\nDescription\t""\nAuthor\t\t""');
+      ModStudio.saveMod(state.mod);
+      renderWorkspace();
+      Studio.toast('Blank mod created!', 'success');
+    }
+
+    function createExampleMod() {
+      const name = prompt('Mod name:', 'Example Mod');
+      if (!name) return;
+      state.mod = ModStudio.createExampleMod(name);
+      ModStudio.saveMod(state.mod);
+      state.selectedPath = 'meta.tyd';
+      expandedFolders.clear();
+      ModStudio.CANONICAL_FOLDERS.forEach(f => expandedFolders.add(f));
+      renderWorkspace();
+      Studio.toast('Example mod created! Try downloading the ZIP.', 'success');
+    }
+
+    function openMod(id) {
+      const m = ModStudio.loadMod(id);
+      if (!m) return;
+      state.mod = m;
+      state.selectedPath = null;
+      expandedFolders.clear();
+      ModStudio.CANONICAL_FOLDERS.forEach(f => expandedFolders.add(f));
+      renderWorkspace();
+    }
+
+    function closeMod() {
+      if (state.dirtyTimer) { clearTimeout(state.dirtyTimer); flushPersist(); }
+      state.mod = null;
+      state.selectedPath = null;
+      renderEmptyState();
+    }
+
+    function confirmDeleteMod(id) {
+      const m = ModStudio.loadMod(id);
+      if (!m) return;
+      if (!confirm('Delete mod "' + m.name + '"? This cannot be undone.')) return;
+      ModStudio.deleteMod(id);
+      if (state.mod && state.mod.id === id) state.mod = null;
+      renderEmptyState();
+      Studio.toast('Mod deleted.', 'info');
+    }
+
+    function selectFile(path) {
+      state.selectedPath = path;
+      renderWorkspace();
+    }
+
+    function openNewFile() {
+      state.newItemMode = 'file';
+      openNewItemModal('New File', 'e.g. SoftwareTypes/MyApp.tyd', 'Use folders in the path — they\'ll be created automatically.');
+    }
+
+    function openNewFolder() {
+      state.newItemMode = 'folder';
+      openNewItemModal('New Folder', 'e.g. MyCustomStuff/', 'Folders let you organize mod assets.');
+    }
+
+    function openNewItemModal(title, placeholder, hint) {
+      document.getElementById('new-item-title').textContent = title;
+      const input = document.getElementById('new-item-input');
+      input.value = '';
+      input.placeholder = placeholder;
+      document.getElementById('new-item-hint').textContent = hint;
+      Studio.openModal('new-item-modal');
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function confirmNewItem() {
+      const raw = document.getElementById('new-item-input').value.trim();
+      if (!raw) { Studio.toast('Path is empty.', 'warning'); return; }
+      Studio.closeModal('new-item-modal');
+      if (state.newItemMode === 'folder') {
+        const r = ModStudio.addFolder(state.mod, raw);
+        if (r.error) { Studio.toast(r.error, 'danger'); return; }
+        expandedFolders.add(ModStudio.normalizePath(raw).replace(/\/?$/, '/'));
+      } else {
+        const r = ModStudio.addFile(state.mod, raw, '');
+        if (r.error) { Studio.toast(r.error, 'danger'); return; }
+        state.selectedPath = r.path;
+        const parent = ModStudio.getParentDir(r.path);
+        if (parent) expandedFolders.add(parent);
+      }
+      ModStudio.saveMod(state.mod);
+      renderWorkspace();
+      Studio.toast(state.newItemMode === 'folder' ? 'Folder created.' : 'File created.', 'success');
+    }
+
+    function openRename(path) {
+      state.renameFrom = path;
+      const input = document.getElementById('rename-input');
+      input.value = path;
+      Studio.openModal('rename-modal');
+      setTimeout(() => { input.focus(); input.select(); }, 50);
+    }
+
+    function confirmRename() {
+      const from = state.renameFrom;
+      const to = document.getElementById('rename-input').value.trim();
+      if (!to || to === from) { Studio.closeModal('rename-modal'); return; }
+      const r = ModStudio.renamePath(state.mod, from, to);
+      if (r.error) { Studio.toast(r.error, 'danger'); return; }
+      Studio.closeModal('rename-modal');
+      if (state.selectedPath === from) {
+        state.selectedPath = ModStudio.normalizePath(to);
+      }
+      ModStudio.saveMod(state.mod);
+      renderWorkspace();
+      Studio.toast('Renamed.', 'success');
+    }
+
+    function confirmDeletePath(path) {
+      if (!confirm('Delete "' + path + '"?\n' + (path.endsWith('/') ? 'All files inside will be removed.' : 'This cannot be undone.'))) return;
+      ModStudio.deletePath(state.mod, path);
+      if (state.selectedPath === path || (path.endsWith('/') && state.selectedPath && state.selectedPath.startsWith(path))) {
+        state.selectedPath = null;
+      }
+      ModStudio.saveMod(state.mod);
+      renderWorkspace();
+      Studio.toast('Deleted.', 'info');
+    }
+
+    async function downloadZip() {
+      try {
+        Studio.toast('Packaging ZIP...', 'info');
+        const blob = await ModStudio.exportZip(state.mod);
+        const name = (state.mod.name || 'mod').replace(/[^A-Za-z0-9._-]+/g, '_') + '.zip';
+        ModStudio.triggerDownload(blob, name);
+        Studio.toast('Downloaded ' + name, 'success');
+      } catch (err) {
+        Studio.toast('ZIP export failed: ' + err.message, 'danger');
+      }
+    }
+
+    /* ─── Persistence debounce ─── */
+
+    function schedulePersist() {
+      if (state.dirtyTimer) clearTimeout(state.dirtyTimer);
+      state.dirtyTimer = setTimeout(flushPersist, 600);
+    }
+    function flushPersist() {
+      if (state.mod) ModStudio.saveMod(state.mod);
+      state.dirtyTimer = null;
+    }
+
+    /* ─── Folder expand state ─── */
+
+    const expandedFolders = new Set();
+    function isPathExpanded(path) {
+      return expandedFolders.has(path) || expandedFolders.has(path.replace(/\/?$/, '/'));
+    }
+    function toggleFolder(path) {
+      const p = path.endsWith('/') ? path : path + '/';
+      if (expandedFolders.has(p)) expandedFolders.delete(p);
+      else expandedFolders.add(p);
+    }
+
+    /* ─── Helpers ─── */
+
+    function countFiles(m) {
+      return Object.keys(m.files || {}).filter(p => { const r = m.files[p]; return r && !r.folder && !r.isFolder; }).length;
+    }
+    function fileIcon(kind) {
+      if (kind === 'tyd') return '&#128196;';
+      if (kind === 'image') return '&#128247;';
+      if (kind === 'markdown') return '&#128221;';
+      return '&#128221;';
+    }
+    function checkSvg() {
+      return '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+    }
+    function warnSvg() {
+      return '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>';
+    }
+    function renameIcon() {
+      return '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+    }
+    function escapeHtml(str) {
+      return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+    function escapeAttr(str) {
+      return escapeHtml(str);
+    }
+
+    /* Wire modal buttons */
+    document.getElementById('new-item-create').addEventListener('click', confirmNewItem);
+    document.getElementById('rename-confirm').addEventListener('click', confirmRename);
+    document.getElementById('new-item-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmNewItem(); });
+    document.getElementById('rename-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmRename(); });
+
+    /* Init: open last mod if present, else empty state */
+    const lastId = ModStudio.getCurrentModId();
+    if (lastId && ModStudio.loadMod(lastId)) {
+      openMod(lastId);
+    } else {
+      renderEmptyState();
+    }
+  </script>
+</body>
+</html>
